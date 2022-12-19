@@ -29,8 +29,8 @@ Improve your sites SEO by identifying and fixing link issues in your Nuxt v3 app
 
 ## Features
 
-- ⛰️ Discover broken links - 404s and internal redirects
-- ❌ Fail on build if broken links are found (optional)
+- ✅ Discover broken links - 404s and internal redirects
+- 🕵️ Fail on build if broken links are found (optional)
 
 ## Install
 
