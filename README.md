@@ -73,9 +73,9 @@ export default defineNuxtConfig({
 ```  
 
 
-### Set host
+### Set host (optional)
 
-You'll need to provide the host of your site in order to generate the sitemap.xml.
+You'll need to provide the host of your site so that the crawler can resolve absolute URLs that may be internal.
 
 ```ts
 export default defineNuxtConfig({
