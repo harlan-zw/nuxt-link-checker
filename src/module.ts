@@ -89,6 +89,9 @@ export default defineNuxtModule<ModuleOptions>({
             process.exit(1)
           }
         }
+        else {
+          nitro.logger.success('Looks good! No broken links found.')
+        }
       })
     })
   },
