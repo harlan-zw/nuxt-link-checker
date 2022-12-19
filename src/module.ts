@@ -50,7 +50,7 @@ export default defineNuxtModule<ModuleOptions>({
           invalidRoutes[ctx.route] = ctx.error.statusCode
       })
       nitro.hooks.hook('close', async () => {
-        nitro.logger.info('Scanning for broken links...')
+        nitro.logger.info('Scanning routes for broken links...')
         const links = Object.entries(linkMap)
         let routeCount = 0
         let badLinkCount = 0
@@ -63,18 +63,19 @@ export default defineNuxtModule<ModuleOptions>({
           }).filter(r => r.statusCode !== 200 || r.badTrailingSlash)
           if (brokenLinks.length) {
             nitro.logger.log(chalk.gray(
-              `  ${Number(++routeCount) === links.length - 1 ? '└─' : '├─'} ${route}`,
+              `  ${Number(++routeCount) === links.length - 1 ? '└─' : '├─'} ${chalk.white(route)}`,
             ))
             brokenLinks.forEach((link) => {
               badLinkCount++
+              nitro.logger.log('')
               if (link.statusCode !== 200) {
                 nitro.logger.log(chalk.red(
-                  `   ${link.href} ${link.statusCode}`,
+                  `   ${link.statusCode} ${link.statusCode === 404 ? 'Not Found' : 'Redirect'}`,
                 ))
               }
               else if (link.badTrailingSlash) {
                 nitro.logger.log(chalk.yellow(
-                  `   ${link.href} Wrong trailing slash`,
+                  `   ${config.trailingSlash ? 'Missing' : 'Has added'} trailing slash`,
                 ))
               }
               nitro.logger.log(`   ${chalk.gray(link.element)}`)
