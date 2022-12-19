@@ -10,7 +10,7 @@
 
 
 <p align="center">
-Find broken links in your Nuxt v3 pre-rendered app.
+Improve your sites SEO by identifying and fixing link issues in your Nuxt v3 app.
 </p>
 
 <p align="center">
@@ -33,6 +33,8 @@ Find broken links in your Nuxt v3 pre-rendered app.
 - ❌ Fail on build if broken links are found (optional)
 
 ## Install
+
+⚠️ The module is in early access and only works when pre-rendering.
 
 ```bash
 npm install --save-dev nuxt-link-checker
