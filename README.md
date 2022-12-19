@@ -92,6 +92,13 @@ export default defineNuxtConfig({
 
 ## Module Config
 
+### `failOn404`
+
+- Type: `boolean`
+- Default: `true`
+
+If set to `true`, the build will fail if any broken links are found.
+
 ### `host`
 
 - Type: `string`

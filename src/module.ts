@@ -52,7 +52,6 @@ export default defineNuxtModule<ModuleOptions>({
       nitro.hooks.hook('close', async () => {
         nitro.logger.info('Scanning for broken links...')
         const links = Object.entries(linkMap)
-        const hasBrokenLinks = Object.keys(invalidRoutes).length
         let routeCount = 0
         let badLinkCount = 0
         links.forEach(([route, routes]) => {
@@ -82,7 +81,7 @@ export default defineNuxtModule<ModuleOptions>({
             })
           }
         })
-        if (hasBrokenLinks) {
+        if (badLinkCount > 0) {
           nitro.logger[config.failOn404 ? 'error' : 'warn'](`Found ${badLinkCount} broken links.`)
           if (config.failOn404) {
             nitro.logger.log(chalk.gray('You can disable this by setting "linkChecker: { failOn404: false }" in your nuxt.config.ts.'))
