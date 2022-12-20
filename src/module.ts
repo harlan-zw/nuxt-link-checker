@@ -41,6 +41,10 @@ export default defineNuxtModule<ModuleOptions>({
     }
   },
   setup(config, nuxt) {
+    // only runs when we build
+    if (nuxt.options.dev)
+      return
+
     nuxt.hooks.hook('nitro:init', async (nitro) => {
       const invalidRoutes: Record<string, number> = {}
       nitro.hooks.hook('prerender:generate', async (ctx) => {
@@ -50,8 +54,10 @@ export default defineNuxtModule<ModuleOptions>({
           invalidRoutes[ctx.route] = ctx.error.statusCode
       })
       nitro.hooks.hook('close', async () => {
-        nitro.logger.info('Scanning routes for broken links...')
         const links = Object.entries(linkMap)
+        if (!links.length)
+          return
+        nitro.logger.info('Scanning routes for broken links...')
         let routeCount = 0
         let badLinkCount = 0
         links.forEach(([route, routes]) => {
