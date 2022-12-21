@@ -27,6 +27,8 @@ Improve your sites SEO by identifying and fixing link issues in your Nuxt v3 app
 </table>
 </p>
 
+ℹ️ Looking for a complete SEO solution? Check out [nuxt-seo-kit](https://github.com/harlan-zw/nuxt-seo-kit).
+
 ## Features
 
 - ✅ Discover broken links - 404s and internal redirects
