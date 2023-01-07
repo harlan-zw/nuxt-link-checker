@@ -126,4 +126,4 @@ Whether internal links should have a trailing slash or not.
 
 ## License
 
-MIT License © 2022-PRESENT [Harlan Wilton](https://github.com/harlan-zw)
+MIT License © 2023-PRESENT [Harlan Wilton](https://github.com/harlan-zw)
