@@ -17,8 +17,8 @@ export default defineNuxtConfig({
       ]
     }
   },
-  sitemap: {
-    hostname: 'https://example.com',
+  linkChecker: {
+    host: 'https://example.com',
   },
   routeRules: {
     '/secret': { index: false },

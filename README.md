@@ -10,7 +10,7 @@
 
 
 <p align="center">
-Improve your sites SEO by identifying and fixing link issues in your Nuxt v3 app.
+Improve your sites SEO by identifying and fixing link issues in your Nuxt 3 app.
 </p>
 
 <p align="center">
@@ -104,7 +104,7 @@ If set to `true`, the build will fail if any broken links are found.
 ### `host`
 
 - Type: `string`
-- Default: `runtimeConfig.public.siteUrl`
+- Default: `runtimeConfig.public.siteUrl || localhost`
 - Required: `false`
 
 The host of your site. This is required to validate absolute URLs which may be internal.

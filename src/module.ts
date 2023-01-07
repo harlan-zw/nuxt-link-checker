@@ -12,7 +12,7 @@ export interface ModuleOptions {
   /**
    * Your site hostname. Used to determine if absolute links are internal.
    */
-  host?: string
+  host: string
   /**
    * Whether the build should fail when a 404 is encountered.
    */
@@ -35,7 +35,7 @@ export default defineNuxtModule<ModuleOptions>({
   },
   defaults(nuxt) {
     return {
-      host: nuxt.options.runtimeConfig.public?.siteUrl,
+      host: nuxt.options.runtimeConfig.public?.siteUrl || 'localhost',
       trailingSlash: nuxt.options.runtimeConfig.public?.trailingSlash || false,
       failOn404: true,
     }
@@ -57,14 +57,14 @@ export default defineNuxtModule<ModuleOptions>({
         const links = Object.entries(linkMap)
         if (!links.length)
           return
-        nitro.logger.info('Scanning routes for broken links...')
+        nitro.logger.info(`Scanning routes for broken links... ${chalk.gray(`trailingSlashes: ${config.trailingSlash ? '\`true\`' : '\`false\`'}`)}`)
         let routeCount = 0
         let badLinkCount = 0
         links.forEach(([route, routes]) => {
           const brokenLinks = routes.map((r) => {
             return {
               ...r,
-              statusCode: invalidRoutes[r.href] || 200,
+              statusCode: invalidRoutes[r.pathname] || 200,
             }
           }).filter(r => r.statusCode !== 200 || r.badTrailingSlash)
           if (brokenLinks.length) {
@@ -79,9 +79,14 @@ export default defineNuxtModule<ModuleOptions>({
                   `   ${link.statusCode} ${link.statusCode === 404 ? 'Not Found' : 'Redirect'}`,
                 ))
               }
+              else if (link.badAbsolute) {
+                nitro.logger.log(chalk.yellow(
+                  '   Absolute link, should be relative',
+                ))
+              }
               else if (link.badTrailingSlash) {
                 nitro.logger.log(chalk.yellow(
-                  `   ${config.trailingSlash ? 'Missing' : 'Has added'} trailing slash`,
+                  '   Incorrect trailing slash',
                 ))
               }
               nitro.logger.log(`   ${chalk.gray(link.element)}`)

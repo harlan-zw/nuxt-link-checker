@@ -1,5 +1,6 @@
 // copied from nitropack prerender.ts
-import { isRelative, parseURL } from 'ufo'
+import type { ParsedURL } from 'ufo'
+import { hasProtocol, parseURL } from 'ufo'
 import { load } from 'cheerio'
 import type { ModuleOptions } from './module'
 
@@ -12,9 +13,11 @@ function getExtension(path: string): string {
 }
 
 interface ExtractedLink {
-  href: string
+  url: ParsedURL
+  pathname: string
   element: string
   badTrailingSlash: boolean
+  badAbsolute: boolean
 }
 export function extractLinks(
   html: string,
@@ -22,15 +25,18 @@ export function extractLinks(
   { host, trailingSlash }: ModuleOptions,
 ): ExtractedLink[] {
   const links: ExtractedLink[] = []
-  const _links: ExtractedLink[] = []
 
+  const hostname = parseURL(host).host
   const $ = load(html)
 
   $('[href]').each((i, el) => {
     const href = $(el).attr('href')
     if (!href)
       return
-    if (host && !isRelative(href) && href.startsWith(host))
+    // create a URL from href
+    const url = parseURL(href)
+    // ignore external links which aren't our host
+    if (hasProtocol(href) && !href.startsWith('/') && url.host !== hostname)
       return
     if (!allowedExtensions.has(getExtension(href)))
       return
@@ -44,20 +50,5 @@ export function extractLinks(
     })
   })
 
-  for (const link of _links.filter(Boolean)) {
-    const parsed = parseURL(link.href)
-    if (parsed.protocol)
-      continue
-
-    let { pathname } = parsed
-    if (!pathname.startsWith('/')) {
-      const fromURL = new URL(from, 'http://localhost')
-      pathname = new URL(pathname, fromURL).pathname
-    }
-    links.push({
-      ...link,
-      href: pathname,
-    })
-  }
   return links
 }
