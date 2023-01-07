@@ -35,9 +35,11 @@ export function extractLinks(
     if (!allowedExtensions.has(getExtension(href)))
       return
 
-    _links.push({
-      href,
-      badTrailingSlash: href !== '/' && ((trailingSlash && !href.endsWith('/')) || (!trailingSlash && href.endsWith('/'))),
+    links.push({
+      pathname: url.pathname || '/',
+      url,
+      badAbsolute: Boolean(hostname) && hostname === url.host,
+      badTrailingSlash: url.pathname !== '/' && ((trailingSlash && !url.pathname.endsWith('/')) || (!trailingSlash && url.pathname.endsWith('/'))),
       element: $.html(el) || '',
     })
   })
