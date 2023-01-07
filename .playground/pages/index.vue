@@ -12,6 +12,7 @@
   <a href="https://example.com/valid/">absolute URL</a>
   <a href="https://external-site.com/valid/">external link</a>
   <a href="#anchor">anchor link</a>
+  <nuxt-link to="/#licence">licences</nuxt-link>
   <div id="anchor">
     this is anchored
   </div>

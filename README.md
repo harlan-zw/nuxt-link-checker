@@ -10,7 +10,7 @@
 
 
 <p align="center">
-Improve your sites SEO by identifying and fixing link issues in your Nuxt 3 app.
+Identifying and fix link issues in Nuxt 3.
 </p>
 
 <p align="center">
