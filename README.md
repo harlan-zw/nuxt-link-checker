@@ -10,7 +10,7 @@
 
 
 <p align="center">
-Identifying and fix link issues in Nuxt 3.
+Identifying and fix link issues for pre-rendered Nuxt 3 apps.
 </p>
 
 <p align="center">
@@ -32,11 +32,10 @@ Identifying and fix link issues in Nuxt 3.
 ## Features
 
 - ✅ Discover broken links - 404s and internal redirects
+- 🚩 Warnings for bad practice links - absolute instead of relative and wrong trailing slash
 - 🕵️ Fail on build if broken links are found (optional)
 
 ## Install
-
-⚠️ The module is in early access and only works when pre-rendering.
 
 ```bash
 npm install --save-dev nuxt-link-checker
@@ -86,7 +85,7 @@ export default defineNuxtConfig({
     siteUrl: 'https://example.com',
   },
   // OR 
-  sitemap: {
+  linkChecker: {
     host: 'https://example.com',
   },
 })
