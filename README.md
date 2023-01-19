@@ -10,7 +10,7 @@
 
 
 <p align="center">
-Identifying and fix link issues for pre-rendered Nuxt 3 apps.
+Identify and fix link issues for prerendered Nuxt 3 apps.
 </p>
 
 <p align="center">
