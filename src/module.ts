@@ -1,6 +1,7 @@
-import { createResolver, defineNuxtModule } from '@nuxt/kit'
+import { defineNuxtModule } from '@nuxt/kit'
 import chalk from 'chalk'
 import { extractLinks, linkMap } from './extractLinks'
+import { createFilter } from './urlFilter'
 
 export interface ModuleOptions {
   /**
@@ -17,6 +18,10 @@ export interface ModuleOptions {
    * Whether the build should fail when a 404 is encountered.
    */
   failOn404: boolean
+  /**
+   * Paths to ignore when checking links.
+   */
+  exclude: string[]
 }
 
 export interface ModuleHooks {
@@ -38,12 +43,17 @@ export default defineNuxtModule<ModuleOptions>({
       host: nuxt.options.runtimeConfig.public?.siteUrl || 'localhost',
       trailingSlash: nuxt.options.runtimeConfig.public?.trailingSlash || false,
       failOn404: true,
+      exclude: [],
     }
   },
   setup(config, nuxt) {
     // only runs when we build
     if (nuxt.options.dev)
       return
+
+    const urlFilter = createFilter({
+      exclude: config.exclude,
+    })
 
     nuxt.hooks.hook('nitro:init', async (nitro) => {
       const invalidRoutes: Record<string, number> = {}
@@ -66,7 +76,10 @@ export default defineNuxtModule<ModuleOptions>({
               ...r,
               statusCode: invalidRoutes[r.pathname] || 200,
             }
-          }).filter(r => r.statusCode !== 200 || r.badTrailingSlash)
+          })
+            .filter(r => r.statusCode !== 200 || r.badTrailingSlash || r.badAbsolute)
+            // make sure we aren't ignoring it
+            .filter(r => urlFilter(r.pathname))
           if (brokenLinks.length) {
             nitro.logger.log(chalk.gray(
               `  ${Number(++routeCount) === links.length - 1 ? '└─' : '├─'} ${chalk.white(route)}`,

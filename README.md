@@ -18,7 +18,7 @@ Identify and fix link issues for prerendered Nuxt 3 apps.
 <tbody>
 <td align="center">
 <img width="800" height="0" /><br>
-<i>Status:</i> Early Access</b> <br>
+<i>Status:</i> Stable</b> <br>
 <sup> Please report any issues 🐛</sup><br>
 <sub>Made possible by my <a href="https://github.com/sponsors/harlan-zw">Sponsor Program 💖</a><br> Follow me <a href="https://twitter.com/harlan_zw">@harlan_zw</a> 🐦 • Join <a href="https://discord.gg/275MBUBvgP">Discord</a> for help</sub><br>
 <img width="800" height="0" />
@@ -27,7 +27,7 @@ Identify and fix link issues for prerendered Nuxt 3 apps.
 </table>
 </p>
 
-ℹ️ Looking for a complete SEO solution? Check out [nuxt-seo-kit](https://github.com/harlan-zw/nuxt-seo-kit).
+ℹ️ Looking for a complete SEO solution? Check out [Nuxt SEO Kit](https://github.com/harlan-zw/nuxt-seo-kit).
 
 ## Features
 
@@ -73,7 +73,6 @@ export default defineNuxtConfig({
 })
 ```  
 
-
 ### Set host (optional)
 
 You'll need to provide the host of your site so that the crawler can resolve absolute URLs that may be internal.
@@ -91,6 +90,34 @@ export default defineNuxtConfig({
 })
 ```
 
+### Exclude URLs from throwing errors
+
+You can exclude URLs from throwing errors by adding them to the `exclude` array.
+
+For example, if you have an `/admin` route that is a separate application, you can ignore all `/admin` links with:
+
+```ts
+export default defineNuxtConfig({
+  linkChecker: {
+    exclude: [
+      '/admin/**'
+    ],
+  },
+})
+```
+
+### Disable errors on broken links
+
+You can disable errors on broken links by setting `failOn404` to `false`.
+
+```ts
+export default defineNuxtConfig({
+  linkChecker: {
+    failOn404: false,
+  },
+})
+```
+
 ## Module Config
 
 ### `failOn404`
@@ -99,6 +126,15 @@ export default defineNuxtConfig({
 - Default: `true`
 
 If set to `true`, the build will fail if any broken links are found.
+
+### `exclude`
+
+- Type: `string[]`
+- Default: `[]`
+
+An array of URLs to exclude from the check. 
+
+This can be useful if you have a route that is not pre-rendered, but you know it will be valid.
 
 ### `host`
 

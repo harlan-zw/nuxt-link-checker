@@ -19,6 +19,9 @@ export default defineNuxtConfig({
   },
   linkChecker: {
     host: 'https://example.com',
+    exclude: [
+      '/excluded/**'
+    ]
   },
   routeRules: {
     '/secret': { index: false },
