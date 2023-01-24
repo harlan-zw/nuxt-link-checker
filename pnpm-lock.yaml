@@ -16,12 +16,14 @@ importers:
       execa: ^6.1.0
       nuxt: ^3.0.0
       pathe: ^1.1.0
+      radix3: ^1.0.0
       ufo: ^1.0.1
       vitest: ^0.28.1
     dependencies:
       '@nuxt/kit': 3.0.0
       chalk: 5.2.0
       cheerio: 1.0.0-rc.12
+      radix3: 1.0.0
       ufo: 1.0.1
     devDependencies:
       '@antfu/eslint-config': 0.34.1_eslint@8.32.0
@@ -6157,7 +6159,6 @@ packages:
 
   /radix3/1.0.0:
     resolution: {integrity: sha512-6n3AEXth91ASapMVKiEh2wrbFJmI+NBilrWE0AbiGgfm0xet0QXC8+a3K19r1UVYjUjctUgB053c3V/J6V0kCQ==}
-    dev: true
 
   /randombytes/2.1.0:
     resolution: {integrity: sha512-vYl3iOX+4CKUWuxGi9Ukhie6fsqXqS9FE2Zaic4tNFD2N2QQaXOMFbuKK4QmDHC0JO6B1Zp41J0LpT0oR68amQ==}
