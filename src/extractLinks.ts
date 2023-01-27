@@ -38,6 +38,10 @@ export function extractLinks(
     // ignore external links which aren't our host
     if (hasProtocol(href) && !href.startsWith('/') && url.host !== hostname)
       return
+    // ignore anchor links
+    if (href.startsWith('#'))
+      return
+    // ignore links with extensions
     if (!allowedExtensions.has(getExtension(href)))
       return
 
