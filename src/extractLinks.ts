@@ -41,6 +41,9 @@ export function extractLinks(
     // ignore anchor links
     if (href.startsWith('#'))
       return
+    // ignore canonical links
+    if (el.tagName === 'link' && el.attribs.rel === 'canonical')
+      return
     // ignore links with extensions
     if (!allowedExtensions.has(getExtension(href)))
       return
