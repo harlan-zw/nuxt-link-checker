@@ -81,7 +81,9 @@ You'll need to provide the host of your site so that the crawler can resolve abs
 export default defineNuxtConfig({
   // Recommended 
   runtimeConfig: {
-    siteUrl: 'https://example.com',
+    public: {
+      siteUrl: 'https://example.com',
+    }
   },
   // OR 
   linkChecker: {
