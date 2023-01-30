@@ -7,6 +7,7 @@
   <NuxtLink to="/trailingslash/">trailing slash</NuxtLink>
   <NuxtLink to="/404link">404 link</NuxtLink>
   <NuxtLink to="/redirect">redirect link</NuxtLink>
+  <NuxtLink to="/with-canonical">with canonical</NuxtLink>
   <NuxtLink to="https://example.com/absolute">absolute link</NuxtLink>
   <NuxtLink to="/excluded/something">excluded link</NuxtLink>
   <a href="javascript:history.back()">previous page</a>
