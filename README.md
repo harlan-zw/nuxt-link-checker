@@ -82,7 +82,7 @@ export default defineNuxtConfig({
   // Recommended 
   runtimeConfig: {
     public: {
-      siteUrl: 'https://example.com',
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://example.com',
     }
   },
   // OR 
