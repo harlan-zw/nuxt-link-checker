@@ -40,8 +40,8 @@ export default defineNuxtModule<ModuleOptions>({
   },
   defaults(nuxt) {
     return {
-      host: nuxt.options.runtimeConfig.public?.siteUrl || 'localhost',
-      trailingSlash: nuxt.options.runtimeConfig.public?.trailingSlash || false,
+      host: process.env.NUXT_PUBLIC_SITE_URL || nuxt.options.runtimeConfig.public?.siteUrl || 'localhost',
+      trailingSlash: process.env.NUXT_PUBLIC_TRAILING_SLASH || nuxt.options.runtimeConfig.public?.trailingSlash || false,
       failOn404: true,
       exclude: [],
     }
