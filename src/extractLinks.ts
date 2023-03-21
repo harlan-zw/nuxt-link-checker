@@ -52,7 +52,7 @@ export function extractLinks(
       pathname: url.pathname || '/',
       url,
       badAbsolute: Boolean(hostname) && hostname === url.host,
-      badTrailingSlash: url.pathname !== '/' && ((trailingSlash && !url.pathname.endsWith('/')) || (!trailingSlash && url.pathname.endsWith('/'))),
+      badTrailingSlash: url.pathname !== '/' && !url.pathname.split('/').at(-1).includes('.') && ((trailingSlash && !url.pathname.endsWith('/')) || (!trailingSlash && url.pathname.endsWith('/'))),
       element: $.html(el) || '',
     })
   })
