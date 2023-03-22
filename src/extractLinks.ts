@@ -29,7 +29,7 @@ export function extractLinks(
   const hostname = parseURL(host).host
   const $ = load(html)
 
-  $('[href]').each((i, el) => {
+  $('body [href]').each((i, el) => {
     const href = $(el).attr('href')
     if (!href)
       return
