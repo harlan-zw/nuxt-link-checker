@@ -2,11 +2,8 @@ import { resolve } from 'pathe'
 import { defineNuxtConfig } from 'nuxt/config'
 
 export default defineNuxtConfig({
-  alias: {
-    'nuxt-link-checker': resolve(__dirname, '../src/module'),
-  },
   modules: [
-    'nuxt-link-checker',
+    resolve(__dirname, '../src/module'),
   ],
   nitro: {
     prerender: {
