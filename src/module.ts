@@ -38,6 +38,7 @@ export default defineNuxtModule<ModuleOptions>({
     },
     configKey: 'linkChecker',
   },
+  // @ts-ignore untyped
   defaults(nuxt) {
     return {
       host: process.env.NUXT_PUBLIC_SITE_URL || nuxt.options.runtimeConfig.public?.siteUrl || 'localhost',
