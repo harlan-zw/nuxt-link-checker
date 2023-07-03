@@ -35,7 +35,7 @@
     "test": "pnpm lint"
   },
   "dependencies": {
-    "@nuxt/kit": "3.4.1",
+    "@nuxt/kit": "^3.4.1",
     "chalk": "^5.2.0",
     "cheerio": "1.0.0-rc.12",
     "radix3": "^1.0.1",
