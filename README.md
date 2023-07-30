@@ -14,20 +14,16 @@ Discover issues with your links that may be negatively effecting your SEO.
 </p>
 
 <p align="center">
-<table>
+<table width="100%">
 <tbody>
 <tr>
-<td colspan="2">
-Discover issues with your links that may be negatively effecting your SEO.
-<img width="800" height="0" aria-hidden="true" /><br>
-</td>
-</tr>
 <td>
 <i>Status:</i> Stable</b> <br>
 </td>
 <td>
 <sub>Made possible by my <a href="https://github.com/sponsors/harlan-zw">Sponsor Program 💖</a><br> Keep up to date <a href="https://twitter.com/harlan_zw">@harlan_zw</a> 🐦 • Free support <a href="https://discord.gg/275MBUBvgP">Discord</a></sub><br>
 </td>
+</tr>
 </tbody>
 </table>
 </p>
