@@ -72,7 +72,7 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
     },
     startQueueWorker() {
       client.stopQueueWorker()
-      queueWorkerTimer = setInterval(async () => {
+      async function workQueue() {
         if (queue.length <= 0) {
           client.stopQueueWorker()
           return
@@ -94,7 +94,9 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
         // attach inspections to elements
         client.maybeAttachEls(payload)
         client.broadcast('queueWorking', { queueLength: queue.length })
-      }, 500)
+        queueWorkerTimer = setTimeout(workQueue, 500)
+      }
+      workQueue()
     },
     maybeAttachEls(payload?: LinkInspectionResult) {
       // must not pass
