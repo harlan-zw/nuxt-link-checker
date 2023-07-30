@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import type { RuleContext } from '../../../src/runtime/inspect/runner'
 import RuleTrailingSlash from '../../../src/runtime/inspections/trailing-slash'
 import { runRule } from './util'
+import {RuleTestContext} from "../../../src/runtime/types";
 
 describe('rule trailing-slash', () => {
   it('works', () => {
@@ -10,17 +10,22 @@ describe('rule trailing-slash', () => {
         trailingSlash: true,
       },
       link: '/test',
-    } as RuleContext
+    } as RuleTestContext
 
     expect(runRule(ctx, RuleTrailingSlash())).toMatchInlineSnapshot(`
       {
         "error": [],
+        "fix": "/test/",
+        "link": "/test",
+        "passes": false,
         "warning": [
           {
             "fix": "/test/",
-            "message": "Links should have a trailing slash.",
+            "fixDescription": "Add trailing slash.",
+            "message": "Should have a trailing slash.",
             "name": "trailing-slash",
             "scope": "warning",
+            "tip": "Incorrect trailing slashes can cause duplicate pages in search engines and waste crawl budget.",
           },
         ],
       }

@@ -1,6 +1,6 @@
 import type { H3Event } from 'h3'
-import type { Rule, RuleContext } from '../../../src/runtime/inspect/runner'
-import { inspect } from '../../../src/runtime/inspect/runner'
+import type { Rule, RuleTestContext } from '../../../src/runtime/types'
+import { inspect } from '../../../src/runtime/inspect'
 
 export function mockEvent(referer: string = '/') {
   return {
@@ -14,7 +14,7 @@ export function mockEvent(referer: string = '/') {
   } as H3Event
 }
 
-export function runRule(ctx: RuleContext, rule: Rule) {
+export function runRule(ctx: RuleTestContext, rule: Rule) {
   if (!ctx.e)
     ctx.e = mockEvent()
   return inspect(ctx, [rule])

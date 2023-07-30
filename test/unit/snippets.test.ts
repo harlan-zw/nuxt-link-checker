@@ -14,10 +14,10 @@ describe('snippets', () => {
     expect(sources).toMatchInlineSnapshot(`
       [
         {
-          "columnNumber": 12,
-          "end": 26,
+          "columnNumber": 14,
+          "end": 31,
           "lineNumber": 2,
-          "start": 22,
+          "start": 27,
         },
       ]
     `)
@@ -28,15 +28,15 @@ describe('snippets', () => {
       [
         {
           "columnNumber": 16,
-          "end": 64,
+          "end": 67,
           "lineNumber": 6,
-          "start": 60,
+          "start": 63,
         },
         {
           "columnNumber": 16,
-          "end": 370,
+          "end": 373,
           "lineNumber": 12,
-          "start": 366,
+          "start": 369,
         },
       ]
     `)
@@ -46,11 +46,8 @@ describe('snippets', () => {
     expect(preview).toMatchInlineSnapshot(`
       [
         {
-          "code": "<template>
-      <NuxtLink to=\\"/foo\\">
-                 ^
-        Foo",
-          "columnNumber": 12,
+          "code": "",
+          "columnNumber": 14,
           "lineNumber": 2,
         },
       ]
@@ -61,18 +58,20 @@ describe('snippets', () => {
     expect(preview).toMatchInlineSnapshot(`
       [
         {
-          "code": "  <div>
+          "code": "<template>
+        <div>
           <NuxtLink to=\\"/foo\\" data-first>
-                     ^
-            Foo",
+            Foo
+          </NuxtLink>",
           "columnNumber": 16,
           "lineNumber": 6,
         },
         {
-          "code": "    </div>
+          "code": "      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci alias amet at commodi consectetur cum dolores, earum, eveniet id illum molestias mollitia nesciunt nisi nulla quaerat quia similique temporibus unde.
+          </div>
           <NuxtLink to=\\"/foo\\" data-second>
-                     ^
-            Test",
+            Test
+          </NuxtLink>",
           "columnNumber": 16,
           "lineNumber": 12,
         },

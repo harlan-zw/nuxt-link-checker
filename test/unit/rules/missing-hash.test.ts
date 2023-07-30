@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import type { RuleContext } from '../../../src/runtime/inspect/runner'
 import RuleMissingHash from '../../../src/runtime/inspections/missing-hash'
+import type { RuleTestContext } from '../../../src/runtime/types'
 import { mockEvent, runRule } from './util'
 
 describe('rule missing-hash', () => {
@@ -13,18 +13,22 @@ describe('rule missing-hash', () => {
         'team',
       ],
       e: mockEvent('/about'),
-    } as RuleContext
+    } as RuleTestContext
 
     expect(runRule(ctx, RuleMissingHash())).toMatchInlineSnapshot(`
       {
         "error": [
           {
-            "message": "Link hash does not exist.",
+            "fix": "/about#team",
+            "fixDescription": "Did you mean /about#team?",
+            "message": "No element with id \\"tem\\" found.",
             "name": "missing-hash",
             "scope": "error",
-            "suggestion": "/about#team",
           },
         ],
+        "fix": "/about#team",
+        "link": "/about#tem",
+        "passes": false,
         "warning": [],
       }
     `)
