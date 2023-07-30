@@ -32,8 +32,8 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
   let devtoolsClient: NuxtDevtoolsIframeClient | undefined
   let isOpeningDevtools = false
   const route = useRoute()
-  let startQueueId: number
-  let domUpdateTimer: NodeJS.Timeout
+  let startQueueIdleId: number
+  let startQueueTimeoutId: number | false
 
   const client: NuxtLinkCheckerClient = shallowReactive({
     isWorkingQueue: false,
@@ -167,12 +167,19 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
       client.restart()
     },
     restart() {
-      startQueueId && cancelIdleCallback(startQueueId)
+      startQueueIdleId && cancelIdleCallback(startQueueIdleId)
       // debounce to add to idle callback
-      startQueueId = requestIdleCallback(() => {
+      startQueueIdleId = requestIdleCallback(() => {
         client.stopQueueWorker()
-        client.scanLinks()
-        client.startQueueWorker()
+        // debounce for 500ms
+        if (!startQueueTimeoutId) {
+          startQueueTimeoutId = setTimeout(() => {
+            client.scanLinks()
+            client.startQueueWorker()
+            client.reset(false)
+            startQueueTimeoutId = false
+          }, 250)
+        }
       })
     },
     start() {
@@ -182,7 +189,6 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
           client.reset(true)
         })
         import.meta.hot.on('vite:afterUpdate', (ctx) => {
-          console.log('vite after update', ctx.type, ctx.updates)
           if (ctx.updates.some(c => c.type === 'js-update'))
             client.reset(true)
         })
@@ -190,13 +196,14 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
 
       // watch the body for changes
       const observer = new MutationObserver(() => {
-        // debounce for 500ms
-        domUpdateTimer && clearTimeout(domUpdateTimer)
-        domUpdateTimer = setTimeout(() => {
-          client.reset(false)
-        }, 500)
+        client.reset(false)
       })
-      observer.observe(document.querySelector('#__nuxt')!, { childList: true, subtree: true })
+      observer.observe(document.querySelector('#__nuxt')!, {
+        childList: true,
+        subtree: true,
+        // we only care if links are added, removed or updated
+        attributeFilter: ['href'],
+      })
 
       if (nuxt.vueApp._instance)
         nuxt.vueApp._instance.appContext.provides.linkChecker = client
