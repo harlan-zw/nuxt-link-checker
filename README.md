@@ -17,19 +17,13 @@ Discover issues with your links that may be negatively effecting your SEO.
 <table width="100%">
 <thead>
    <tr>
-      <th width="500px"></th>
-      <th width="500px"></th>
+      <th width="800px">
+<i>Status:</i> Stable</b> <br>
+<sub>Made possible by my <a href="https://github.com/sponsors/harlan-zw">Sponsor Program 💖</a><br> Keep up to date <a href="https://twitter.com/harlan_zw">@harlan_zw</a> 🐦 • Free support <a href="https://discord.gg/275MBUBvgP">Discord</a></sub><br>
+</th>
     </tr>
 </thead>
 <tbody>
-<tr>
-<td>
-<i>Status:</i> Stable</b> <br>
-</td>
-<td>
-<sub>Made possible by my <a href="https://github.com/sponsors/harlan-zw">Sponsor Program 💖</a><br> Keep up to date <a href="https://twitter.com/harlan_zw">@harlan_zw</a> 🐦 • Free support <a href="https://discord.gg/275MBUBvgP">Discord</a></sub><br>
-</td>
-</tr>
 </tbody>
 </table>
 </p>
