@@ -15,6 +15,12 @@ Discover issues with your links that may be negatively effecting your SEO.
 
 <p align="center">
 <table width="100%">
+<thead>
+   <tr>
+      <th width="500px"></th>
+      <th width="500px"></th>
+    </tr>
+</thead>
 <tbody>
 <tr>
 <td>
