@@ -1,9 +1,12 @@
 {
   "private": true,
-  "dependencies": {
-    "nuxt-simple-sitemap": "link:../"
-  },
   "scripts": {
     "prepare": "nuxi prepare"
+  },
+  "devDependencies": {
+    "nuxt-icon": "^0.4.2",
+    "@nuxt/devtools": "0.7.0",
+    "@nuxthq/ui": "^2.6.0",
+    "nuxt-simple-sitemap": "^3.0.12"
   }
 }

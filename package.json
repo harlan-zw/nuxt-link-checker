@@ -2,7 +2,7 @@
   "name": "nuxt-link-checker",
   "type": "module",
   "version": "1.0.5",
-  "packageManager": "pnpm@8.6.5",
+  "packageManager": "pnpm@8.6.10",
   "license": "MIT",
   "funding": "https://github.com/sponsors/harlan-zw",
   "homepage": "https://github.com/harlan-zw/nuxt-link-checker#readme",
@@ -26,31 +26,47 @@
     "dist"
   ],
   "scripts": {
-    "lint": "eslint \"**/*.{ts,vue,json,yml}\" --fix",
-    "build": "nuxi prepare .playground && nuxt-module-build",
-    "dev": "nuxi dev .playground",
-    "dev:build": "nuxi build .playground",
-    "dev:prepare": "nuxt-module-build --stub && nuxi prepare .playground",
+    "prepack": "nuxt-module-build && npm run client:build",
+    "build": "npm run prepack",
+    "client:build": "nuxi generate client",
+    "client:dev": "nuxi dev client --port 3300",
+    "dev": "npm run play:dev",
+    "dev:prepare": "nuxt-module-build --stub && nuxi prepare client",
+    "play:dev": "nuxi dev .playground",
+    "play:prod": "npm run prepack && nuxi dev .playground",
     "release": "bumpp package.json --commit --push --tag",
-    "test": "pnpm lint"
+    "lint": "eslint . --fix",
+    "test": "vitest run",
+    "test:watch": "vitest watch"
   },
   "dependencies": {
-    "@nuxt/kit": "^3.6.1",
+    "@nuxt/devtools-kit": "^0.7.1",
+    "@nuxt/devtools-ui-kit": "^0.7.1",
+    "@nuxt/kit": "^3.6.5",
+    "@vueuse/core": "^10.2.1",
     "chalk": "^5.3.0",
     "cheerio": "1.0.0-rc.12",
+    "diff": "^5.1.0",
+    "fuse.js": "^6.6.2",
+    "magic-string": "^0.30.2",
+    "nuxt-site-config": "1.0.9",
+    "nuxt-site-config-kit": "1.0.9",
+    "pathe": "^1.1.1",
     "radix3": "^1.0.1",
-    "ufo": "^1.1.2"
+    "shiki-es": "^0.14.0",
+    "sirv": "^2.0.3",
+    "ufo": "^1.2.0"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^0.39.6",
+    "@antfu/eslint-config": "^0.39.8",
     "@nuxt/module-builder": "^0.4.0",
-    "@nuxt/test-utils": "^3.6.1",
+    "@nuxt/test-utils": "^3.6.5",
     "@nuxtjs/eslint-config-typescript": "^12.0.0",
+    "@types/diff": "^5.0.3",
     "bumpp": "^9.1.1",
-    "eslint": "8.44.0",
-    "execa": "^7.1.1",
-    "nuxt": "^3.6.1",
-    "pathe": "^1.1.1",
-    "vitest": "^0.32.3"
+    "eslint": "8.46.0",
+    "execa": "^7.2.0",
+    "nuxt": "^3.6.5",
+    "vitest": "^0.33.0"
   }
 }

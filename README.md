@@ -79,13 +79,13 @@ You'll need to provide the host of your site so that the crawler can resolve abs
 
 ```ts
 export default defineNuxtConfig({
-  // Recommended 
+  // Recommended
   runtimeConfig: {
     public: {
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://example.com',
     }
   },
-  // OR 
+  // OR
   linkChecker: {
     host: 'https://example.com',
   },
