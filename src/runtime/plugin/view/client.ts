@@ -175,7 +175,7 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
       // attach reactivity
       if (import.meta.hot) {
         import.meta.hot.on('nuxt-link-checker:reset', () => client.reset(true))
-        import.meta.hot.on('vite:afterUpdate', () => client.reset(false))
+        import.meta.hot.on('vite:afterUpdate', () => client.reset(true))
       }
 
       // watch the body for changes
