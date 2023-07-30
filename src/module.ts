@@ -86,14 +86,14 @@ export default defineNuxtModule<ModuleOptions>({
 
     if (nuxt.options.dev) {
       addPlugin({
-        src: resolve('./runtime/plugin/ui.client.ts'),
+        src: resolve('./runtime/plugin/ui.client'),
         mode: 'client',
       })
       addServerHandler({
         route: '/api/__link_checker__/inspect',
         handler: resolve('./runtime/server/api/inspect'),
       })
-      addServerPlugin(resolve('./runtime/plugin/search.nitro.ts'))
+      addServerPlugin(resolve('./runtime/plugin/search.nitro'))
       const hasLinksEndpoint = hasNuxtModule('nuxt-simple-sitemap')
       if (hasLinksEndpoint) {
         addServerHandler({
