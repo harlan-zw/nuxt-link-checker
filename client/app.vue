@@ -3,6 +3,9 @@ import { computed, ref } from 'vue'
 import FixActionDialog from './components/FixActionDialog.vue'
 import { linkCheckerRpc } from './composables/rpc'
 import { linkDb, linkFilter, queueLength, visibleLinks } from './composables/state'
+import { loadShiki } from './composables/shiki'
+
+await loadShiki()
 
 const refreshSnippets = ref(0)
 
@@ -67,16 +70,17 @@ async function retryAll() {
             Discover issues with your links that may be negatively effecting your SEO.
           </p>
         </div>
-        <div v-if="!linkFilter && nodes.length">
+        <div v-if="nodes.length">
           <button class="hover:shadow-lg text-sm transition items-center gap-2 inline-flex border-green-500/50 border-1 rounded-lg shadow-sm px-3 py-1" @click="retryAll">
             <NIcon icon="carbon:retry-failed" />
             <div>
-              Retry All
+              Retry {{ nodes.length > 1 ? 'All' : '' }}
             </div>
           </button>
         </div>
       </div>
       <p v-if="linkFilter" text-sm flex items-center gap-1 mb6>
+        <NIcon v-if="queueLength" icon="carbon:progress-bar-round" class="animated animate-spin op50 text-xs" />
         <NIcon icon="carbon:filter" /> Filtering Results. <button type="button" underline @click="linkFilter = false">
           Show All
         </button>

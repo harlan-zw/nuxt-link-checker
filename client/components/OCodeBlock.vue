@@ -13,12 +13,9 @@ const props = withDefaults(
     lines: true,
   },
 )
-
-const shiki = renderCodeHighlight(props.code, props.lang)
-await shiki.promise
-
 const rendered = computed(() => {
-  return props.transformRendered ? props.transformRendered(shiki.code.value || '') : shiki.code.value
+  const code = renderCodeHighlight(props.code, props.lang)
+  return props.transformRendered ? props.transformRendered(code.value || '') : code.value
 })
 </script>
 

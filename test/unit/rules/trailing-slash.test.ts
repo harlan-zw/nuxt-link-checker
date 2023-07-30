@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import RuleTrailingSlash from '../../../src/runtime/inspections/trailing-slash'
+import type { RuleTestContext } from '../../../src/runtime/types'
 import { runRule } from './util'
-import {RuleTestContext} from "../../../src/runtime/types";
 
 describe('rule trailing-slash', () => {
   it('works', () => {

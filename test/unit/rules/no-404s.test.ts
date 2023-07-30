@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
+import Fuse from 'fuse.js'
 import RuleNoErrorResponse from '../../../src/runtime/inspections/no-error-response-status'
 import type { RuleTestContext } from '../../../src/runtime/types'
 import { runRule } from './util'
-import Fuse from "fuse.js";
 
 describe('rule no-404s', () => {
   it('works', () => {
@@ -11,7 +11,7 @@ describe('rule no-404s', () => {
       response: { status: 404 },
       pageSearch: new Fuse(['/about'], {
         threshold: 0.5,
-      })
+      }),
     } as RuleTestContext
 
     expect(runRule(ctx, RuleNoErrorResponse())).toMatchInlineSnapshot(`

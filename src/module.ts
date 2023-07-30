@@ -105,7 +105,7 @@ export default defineNuxtModule<ModuleOptions>({
         hasSitemapModule: hasNuxtModule('nuxt-simple-sitemap'),
         hasLinksEndpoint,
       }
-      setupDevToolsUI(nuxt, resolve)
+      setupDevToolsUI(config, resolve)
     }
 
     prerender(config)

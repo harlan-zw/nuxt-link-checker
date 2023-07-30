@@ -3,15 +3,18 @@ import { readFile, writeFile } from 'node:fs/promises'
 import type { Nuxt } from 'nuxt/schema'
 import type { Resolver } from '@nuxt/kit'
 import { extendServerRpc, onDevToolsInitialized } from '@nuxt/devtools-kit'
+import { diffArrays } from 'diff'
+import { extendPages, useNuxt } from '@nuxt/kit'
 import { generateLinkDiff } from './runtime/server/util'
 import type { ClientFunctions, ServerFunctions } from './rpc-types'
-import { useViteWebSocket } from './util'
+import { convertNuxtPagesToPaths, useViteWebSocket } from './util'
+import type { ModuleOptions } from './module'
 
 const DEVTOOLS_UI_ROUTE = '/__nuxt-link-checker'
 const DEVTOOLS_UI_LOCAL_PORT = 3030
 const RPC_NAMESPACE = 'nuxt-link-checker-rpc'
 
-export function setupDevToolsUI(nuxt: Nuxt, resolve: Resolver['resolve']) {
+export function setupDevToolsUI(options: ModuleOptions, resolve: Resolver['resolve'], nuxt: Nuxt = useNuxt()) {
   const clientPath = resolve('./client')
   const isProductionBuild = existsSync(clientPath)
 
@@ -58,16 +61,18 @@ export function setupDevToolsUI(nuxt: Nuxt, resolve: Resolver['resolve']) {
   const viteServerWs = useViteWebSocket()
   onDevToolsInitialized(async () => {
     const rpc = extendServerRpc<ClientFunctions, ServerFunctions>(RPC_NAMESPACE, {
-      // register server RPC functions
-      getMyModuleOptions() {
-        return { foo: 'bar' }
+      getOptions() {
+        return options
       },
       async reset() {
         const ws = await viteServerWs
         ws.send('nuxt-link-checker:reset')
       },
       async applyLinkFixes(filepath, original, replacement) {
-        // @todo validate filepath resides in root dir
+        filepath = resolve(filepath)
+        // don't allow modifying files outside the root dir
+        if (!filepath.startsWith(nuxt.options.rootDir))
+          return
         const contents = await readFile(filepath, 'utf8')
         const diff = generateLinkDiff(contents, original, replacement)
         await writeFile(filepath, diff.code, 'utf8')
@@ -77,9 +82,21 @@ export function setupDevToolsUI(nuxt: Nuxt, resolve: Resolver['resolve']) {
       },
     })
     viteServerWs.then((ws) => {
-      ws.on('nuxt-link-checker:queueWorking', payload => rpc.broadcast.queueWorking(payload))
-      ws.on('nuxt-link-checker:updated', () => rpc.broadcast.updated())
-      ws.on('nuxt-link-checker:filter', payload => rpc.broadcast.filter(payload))
+      ws.on('nuxt-link-checker:queueWorking', payload => rpc.broadcast.queueWorking(payload).catch(() => {}))
+      ws.on('nuxt-link-checker:updated', () => rpc.broadcast.updated().catch(() => {}))
+      ws.on('nuxt-link-checker:filter', payload => rpc.broadcast.filter(payload).catch(() => {}))
+
+      let lastRoutes: string[] = []
+      extendPages(async (pages) => {
+        // convert pages to routes
+        const routes = convertNuxtPagesToPaths(pages)
+        if (lastRoutes.length) {
+          const routeDiff = diffArrays(lastRoutes, routes)
+          if (routeDiff.some(diff => diff.added || diff.removed))
+            ws.send('nuxt-link-checker:reset')
+        }
+        lastRoutes = routes
+      })
     })
   })
 }

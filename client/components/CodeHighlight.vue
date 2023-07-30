@@ -29,4 +29,8 @@ const elRef = ref<HTMLDivElement>()
 .highlight {
   background-color: #ffd5d5;
 }
+
+.vitesse-dark .highlight {
+  background-color: #5c0000;
+}
 </style>

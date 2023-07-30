@@ -180,7 +180,7 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
       const observer = new MutationObserver(() => client.reset(false))
       observer.observe(document.querySelector('#__nuxt')!, { childList: true, subtree: true })
 
-      if (nuxt.vueApp._instance?.appContext.provides.linkChecker)
+      if (nuxt.vueApp._instance)
         nuxt.vueApp._instance.appContext.provides.linkChecker = client
       const holder = document.createElement('div')
       holder.id = 'nuxt-link-checker-container'

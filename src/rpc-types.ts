@@ -1,7 +1,9 @@
 // rpc-types.ts
 
+import type { ModuleOptions } from './module'
+
 export interface ServerFunctions {
-  getMyModuleOptions(): any
+  getOptions(): ModuleOptions
   reset(): void
   applyLinkFixes(filepath: string, original: string, replacement: string): void
 }

@@ -8,22 +8,4 @@ function purgeOnHmr() {
   //         rpc.broadcast.purgeLinkPath(relative(nuxt.options.rootDir, path))
   //     }
   // })
-  // let lastRoutes: string[] = []
-  // extendPages(async (pages) => {
-  //     // convert pages to routes
-  //     const routes = convertNuxtPagesToPaths(pages)
-  //     if (lastRoutes.length) {
-  //         const rpc = await _rpc
-  //         const routeDiff = diffArrays(lastRoutes, routes)
-  //         routeDiff.forEach((diff) => {
-  //             if (diff.added || diff.removed) {
-  //                 diff.value.forEach((p) => {
-  //                     rpc.broadcast.purgeLinkPath(p)
-  //                 })
-  //             }
-  //         })
-  //     }
-  //
-  //     lastRoutes = routes
-  // })
 }

@@ -8,7 +8,7 @@
   <div class="mb-5">
     <h2 class="text-lg font-bold mb-4">Errors</h2>
     <LinkDebug to="/abot">page typo with magic fix</LinkDebug>
-    <LinkDebug to="/#broken-anchor">broken anchor dd</LinkDebug>
+    <LinkDebug to="/#broken-anchor">broken anchor</LinkDebug>
     <LinkDebug to="/404link">404 links</LinkDebug>
     <LinkDebug to="https://example.com/absolute">absolute 404 link</LinkDebug>
     <LinkDebug to="javascript:history.back()">javacript link</LinkDebug>
