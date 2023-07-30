@@ -32,6 +32,8 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
   let devtoolsClient: NuxtDevtoolsIframeClient | undefined
   let isOpeningDevtools = false
   const route = useRoute()
+  let startQueueId: number
+  let domUpdateTimer: NodeJS.Timeout
 
   const client: NuxtLinkCheckerClient = shallowReactive({
     isWorkingQueue: false,
@@ -134,7 +136,7 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
           // wait for the iframe
           const interval = setInterval(() => {
             devtoolsClient = resolveDevtoolsIframe()
-            if (devtoolsClient) {
+            if (devtoolsClient && devtoolsClient.host.getIframe()) {
               devtoolsClient.host.getIframe()!.src = `/__nuxt_devtools__/client/modules/custom-nuxt-link-checker?link=${encodeURIComponent(link)}`
               isOpeningDevtools = false
               clearInterval(interval)
@@ -165,7 +167,9 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
       client.restart()
     },
     restart() {
-      requestIdleCallback(() => {
+      startQueueId && cancelIdleCallback(startQueueId)
+      // debounce to add to idle callback
+      startQueueId = requestIdleCallback(() => {
         client.stopQueueWorker()
         client.scanLinks()
         client.startQueueWorker()
@@ -174,12 +178,24 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
     start() {
       // attach reactivity
       if (import.meta.hot) {
-        import.meta.hot.on('nuxt-link-checker:reset', () => client.reset(true))
-        import.meta.hot.on('vite:afterUpdate', () => client.reset(true))
+        import.meta.hot.on('nuxt-link-checker:reset', () => {
+          client.reset(true)
+        })
+        import.meta.hot.on('vite:afterUpdate', (ctx) => {
+          console.log('vite after update', ctx.type, ctx.updates)
+          if (ctx.updates.some(c => c.type === 'js-update'))
+            client.reset(true)
+        })
       }
 
       // watch the body for changes
-      const observer = new MutationObserver(() => client.reset(false))
+      const observer = new MutationObserver(() => {
+        // debounce for 500ms
+        domUpdateTimer && clearTimeout(domUpdateTimer)
+        domUpdateTimer = setTimeout(() => {
+          client.reset(false)
+        }, 500)
+      })
       observer.observe(document.querySelector('#__nuxt')!, { childList: true, subtree: true })
 
       if (nuxt.vueApp._instance)

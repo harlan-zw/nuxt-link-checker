@@ -18,7 +18,6 @@ const renderKey = ref(0)
 if (import.meta.hot) {
   import.meta.hot.on('vite:afterUpdate', () => {
     renderKey.value++
-    props.client.reset(true)
   })
 }
 
