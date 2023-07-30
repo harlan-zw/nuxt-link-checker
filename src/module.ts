@@ -84,7 +84,8 @@ export default defineNuxtModule<ModuleOptions>({
       })
     }
 
-    if (nuxt.options.dev) {
+    const isDevToolsEnabled = typeof nuxt.options.devtools === 'boolean' ? nuxt.options.devtools : nuxt.options.devtools.enabled
+    if (nuxt.options.dev && isDevToolsEnabled) {
       addPlugin({
         src: resolve('./runtime/plugin/ui.client'),
         mode: 'client',
