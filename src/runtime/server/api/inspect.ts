@@ -21,8 +21,18 @@ export default defineEventHandler(async (e) => {
     response = { status: 200, statusText: 'OK', headers: {} }
   }
   else {
-    response = await $fetch.raw(link)
+    const timeoutController = new AbortController()
+    const abortRequestTimeout = setTimeout(() => timeoutController.abort(), 5000)
+
+    response = await $fetch.raw(link, {
+      method: 'HEAD',
+      signal: timeoutController.signal,
+      headers: {
+        'user-agent': 'Nuxt Link Checker',
+      },
+    })
       .catch(() => ({ status: 404, statusText: 'Not Found', headers: {} }))
+      .finally(() => clearTimeout(abortRequestTimeout))
   }
   // @ts-expect-error untyped
   const result = inspect({
@@ -38,7 +48,7 @@ export default defineEventHandler(async (e) => {
   if (!result.passes) {
     result.sources = (await Promise.all(filePaths.map(async filepath => await generateFileLinkPreviews(filepath, link))))
       .filter(s => s.previews.length)
-    result.diff = await Promise.all(result.sources.map(async ({ filepath }) => generateFileLinkDiff(filepath, link, result.fix!)))
+    result.diff = await Promise.all((result.sources || []).map(async ({ filepath }) => generateFileLinkDiff(filepath, link, result.fix!)))
   }
   return result
 })
