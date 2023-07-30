@@ -176,7 +176,6 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
           startQueueTimeoutId = setTimeout(() => {
             client.scanLinks()
             client.startQueueWorker()
-            client.reset(false)
             startQueueTimeoutId = false
           }, 250)
         }
