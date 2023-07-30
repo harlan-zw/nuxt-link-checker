@@ -10,24 +10,26 @@
 
 
 <p align="center">
-Identify and fix link issues for prerendered Nuxt 3 apps.
+Discover issues with your links that may be negatively effecting your SEO.
 </p>
 
 <p align="center">
 <table>
 <tbody>
-<td align="center">
+<tr>
+<td colspan="2">
 <img width="800" height="0" /><br>
+</td>
+</tr>
+<td>
 <i>Status:</i> Stable</b> <br>
-<sup> Please report any issues 🐛</sup><br>
-<sub>Made possible by my <a href="https://github.com/sponsors/harlan-zw">Sponsor Program 💖</a><br> Follow me <a href="https://twitter.com/harlan_zw">@harlan_zw</a> 🐦 • Join <a href="https://discord.gg/275MBUBvgP">Discord</a> for help</sub><br>
-<img width="800" height="0" />
+</td>
+<td>
+<sub>Made possible by my <a href="https://github.com/sponsors/harlan-zw">Sponsor Program 💖</a><br> Keep up to date <a href="https://twitter.com/harlan_zw">@harlan_zw</a> 🐦 • Free support <a href="https://discord.gg/275MBUBvgP">Discord</a></sub><br>
 </td>
 </tbody>
 </table>
 </p>
-
-ℹ️ Looking for a complete SEO solution? Check out [Nuxt SEO Kit](https://github.com/harlan-zw/nuxt-seo-kit).
 
 ## Features
 
