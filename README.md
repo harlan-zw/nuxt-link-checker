@@ -18,7 +18,8 @@ Discover issues with your links that may be negatively effecting your SEO.
 <tbody>
 <tr>
 <td colspan="2">
-<img width="800" height="0" /><br>
+Discover issues with your links that may be negatively effecting your SEO.
+<img width="800" height="0" aria-hidden="true" /><br>
 </td>
 </tr>
 <td>
