@@ -29,7 +29,7 @@ onDevtoolsClientConnected(async (client) => {
       visibleLinks.value = [...linkCheckerClient.visibleLinks]
     },
     updated() {
-      // linkDb.value = linkCheckerClient.linkDb.value
+      linkDb.value = unref(nuxt.vueApp._instance?.appContext.provides.linkChecker.linkDb)
       visibleLinks.value = [...linkCheckerClient.visibleLinks]
     },
     filter(payload) {
