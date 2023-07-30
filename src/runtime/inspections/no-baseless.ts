@@ -1,11 +1,11 @@
-import { isScriptProtocol, joinURL } from 'ufo'
+import { joinURL } from 'ufo'
 import { getHeader } from 'h3'
-import { defineRule } from './util'
+import { defineRule, isInvalidLinkProtocol } from './util'
 
 export default function RuleNoBaseLess() {
   return defineRule({
     test({ link, e, report }) {
-      if (link.startsWith('/') || link.startsWith('http') || isScriptProtocol(link) || link.startsWith('#'))
+      if (link.startsWith('/') || link.startsWith('http') || isInvalidLinkProtocol(link) || link.startsWith('#'))
         return
 
       // get referrer

@@ -10,7 +10,7 @@
 
 
 <p align="center">
-Discover issues with your links that may be negatively effecting your SEO.
+Find and magically fix links that may be negatively effecting your Nuxt sites SEO.
 </p>
 
 <p align="center">

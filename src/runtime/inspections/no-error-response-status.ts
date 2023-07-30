@@ -1,11 +1,10 @@
-import { isScriptProtocol } from 'ufo'
 import type { RuleReport } from '../types'
-import { defineRule } from './util'
+import { defineRule, isInvalidLinkProtocol } from './util'
 
 export default function RuleNoErrorResponse() {
   return defineRule({
     test({ link, response, report, pageSearch }) {
-      if (response.status.toString().startsWith('2') || response.status.toString().startsWith('3') || isScriptProtocol(link) || link.startsWith('#'))
+      if (response.status.toString().startsWith('2') || response.status.toString().startsWith('3') || isInvalidLinkProtocol(link) || link.startsWith('#'))
         return
       const payload: RuleReport = {
         name: 'no-error-response',

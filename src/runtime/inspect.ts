@@ -25,11 +25,22 @@ export function inspect(ctx: RuleTestContext, rules?: Rule[]): Partial<LinkInspe
     rules = inspection
   const res: Partial<LinkInspectionResult> = { error: [], warning: [], fix: ctx.link, link: ctx.link }
   let link = ctx.link
+  const url = parseURL(link)
+  if (!url.pathname && !url.protocol && !url.host) {
+    // @ts-expect-error untyped
+    res.error.push({
+      name: 'invalid-url',
+      scope: 'error',
+      message: `Invalid URL: ${link}`,
+    })
+    return res
+  }
   const fromPath = fixSlashes(false, parseURL(getHeader(ctx.e, 'referer') || '/').pathname)
   for (const rule of rules) {
     rule.test({
       ...ctx,
       link,
+      url,
       fromPath,
       report(obj) {
         // @ts-expect-error untyped

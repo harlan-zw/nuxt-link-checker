@@ -94,7 +94,7 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
         // attach inspections to elements
         client.maybeAttachEls(payload)
         client.broadcast('queueWorking', { queueLength: queue.length })
-        queueWorkerTimer = setTimeout(workQueue, 500)
+        queueWorkerTimer = setTimeout(workQueue, 200)
       }
       workQueue()
     },

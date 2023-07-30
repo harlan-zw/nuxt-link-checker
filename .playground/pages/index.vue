@@ -7,6 +7,7 @@
   </div>
   <div class="mb-5">
     <h2 class="text-lg font-bold mb-4">Errors</h2>
+    <LinkDebug to="this is a very bad link">very bad link</LinkDebug>
     <LinkDebug to="/abot">page typo with magic fix</LinkDebug>
     <LinkDebug to="/#broken-anchor">broken anchor</LinkDebug>
     <LinkDebug to="/404link">404 links</LinkDebug>

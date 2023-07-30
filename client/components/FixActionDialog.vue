@@ -30,9 +30,9 @@ function handleClose(a, resolve) {
                 op50
                 text-xs
                 font-mono
-                @click="openFilePath(source.filepath)"
+                @click="openFilePath(args[0].sources[0].filepath)"
               >
-                {{ source.filepath }}
+                {{ args[0].sources[0].filepath }}
               </button>
             </div>
 

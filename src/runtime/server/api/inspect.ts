@@ -1,8 +1,8 @@
 import { defineEventHandler, getQuery, readBody } from 'h3'
-import { isScriptProtocol } from 'ufo'
 import { inspect } from '../../inspect'
 import type { RuleTestContext } from '../../types'
 import { generateFileLinkDiff, generateFileLinkPreviews } from '../util'
+import { isInvalidLinkProtocol } from '../../inspections/util'
 import { useNitroApp, useSiteConfig } from '#imports'
 
 // verify a link
@@ -17,7 +17,7 @@ export default defineEventHandler(async (e) => {
   }
 
   let response
-  if (isScriptProtocol(link) || link.startsWith('#')) {
+  if (isInvalidLinkProtocol(link) || link.startsWith('#')) {
     response = { status: 200, statusText: 'OK', headers: {} }
   }
   else {

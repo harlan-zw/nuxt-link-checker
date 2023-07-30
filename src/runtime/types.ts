@@ -3,6 +3,7 @@ import type { H3Event } from 'h3'
 import type { SiteConfig } from 'nuxt-site-config-kit'
 import type Fuse from 'fuse.js'
 import type { ComputedRef, Ref } from 'vue'
+import type { ParsedURL } from 'ufo'
 
 export interface Rule {
   test(ctx: RuleTestContext): void
@@ -10,6 +11,7 @@ export interface Rule {
 
 export interface RuleTestContext {
   link: string
+  url: ParsedURL
   ids: string[]
   fromPath: string
   response: FetchResponse<any>
