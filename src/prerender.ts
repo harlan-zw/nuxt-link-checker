@@ -6,9 +6,8 @@ import Fuse from 'fuse.js'
 import { resolve } from 'pathe'
 import { load } from 'cheerio'
 import type { ModuleOptions } from './module'
-import { createFilter } from './urlFilter'
 import { inspect } from './runtime/inspect'
-import { crawlFetch } from './runtime/sharedUtils'
+import { crawlFetch, createFilter } from './runtime/sharedUtils'
 
 const responses: Record<string, Promise<{ status: number; statusText: string }>> = {}
 const linkMap: Record<string, ExtractedPayload> = {}

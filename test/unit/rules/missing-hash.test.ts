@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import RuleMissingHash from '../../../src/runtime/inspections/missing-hash'
 import type { RuleTestContext } from '../../../src/runtime/types'
-import { mockEvent, runRule } from './util'
+import { runRule } from './util'
 
 describe('rule missing-hash', () => {
   it('works', () => {
