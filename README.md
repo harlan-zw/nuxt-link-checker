@@ -62,6 +62,10 @@ export default defineNuxtConfig({
 
 [📖 Read the full documentation](https://nuxtseo.com/nuxt-link-checker/getting-started/installation) for more information.
 
+# Demos
+
+- [StackBlitz](https://stackblitz.com/edit/nuxt-starter-qtaq7x?file=pages%2Findex.vue)
+
 ## Sponsors
 
 <p align="center">
