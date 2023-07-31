@@ -14,20 +14,15 @@ Find and magically fix links that may be negatively effecting your Nuxt sites SE
 </p>
 
 <p align="center">
-<table width="100%">
-<thead>
-   <tr>
-      <th width="800px">
-<p style="font-weight: 400;">
-<i>Status:</i> <a href="https://nuxtseo.com/link-checker/releases/v2">v2 Released</a> 🎉</b> 
-</p>
-<p style="font-weight: 400;">
-<sub>Made possible by my <a href="https://github.com/sponsors/harlan-zw">Sponsor Program 💖</a><br> Keep up to date <a href="https://twitter.com/harlan_zw">@harlan_zw</a> 🐦 • Free support <a href="https://discord.gg/275MBUBvgP">Discord</a></sub><br>
-</p>
-</th>
-    </tr>
-</thead>
+<table>
 <tbody>
+<td align="center">
+<img width="800" height="0" /><br>
+<i>Status:</i> <a href="https://nuxtseo.com/link-checker/releases/v2">v2 Released</a> 🎉</b> <br>
+<sup> Please report any issues 🐛</sup><br>
+<sub>Made possible by my <a href="https://github.com/sponsors/harlan-zw">Sponsor Program 💖</a><br> Follow me <a href="https://twitter.com/harlan_zw">@harlan_zw</a> 🐦 • Join <a href="https://discord.gg/275MBUBvgP">Discord</a> for help</sub><br>
+<img width="800" height="0" />
+</td>
 </tbody>
 </table>
 </p>
