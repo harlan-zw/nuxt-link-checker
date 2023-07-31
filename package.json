@@ -20,6 +20,11 @@
       "import": "./dist/module.mjs"
     }
   },
+  "build": {
+    "externals": [
+      "ofetch"
+    ]
+  },
   "main": "./dist/module.cjs",
   "types": "./dist/types.d.ts",
   "files": [
@@ -55,6 +60,7 @@
     "radix3": "^1.0.1",
     "shiki-es": "^0.14.0",
     "sirv": "^2.0.3",
+    "site-config-stack": "^1.0.9",
     "ufo": "^1.2.0"
   },
   "devDependencies": {

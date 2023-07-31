@@ -53,6 +53,9 @@ importers:
       sirv:
         specifier: ^2.0.3
         version: 2.0.3
+      site-config-stack:
+        specifier: ^1.0.9
+        version: 1.0.9(rollup@3.26.0)
       ufo:
         specifier: ^1.2.0
         version: 1.2.0
@@ -4933,7 +4936,7 @@ packages:
     dependencies:
       debug: 3.2.7
       is-core-module: 2.12.1
-      resolve: 1.22.3
+      resolve: 1.22.2
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -7586,7 +7589,7 @@ packages:
       nuxt-site-config-kit: 1.0.7(rollup@3.26.0)
       pathe: 1.1.1
       radix3: 1.0.1
-      site-config-stack: 1.0.7(rollup@3.26.0)
+      site-config-stack: 1.0.9(rollup@3.26.0)
       ufo: 1.1.2
     transitivePeerDependencies:
       - nuxt
@@ -9111,7 +9114,6 @@ packages:
     transitivePeerDependencies:
       - rollup
       - supports-color
-    dev: false
 
   /slash@3.0.0:
     resolution: {integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==}
@@ -10426,7 +10428,7 @@ packages:
       espree: 9.6.0
       esquery: 1.5.0
       lodash: 4.17.21
-      semver: 7.5.3
+      semver: 7.5.4
     transitivePeerDependencies:
       - supports-color
     dev: true
