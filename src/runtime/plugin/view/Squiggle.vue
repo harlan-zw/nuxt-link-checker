@@ -39,6 +39,8 @@ const position = computed(() => {
   background-size: 8px 2px;
   background-position:0 100%;
   transition: 0.2s;
+  background-color: transparent;
+  border: none;
 }
 .squiggle:hover {
   /*  do hover effect with bg image */
