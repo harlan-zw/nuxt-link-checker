@@ -19,7 +19,7 @@ Find and magically fix links that may be negatively effecting your Nuxt sites SE
    <tr>
       <th width="800px">
 <p style="font-weight: 400;">
-<i>Status:</i> Stable</b> 
+<i>Status:</i> <a href="https://nuxtseo.com/link-checker/releases/v2">v2 Released</a> 🎉</b> 
 </p>
 <p style="font-weight: 400;">
 <sub>Made possible by my <a href="https://github.com/sponsors/harlan-zw">Sponsor Program 💖</a><br> Keep up to date <a href="https://twitter.com/harlan_zw">@harlan_zw</a> 🐦 • Free support <a href="https://discord.gg/275MBUBvgP">Discord</a></sub><br>
