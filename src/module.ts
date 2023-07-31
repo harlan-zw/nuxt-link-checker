@@ -3,13 +3,15 @@ import {
   addServerHandler,
   addServerPlugin,
   createResolver,
-  defineNuxtModule,
+  defineNuxtModule, extendPages,
   hasNuxtModule, useLogger,
 } from '@nuxt/kit'
 import { installNuxtSiteConfig, updateSiteConfig } from 'nuxt-site-config-kit'
+import type { NuxtPage } from '@nuxt/schema'
 import { prerender } from './prerender'
 import { setupDevToolsUI } from './devtools'
 import type { DefaultInspections } from './runtime/inspect'
+import { convertNuxtPagesToPaths } from './util'
 
 export interface ModuleOptions {
   /**
@@ -130,17 +132,25 @@ export default defineNuxtModule<ModuleOptions>({
         route: '/api/__link_checker__/inspect',
         handler: resolve('./runtime/server/api/inspect'),
       })
-      addServerPlugin(resolve('./runtime/plugin/search.nitro'))
-      const hasLinksEndpoint = hasNuxtModule('nuxt-simple-sitemap')
-      if (hasLinksEndpoint) {
-        addServerHandler({
-          route: '/api/__link_checker__/links',
-          handler: resolve('./runtime/server/api/links'),
+      const pagePromise = new Promise<NuxtPage[]>((_resolve) => {
+        extendPages((pages) => {
+          _resolve(pages)
         })
-      }
+      })
+      nuxt.hooks.hook('nitro:config', (nitroConfig) => {
+        // @ts-expect-error runtime types
+        nitroConfig.virtual['#nuxt-link-checker-sitemap/pages.mjs'] = async () => {
+          const pages = await pagePromise
+          return `export default ${JSON.stringify(convertNuxtPagesToPaths(pages), null, 2)}`
+        }
+      })
+      addServerPlugin(resolve('./runtime/plugin/search.nitro'))
+      addServerHandler({
+        route: '/api/__link_checker__/links',
+        handler: resolve('./runtime/server/api/links'),
+      })
       nuxt.options.runtimeConfig.public['nuxt-link-checker'] = {
         hasSitemapModule: hasNuxtModule('nuxt-simple-sitemap'),
-        hasLinksEndpoint,
         excludeLinks: config.excludeLinks,
         skipInspections: config.skipInspections,
         fetchTimeout: config.fetchTimeout,
