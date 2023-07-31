@@ -50,6 +50,22 @@ export default defineNuxtConfig({
     url: 'https://nuxt-link-checker.com',
   },
 
+  nitro: {
+    prerender: {
+      failOnError: false,
+    }
+  },
+
+  linkChecker: {
+    failOnError: true,
+    excludeLinks: ['/ignored'],
+    skipInspections: ['missing-hash'],
+    report: {
+      html: true,
+      markdown: true,
+    }
+  },
+
   devtools: {
     enabled: true,
   },

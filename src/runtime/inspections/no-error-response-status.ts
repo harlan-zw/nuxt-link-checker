@@ -12,7 +12,7 @@ export default function RuleNoErrorResponse() {
         message: `Should not respond with ${response.status} ${response.statusText}.`,
       }
       // only for relative links
-      if (link.startsWith('/')) {
+      if (link.startsWith('/') && pageSearch) {
         const fix = pageSearch.search(link)?.[0]?.item
         if (fix && fix !== link) {
           payload.fix = fix

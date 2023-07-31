@@ -14,10 +14,11 @@ export default function RuleRedirects() {
         tip: 'Redirects use up your crawl budget and increase loading times, it\'s recommended to avoid them when possible.',
       }
 
-      const fix = response.headers.get('location')!
+      // @ts-expect-error untyped
+      const fix = typeof response.headers?.get === 'function' ? response.headers.get('location') : response.headers?.location || false
       if (fix) {
         payload.fix = fix
-        payload.fixDescription = `Set to redirected URL ${fix}.`
+        payload.fixDescription = `Set to redirect URL ${fix}.`
       }
 
       report(payload)

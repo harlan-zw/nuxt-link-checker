@@ -2,7 +2,7 @@ import { defineEventHandler } from 'h3'
 import { useRuntimeConfig } from '#imports'
 
 export default defineEventHandler(async () => {
-  const runtimeConfig = useRuntimeConfig()['nuxt-link-checker']
+  const runtimeConfig = useRuntimeConfig().public['nuxt-link-checker']
   const linkDb = []
   if (runtimeConfig.hasSitemapModule) {
     // fetch URLs from sitemap data

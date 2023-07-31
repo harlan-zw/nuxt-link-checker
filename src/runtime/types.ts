@@ -1,5 +1,4 @@
 import type { FetchResponse } from 'ofetch'
-import type { H3Event } from 'h3'
 import type { SiteConfig } from 'nuxt-site-config-kit'
 import type Fuse from 'fuse.js'
 import type { ComputedRef, Ref } from 'vue'
@@ -15,10 +14,10 @@ export interface RuleTestContext {
   ids: string[]
   fromPath: string
   response: FetchResponse<any>
-  e: H3Event
   siteConfig: SiteConfig
-  pageSearch: Fuse<string>
+  pageSearch?: Fuse<string>
   report: (report: RuleReport) => void
+  skipInspections?: string[]
 }
 
 export interface RuleReport {

@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import RuleNoBaseLess from '../../../src/runtime/inspections/no-baseless'
 import type { RuleTestContext } from '../../../src/runtime/types'
-import { mockEvent, runRule } from './util'
+import { runRule } from './util'
 
 describe('rule no-baseless', () => {
   it('works', () => {
     const ctx = {
       link: 'my-post',
       response: { status: 200 },
-      e: mockEvent('/my-blog'),
+      fromPath: '/my-blog',
     } as RuleTestContext
 
     expect(runRule(ctx, RuleNoBaseLess())).toMatchInlineSnapshot(`

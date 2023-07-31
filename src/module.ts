@@ -9,16 +9,48 @@ import {
 import { installNuxtSiteConfig, updateSiteConfig } from 'nuxt-site-config-kit'
 import { prerender } from './prerender'
 import { setupDevToolsUI } from './devtools'
+import type { DefaultInspections } from './runtime/inspect'
 
 export interface ModuleOptions {
   /**
    * Whether the build should fail when a 404 is encountered.
    */
-  failOn404: boolean
+  failOnError: boolean
   /**
-   * Paths to ignore when checking links.
+   * Skip specific inspections from running.
    */
-  exclude: string[]
+  skipInspections: (Partial<keyof typeof DefaultInspections>)[]
+  /**
+   * The timeout for fetching a URL.
+   *
+   * @default 5000
+   */
+  fetchTimeout: number
+  /**
+   * Links to ignore when running inspections.
+   */
+  excludeLinks: string[]
+  /**
+   * Generate a report when using nuxt build` or `nuxt generate`.
+   */
+  report?: {
+    /**
+     * Whether to output a HTML report.
+     */
+    html?: boolean
+    /**
+     * Whether to output a JSON report.
+     */
+    markdown?: boolean
+  }
+  /**
+   * Whether to show live inspections in your Nuxt app.
+   */
+  showLiveInspections: boolean
+  /**
+   * Whether to run the module on `nuxt build` or `nuxt generate`.
+   */
+  runOnBuild: boolean
   /**
    * Whether the module is enabled.
    *
@@ -61,10 +93,14 @@ export default defineNuxtModule<ModuleOptions>({
     configKey: 'linkChecker',
   },
   defaults: {
+    runOnBuild: true,
     debug: false,
+    showLiveInspections: true,
     enabled: true,
-    failOn404: true,
-    exclude: [],
+    fetchTimeout: 5000,
+    failOnError: false,
+    excludeLinks: [],
+    skipInspections: [],
   },
   async setup(config, nuxt) {
     const logger = useLogger('nuxt-link-checker')
@@ -85,6 +121,7 @@ export default defineNuxtModule<ModuleOptions>({
     }
 
     const isDevToolsEnabled = typeof nuxt.options.devtools === 'boolean' ? nuxt.options.devtools : nuxt.options.devtools.enabled
+    console.log({ isDevToolsEnabled, dev: nuxt.options.dev })
     if (nuxt.options.dev && isDevToolsEnabled) {
       addPlugin({
         src: resolve('./runtime/plugin/ui.client'),
@@ -102,13 +139,18 @@ export default defineNuxtModule<ModuleOptions>({
           handler: resolve('./runtime/server/api/links'),
         })
       }
-      nuxt.options.runtimeConfig['nuxt-link-checker'] = {
+      nuxt.options.runtimeConfig.public['nuxt-link-checker'] = {
         hasSitemapModule: hasNuxtModule('nuxt-simple-sitemap'),
         hasLinksEndpoint,
+        excludeLinks: config.excludeLinks,
+        skipInspections: config.skipInspections,
+        fetchTimeout: config.fetchTimeout,
+        showLiveInspections: config.showLiveInspections,
       }
       setupDevToolsUI(config, resolve)
     }
 
-    prerender(config)
+    if (config.runOnBuild)
+      prerender(config)
   },
 })

@@ -9,6 +9,7 @@ describe('rule trailing-slash', () => {
       siteConfig: {
         trailingSlash: true,
       },
+      response: { status: 200, statusText: 'OK', headers: {} },
       link: '/test',
     } as RuleTestContext
 

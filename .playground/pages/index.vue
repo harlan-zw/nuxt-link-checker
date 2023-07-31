@@ -4,6 +4,7 @@
     <h2 class="text-lg font-bold mb-4">Valid</h2>
     <LinkDebug to="/#anchor">valid anchor</LinkDebug>
     <LinkDebug to="/valid">valid link</LinkDebug>
+    <LinkDebug to="/ignored">valid because ignored</LinkDebug>
   </div>
   <div class="mb-5">
     <h2 class="text-lg font-bold mb-4">Errors</h2>

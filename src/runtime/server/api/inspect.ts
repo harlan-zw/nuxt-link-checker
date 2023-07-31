@@ -1,9 +1,12 @@
-import { defineEventHandler, getQuery, readBody } from 'h3'
+import { defineEventHandler, getHeader, getQuery, readBody } from 'h3'
+import { fixSlashes } from 'site-config-stack'
+import { parseURL } from 'ufo'
 import { inspect } from '../../inspect'
 import type { RuleTestContext } from '../../types'
 import { generateFileLinkDiff, generateFileLinkPreviews } from '../util'
 import { isInvalidLinkProtocol } from '../../inspections/util'
-import { useNitroApp, useSiteConfig } from '#imports'
+import { crawlFetch } from '../../sharedUtils'
+import { useNitroApp, useRuntimeConfig, useSiteConfig } from '#imports'
 
 // verify a link
 export default defineEventHandler(async (e) => {
@@ -12,27 +15,20 @@ export default defineEventHandler(async (e) => {
   const { ids, paths } = body
   const partialCtx: Partial<RuleTestContext> = {
     ids,
-    e,
+    fromPath: fixSlashes(false, parseURL(getHeader(e, 'referer') || '/').pathname),
     siteConfig: useSiteConfig(e),
   }
+  const runtimeConfig = useRuntimeConfig().public['nuxt-link-checker']
 
   let response
   if (isInvalidLinkProtocol(link) || link.startsWith('#')) {
     response = { status: 200, statusText: 'OK', headers: {} }
   }
   else {
-    const timeoutController = new AbortController()
-    const abortRequestTimeout = setTimeout(() => timeoutController.abort(), 5000)
-
-    response = await $fetch.raw(link, {
-      method: 'HEAD',
-      signal: timeoutController.signal,
-      headers: {
-        'user-agent': 'Nuxt Link Checker',
-      },
+    response = await crawlFetch(link, {
+      fetch: $fetch.raw,
+      timeout: runtimeConfig.timeout,
     })
-      .catch(() => ({ status: 404, statusText: 'Not Found', headers: {} }))
-      .finally(() => clearTimeout(abortRequestTimeout))
   }
   // @ts-expect-error untyped
   const result = inspect({
@@ -40,6 +36,7 @@ export default defineEventHandler(async (e) => {
     link,
     pageSearch: useNitroApp()._linkCheckerPageSearch,
     response,
+    skipInspections: runtimeConfig.skipInspections,
   })
   const filePaths = paths.map((p) => {
     const [filepath] = p.split(':')

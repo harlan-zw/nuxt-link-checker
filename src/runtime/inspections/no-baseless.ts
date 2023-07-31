@@ -1,15 +1,11 @@
 import { joinURL } from 'ufo'
-import { getHeader } from 'h3'
 import { defineRule, isInvalidLinkProtocol } from './util'
 
 export default function RuleNoBaseLess() {
   return defineRule({
-    test({ link, e, report }) {
+    test({ link, fromPath, report }) {
       if (link.startsWith('/') || link.startsWith('http') || isInvalidLinkProtocol(link) || link.startsWith('#'))
         return
-
-      // get referrer
-      const fromPath = getHeader(e, 'referer') || ''
 
       report({
         name: 'no-baseless',

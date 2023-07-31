@@ -34,127 +34,38 @@ Find and magically fix links that may be negatively effecting your Nuxt sites SE
 
 ## Features
 
-- ✅ Discover broken links - 404s and internal redirects
-- 🚩 Warnings for bad practice links - absolute instead of relative and wrong trailing slash
-- 🕵️ Fail on build if broken links are found (optional)
+- ✅ 7 SEO focused link inspections (more coming soon)
+- ✨ See live inspections right in your Nuxt App
+- 🧙 Magically fix them in Nuxt Dev Tools
+- 🚩 Generate reports on build (html, markdown)
 
-## Install
+
+## Installation
+
+1. Install `nuxt-link-checker` dependency to your project:
+
 
 ```bash
-npm install --save-dev nuxt-link-checker
-
-# Using yarn
-yarn add --dev nuxt-link-checker
+#
+yarn add -D nuxt-link-checker
+#
+npm install -D nuxt-link-checker
+#
+pnpm i -D nuxt-link-checker
 ```
 
-## Setup
 
-_nuxt.config.ts_
+2. Add it to your `modules` section in your `nuxt.config`:
 
 ```ts
 export default defineNuxtConfig({
-  modules: [
-    'nuxt-link-checker',
-  ],
+  modules: ['nuxt-link-checker']
 })
 ```
 
-To have routes scanned for broken links automatically, they need to be pre-rendered by Nitro.
+# Documentation
 
-```ts
-export default defineNuxtConfig({
-  nitro: {
-    prerender: {
-      crawlLinks: true,
-      routes: [
-        '/',
-        // any URLs that can't be discovered by crawler
-        '/my-hidden-url'
-      ]
-    }
-  }
-})
-```  
-
-### Set host (optional)
-
-You'll need to provide the host of your site so that the crawler can resolve absolute URLs that may be internal.
-
-```ts
-export default defineNuxtConfig({
-  // Recommended
-  runtimeConfig: {
-    public: {
-      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://example.com',
-    }
-  },
-  // OR
-  linkChecker: {
-    host: 'https://example.com',
-  },
-})
-```
-
-### Exclude URLs from throwing errors
-
-You can exclude URLs from throwing errors by adding them to the `exclude` array.
-
-For example, if you have an `/admin` route that is a separate application, you can ignore all `/admin` links with:
-
-```ts
-export default defineNuxtConfig({
-  linkChecker: {
-    exclude: [
-      '/admin/**'
-    ],
-  },
-})
-```
-
-### Disable errors on broken links
-
-You can disable errors on broken links by setting `failOn404` to `false`.
-
-```ts
-export default defineNuxtConfig({
-  linkChecker: {
-    failOn404: false,
-  },
-})
-```
-
-## Module Config
-
-### `failOn404`
-
-- Type: `boolean`
-- Default: `true`
-
-If set to `true`, the build will fail if any broken links are found.
-
-### `exclude`
-
-- Type: `string[]`
-- Default: `[]`
-
-An array of URLs to exclude from the check. 
-
-This can be useful if you have a route that is not pre-rendered, but you know it will be valid.
-
-### `host`
-
-- Type: `string`
-- Default: `runtimeConfig.public.siteUrl || localhost`
-- Required: `false`
-
-The host of your site. This is required to validate absolute URLs which may be internal.
-
-### `trailingSlash`
-
-- Type: `boolean`
-- Default: `false`
-
-Whether internal links should have a trailing slash or not.
+[📖 Read the full documentation](https://nuxtseo.com/nuxt-link-checker/getting-started/installation) for more information.
 
 ## Sponsors
 
@@ -163,7 +74,6 @@ Whether internal links should have a trailing slash or not.
     <img src='https://raw.githubusercontent.com/harlan-zw/static/main/sponsors.svg'/>
   </a>
 </p>
-
 
 ## License
 

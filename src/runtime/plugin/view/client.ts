@@ -3,9 +3,10 @@ import { computed, createApp, h, ref, shallowReactive, unref } from 'vue'
 import type { NuxtApp } from 'nuxt/app'
 import type { NuxtDevtoolsIframeClient } from '@nuxt/devtools-kit/types'
 import type { LinkInspectionResult, NuxtLinkCheckerClient } from '../../types'
+import { createFilter } from '../../../urlFilter'
 import Main from './Main.vue'
 import { linkDb } from './state'
-import { useRoute } from '#imports'
+import { useRoute, useRuntimeConfig } from '#imports'
 
 function resolveDevtoolsIframe() {
   return document.querySelector('#nuxt-devtools-iframe')?.contentWindow?.__NUXT_DEVTOOLS__
@@ -35,16 +36,23 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
   let startQueueIdleId: number
   let startQueueTimeoutId: number | false
 
+  const runtimeConfig = useRuntimeConfig().public['nuxt-link-checker']
+  const filter = createFilter({
+    exclude: runtimeConfig.excludeLinks,
+  })
+
   const client: NuxtLinkCheckerClient = shallowReactive({
     isWorkingQueue: false,
     scanLinks() {
       elMap = {}
       visibleLinks.clear()
       const ids = [...new Set([...document.querySelectorAll('#__nuxt [id]')].map(el => el.id))]
-      ;[...document.querySelectorAll('#__nuxt a')]
+      ;[...document.querySelectorAll('#__nuxt a[href]')]
         .map(el => ({ el, link: el.getAttribute('href')! }))
         .forEach(({ el, link }) => {
           if (!link)
+            return
+          if (!filter(link))
             return
           visibleLinks.add(link)
           elMap[link] = elMap[link] || []
@@ -102,7 +110,7 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
     },
     maybeAttachEls(payload?: LinkInspectionResult) {
       // must not pass
-      if (!payload || payload.passes)
+      if (!payload || payload.passes || !runtimeConfig.showLiveInspections)
         return
       const els = elMap?.[payload.link] || []
       for (const el of els)

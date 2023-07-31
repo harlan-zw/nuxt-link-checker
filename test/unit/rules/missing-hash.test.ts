@@ -12,7 +12,7 @@ describe('rule missing-hash', () => {
         'bar',
         'team',
       ],
-      e: mockEvent('/about'),
+      fromPath: '/about',
     } as RuleTestContext
 
     expect(runRule(ctx, RuleMissingHash())).toMatchInlineSnapshot(`
