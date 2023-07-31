@@ -69,10 +69,7 @@ export function setupDevToolsUI(options: ModuleOptions, resolve: Resolver['resol
         ws.send('nuxt-link-checker:reset')
       },
       async applyLinkFixes(filepath, original, replacement) {
-        filepath = resolve(filepath)
-        // don't allow modifying files outside the root dir
-        if (!filepath.startsWith(nuxt.options.rootDir))
-          return
+        filepath = resolve(nuxt.options.rootDir, filepath)
         const contents = await readFile(filepath, 'utf8')
         const diff = generateLinkDiff(contents, original, replacement)
         await writeFile(filepath, diff.code, 'utf8')
