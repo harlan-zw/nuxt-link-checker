@@ -60,7 +60,7 @@ export default defineNuxtConfig({
 
 # Documentation
 
-[📖 Read the full documentation](https://nuxtseo.com/nuxt-link-checker/getting-started/installation) for more information.
+[📖 Read the full documentation](https://nuxtseo.com/link-checker/getting-started/installation) for more information.
 
 # Demos
 
