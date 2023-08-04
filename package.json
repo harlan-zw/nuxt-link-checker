@@ -16,8 +16,8 @@
   "exports": {
     ".": {
       "types": "./dist/types.d.ts",
-      "require": "./dist/module.cjs",
-      "import": "./dist/module.mjs"
+      "import": "./dist/module.mjs",
+      "require": "./dist/module.cjs"
     }
   },
   "build": {
@@ -45,8 +45,8 @@
     "test:watch": "vitest watch"
   },
   "dependencies": {
-    "@nuxt/devtools-kit": "^0.7.1",
-    "@nuxt/devtools-ui-kit": "^0.7.1",
+    "@nuxt/devtools-kit": "^0.7.4",
+    "@nuxt/devtools-ui-kit": "^0.7.4",
     "@nuxt/kit": "^3.6.5",
     "@vueuse/core": "^10.3.0",
     "chalk": "^5.3.0",
@@ -54,17 +54,17 @@
     "diff": "^5.1.0",
     "fuse.js": "^6.6.2",
     "magic-string": "^0.30.2",
-    "nuxt-site-config": "1.0.9",
-    "nuxt-site-config-kit": "1.0.9",
+    "nuxt-site-config": "1.0.10",
+    "nuxt-site-config-kit": "1.0.10",
     "pathe": "^1.1.1",
     "radix3": "^1.0.1",
     "shiki-es": "^0.14.0",
     "sirv": "^2.0.3",
-    "site-config-stack": "^1.0.9",
+    "site-config-stack": "^1.0.10",
     "ufo": "^1.2.0"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^0.39.8",
+    "@antfu/eslint-config": "^0.40.0",
     "@nuxt/module-builder": "^0.4.0",
     "@nuxt/test-utils": "^3.6.5",
     "@nuxtjs/eslint-config-typescript": "^12.0.0",
@@ -73,6 +73,6 @@
     "eslint": "8.46.0",
     "execa": "^7.2.0",
     "nuxt": "^3.6.5",
-    "vitest": "^0.33.0"
+    "vitest": "^0.34.1"
   }
 }
