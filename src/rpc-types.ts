@@ -6,6 +6,7 @@ export interface ServerFunctions {
   getOptions(): ModuleOptions
   reset(): void
   applyLinkFixes(filepath: string, original: string, replacement: string): void
+  toggleLiveInspections(enabled: boolean): void
 }
 
 export interface ClientFunctions {

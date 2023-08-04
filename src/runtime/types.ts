@@ -72,4 +72,5 @@ export interface NuxtLinkCheckerClient {
   visibleLinks: Set<string>
   isWorkingQueue: boolean
   linkDb: ComputedRef<LinkInspectionResult[]>
+  showInspections: Ref<boolean>
 }

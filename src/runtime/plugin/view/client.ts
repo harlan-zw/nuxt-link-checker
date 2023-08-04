@@ -35,6 +35,7 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
   const route = useRoute()
   let startQueueIdleId: number
   let startQueueTimeoutId: number | false
+  const showInspections = ref(false)
 
   const runtimeConfig = useRuntimeConfig().public['nuxt-link-checker']
   const filter = createFilter({
@@ -128,7 +129,9 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
         console.warn('No hot context')
         return
       }
-      import.meta.hot.send(`nuxt-link-checker:${event}`, payload)
+      try {
+        import.meta.hot.send(`nuxt-link-checker:${event}`, payload)
+      } catch {}
     },
     openDevtoolsToLink(link: string) {
       if (isOpeningDevtools)
@@ -195,6 +198,9 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
         import.meta.hot.on('nuxt-link-checker:reset', () => {
           client.reset(true)
         })
+        import.meta.hot.on('nuxt-link-checker:live-inspections', ({ enabled }) => {
+          showInspections.value = enabled
+        })
         import.meta.hot.on('vite:afterUpdate', (ctx) => {
           if (ctx.updates.some(c => c.type === 'js-update'))
             client.reset(true)
@@ -229,6 +235,7 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
     visibleLinks,
     inspectionEls,
     linkDb: computed(() => linkDb.value[route.path] || []),
+    showInspections,
   })
 
   client.start()

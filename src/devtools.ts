@@ -77,6 +77,10 @@ export function setupDevToolsUI(options: ModuleOptions, resolve: Resolver['resol
         const ws = await viteServerWs
         ws.send('nuxt-link-checker:reset')
       },
+      async toggleLiveInspections(enabled) {
+        const ws = await viteServerWs
+        ws.send('nuxt-link-checker:live-inspections', { enabled })
+      },
     })
     viteServerWs.then((ws) => {
       ws.on('nuxt-link-checker:queueWorking', payload => rpc.broadcast.queueWorking(payload).catch(() => {}))

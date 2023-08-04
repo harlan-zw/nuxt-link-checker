@@ -24,10 +24,15 @@ if (import.meta.hot) {
 useEventListener(window, 'resize', () => {
   renderKey.value++
 })
+
+const showInspections = computed(() => {
+  return props.client.showInspections.value
+})
 </script>
 
 <template>
   <div
+    v-if="showInspections"
     :key="renderKey"
   >
     <Squiggle

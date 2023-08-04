@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import FixActionDialog from './components/FixActionDialog.vue'
 import { linkCheckerRpc } from './composables/rpc'
-import { linkDb, linkFilter, queueLength, visibleLinks } from './composables/state'
+import { linkDb, linkFilter, queueLength, showLiveInspections, visibleLinks } from './composables/state'
 import { loadShiki } from './composables/shiki'
 
 await loadShiki()
@@ -55,6 +55,10 @@ async function retryAll() {
   queueLength.value = 0
   await linkCheckerRpc.value.reset()
 }
+async function toggleLiveInspections() {
+  showLiveInspections.value = !showLiveInspections.value
+  await linkCheckerRpc.value.toggleLiveInspections(showLiveInspections.value)
+}
 </script>
 
 <template>
@@ -71,7 +75,19 @@ async function retryAll() {
           </p>
         </div>
         <div v-if="nodes.length">
-          <button class="hover:shadow-lg text-sm transition items-center gap-2 inline-flex border-green-500/50 border-1 rounded-lg shadow-sm px-3 py-1" @click="retryAll">
+          <button
+            class="mr-5 hover:shadow-lg text-sm transition items-center gap-2 inline-flex border-green-500/50 border-1 rounded-lg shadow-sm px-3 py-1"
+            @click="toggleLiveInspections"
+          >
+            <NIcon :icon="`${showLiveInspections ? 'carbon:view-off' : 'carbon:view'}`" />
+            <div>
+              {{ showLiveInspections ? 'Hide' : 'Show' }} Inspections
+            </div>
+          </button>
+          <button
+            class="hover:shadow-lg text-sm transition items-center gap-2 inline-flex border-green-500/50 border-1 rounded-lg shadow-sm px-3 py-1"
+            @click="retryAll"
+          >
             <NIcon icon="carbon:retry-failed" />
             <div>
               Retry {{ nodes.length > 1 ? 'All' : '' }}
