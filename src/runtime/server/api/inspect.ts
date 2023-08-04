@@ -11,6 +11,12 @@ import { useNitroApp, useRuntimeConfig, useSiteConfig } from '#imports'
 // verify a link
 export default defineEventHandler(async (e) => {
   const link = decodeURIComponent(getQuery(e).link as string)
+
+  // do a quick check for links that are always safe
+  if (link.startsWith('mailto:') || link.startsWith('tel:')) {
+    return { passes: true }
+  }
+
   const body = await readBody<{ paths: string[]; ids: string[] }>(e)
   const { ids, paths } = body
   const partialCtx: Partial<RuleTestContext> = {
