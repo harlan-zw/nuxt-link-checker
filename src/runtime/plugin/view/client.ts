@@ -131,7 +131,8 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
       }
       try {
         import.meta.hot.send(`nuxt-link-checker:${event}`, payload)
-      } catch {}
+      }
+      catch {}
     },
     openDevtoolsToLink(link: string) {
       if (isOpeningDevtools)

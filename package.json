@@ -2,7 +2,7 @@
   "name": "nuxt-link-checker",
   "type": "module",
   "version": "2.1.0",
-  "packageManager": "pnpm@8.6.11",
+  "packageManager": "pnpm@8.6.12",
   "license": "MIT",
   "funding": "https://github.com/sponsors/harlan-zw",
   "homepage": "https://github.com/harlan-zw/nuxt-link-checker#readme",
@@ -45,8 +45,8 @@
     "test:watch": "vitest watch"
   },
   "dependencies": {
-    "@nuxt/devtools-kit": "^0.7.4",
-    "@nuxt/devtools-ui-kit": "^0.7.4",
+    "@nuxt/devtools-kit": "^0.7.5",
+    "@nuxt/devtools-ui-kit": "^0.7.5",
     "@nuxt/kit": "^3.6.5",
     "@vueuse/core": "^10.3.0",
     "chalk": "^5.3.0",
@@ -64,7 +64,7 @@
     "ufo": "^1.2.0"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^0.40.0",
+    "@antfu/eslint-config": "^0.40.2",
     "@nuxt/module-builder": "^0.4.0",
     "@nuxt/test-utils": "^3.6.5",
     "@nuxtjs/eslint-config-typescript": "^12.0.0",
