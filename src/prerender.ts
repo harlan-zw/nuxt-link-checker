@@ -8,6 +8,7 @@ import { load } from 'cheerio'
 import type { ModuleOptions } from './module'
 import { inspect } from './runtime/inspect'
 import { crawlFetch, createFilter } from './runtime/sharedUtils'
+import { isInvalidLinkProtocol } from './runtime/inspections/util'
 
 const responses: Record<string, Promise<{ status: number; statusText: string }>> = {}
 const linkMap: Record<string, ExtractedPayload> = {}
@@ -23,11 +24,19 @@ export function extractPayload(html: string) {
   return { ids, links }
 }
 
-async function getLinkResponse(link: string, timeout: number) {
+async function getLinkResponse(link: string, timeout: number, fetchRemoteUrls: boolean) {
   const response = responses[link]
   if (!response) {
-    // do fetch
-    responses[link] = crawlFetch(link, { timeout })
+    if (isInvalidLinkProtocol(link) || link.startsWith('#')
+      // skip remote urls if we're not allowed to fetch them
+      || (link.startsWith('http') && fetchRemoteUrls)
+    ) {
+      responses[link] = Promise.resolve({ status: 200, statusText: 'OK', headers: {} })
+    }
+    else {
+      // do fetch
+      responses[link] = crawlFetch(link, { timeout })
+    }
   }
   return responses[link]
 }
@@ -44,7 +53,7 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
       if (ctx.contents && !ctx.error && ctx.fileName?.endsWith('.html') && !ctx.route.endsWith('.html') && urlFilter(ctx.route)) {
         linkMap[ctx.route] = extractPayload(ctx.contents)
         linkMap[ctx.route].links.forEach((link) => {
-          getLinkResponse(link, config.fetchTimeout)
+          getLinkResponse(link, config.fetchTimeout, config.fetchRemoteUrls)
         })
       }
       responses[ctx.route] = Promise.resolve({ status: Number(ctx.error?.statusCode) || 200, statusText: ctx.error?.statusMessage || '' })
@@ -62,7 +71,7 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
       let errorCount = 0
       await Promise.all(payloads.map(async ([route, payload]) => {
         const reports = await Promise.all(payload.links.map(async (link) => {
-          const response = await getLinkResponse(link)
+          const response = await getLinkResponse(link, config.fetchTimeout, config.fetchRemoteUrls)
           return inspect({
             ids: linkMap[route].ids,
             fromPath: route,

@@ -26,7 +26,10 @@ export default defineEventHandler(async (e) => {
   const runtimeConfig = useRuntimeConfig().public['nuxt-link-checker']
 
   let response
-  if (isInvalidLinkProtocol(link) || link.startsWith('#')) {
+  if (isInvalidLinkProtocol(link) || link.startsWith('#')
+    // skip remote urls if we're not allowed to fetch them
+    || (link.startsWith('http') && runtimeConfig.fetchRemoteUrls)
+  ) {
     response = { status: 200, statusText: 'OK', headers: {} }
   }
   else {

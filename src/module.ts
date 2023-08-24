@@ -8,10 +8,12 @@ import {
 } from '@nuxt/kit'
 import { installNuxtSiteConfig, updateSiteConfig } from 'nuxt-site-config-kit'
 import type { NuxtPage } from '@nuxt/schema'
+import { provider } from 'std-env'
 import { prerender } from './prerender'
 import { setupDevToolsUI } from './devtools'
 import type { DefaultInspections } from './runtime/inspect'
 import { convertNuxtPagesToPaths } from './util'
+import { crawlFetch } from './runtime/sharedUtils'
 
 export interface ModuleOptions {
   /**
@@ -54,6 +56,12 @@ export interface ModuleOptions {
    */
   runOnBuild: boolean
   /**
+   * Should remote URLs be fetched.
+   *
+   * @default true (disabled in stackblitz)
+   */
+  fetchRemoteUrls: boolean
+  /**
    * Whether the module is enabled.
    *
    * @default true
@@ -95,6 +103,7 @@ export default defineNuxtModule<ModuleOptions>({
     configKey: 'linkChecker',
   },
   defaults: {
+    fetchRemoteUrls: provider !== 'stackblitz',
     runOnBuild: true,
     debug: false,
     showLiveInspections: true,
@@ -120,6 +129,12 @@ export default defineNuxtModule<ModuleOptions>({
         trailingSlash: config.trailingSlash,
         host: config.host,
       })
+    }
+
+    if (config.fetchRemoteUrls) {
+      config.fetchRemoteUrls = (await crawlFetch('https://google.com')).status === 200
+      if (!config.fetchRemoteUrls)
+        logger.warn('Remote URL fetching is disabled because https://google.com could not be fetched.')
     }
 
     const isDevToolsEnabled = typeof nuxt.options.devtools === 'boolean' ? nuxt.options.devtools : nuxt.options.devtools.enabled
@@ -155,6 +170,7 @@ export default defineNuxtModule<ModuleOptions>({
         skipInspections: config.skipInspections,
         fetchTimeout: config.fetchTimeout,
         showLiveInspections: config.showLiveInspections,
+        fetchRemoteUrls: config.fetchRemoteUrls,
       }
       setupDevToolsUI(config, resolve)
     }

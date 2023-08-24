@@ -1,4 +1,5 @@
 import { createRouter, toRouteMatcher } from 'radix3'
+import { $fetch } from 'ofetch'
 
 export interface CreateFilterOptions {
   include?: (string | RegExp)[]
@@ -39,18 +40,23 @@ export function createFilter(options: CreateFilterOptions = {}): (path: string) 
 }
 
 export async function crawlFetch(link: string, options: { fetch?: typeof globalThis.fetch; timeout?: number } = {}) {
-  const fetch = options.fetch || globalThis.fetch
+  const $ = options.fetch || $fetch
   const timeout = options.timeout || 5000
   const timeoutController = new AbortController()
   const abortRequestTimeout = setTimeout(() => timeoutController.abort(), timeout)
 
-  return await fetch(link, {
+  return await $(link, {
     method: 'HEAD',
     signal: timeoutController.signal,
     headers: {
       'user-agent': 'Nuxt Link Checker',
     },
   })
-    .catch(() => ({ status: 404, statusText: 'Not Found', headers: {} }))
+    .catch((error) => {
+      if (error.name === 'AbortError')
+        return { status: 408, statusText: 'Request Timeout', headers: {} }
+      // make sure we have a 404 and not a timeout
+      return { status: 404, statusText: 'Not Found', headers: {} }
+    })
     .finally(() => clearTimeout(abortRequestTimeout))
 }
