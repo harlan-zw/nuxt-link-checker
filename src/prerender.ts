@@ -3,7 +3,7 @@ import chalk from 'chalk'
 import { useNuxt } from '@nuxt/kit'
 import { useSiteConfig } from 'nuxt-site-config-kit'
 import Fuse from 'fuse.js'
-import { resolve } from 'pathe'
+import { relative, resolve } from 'pathe'
 import { load } from 'cheerio'
 import type { ModuleOptions } from './module'
 import { inspect } from './runtime/inspect'
@@ -141,7 +141,7 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
                 `
             // write file
             await fs.writeFile(resolve(nitro.options.output.dir, 'link-checker-report.html'), html)
-            nitro.logger.info(`Nuxt Link Checker Report written to ${resolve(nitro.options.output.dir, 'link-checker-report.html')}`)
+            nitro.logger.info(`Nuxt Link Checker HTML report written to ${relative(nuxt.options.rootDir, resolve(nitro.options.output.dir, 'link-checker-report.html'))}`)
           }
         }
         if (config.report?.markdown) {
@@ -151,28 +151,27 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
             const reportMarkdown = reports.map((r) => {
               const errors = r.error?.map((error) => {
                 return `| ${r.link} | ${error.message} (${error.name}) |`
-              }).join('')
+              })
               const warnings = r.warning?.map((warning) => {
                 return `| ${r.link} | ${warning.message} (${warning.name}) |`
-              }).join('')
-              return `${errors}${warnings}`
-            }).join('')
+              })
+              return [errors, warnings]
+            }).flat().filter(Boolean).join('\n')
             const markdown = [
               '# Link Checker Report',
               '',
               '| Link | Message |',
               '| --- | --- |',
-              reportMarkdown,
-            ].join('\n')
+            ].join('\n') + reportMarkdown
             // write file
             await fs.writeFile(resolve(nitro.options.output.dir, 'link-checker-report.md'), markdown)
-            nitro.logger.info(`Nuxt Link Checker Report written to ${resolve(nitro.options.output.dir, 'link-checker-report.md')}`)
+            nitro.logger.info(`Nuxt Link Checker Markdown report written to ${relative(nuxt.options.rootDir, resolve(nitro.options.output.dir, 'link-checker-report.md'))}`)
           }
         }
       }))
       if (errorCount > 0 && config.failOnError) {
         nitro.logger.error(`Nuxt Link Checker found ${errorCount} errors, failing build.`)
-        nitro.logger.log(chalk.gray('You can disable this by setting "linkChecker: { failOn404: false }" in your nuxt.config.ts.'))
+        nitro.logger.log(chalk.gray('You can disable this by setting "linkChecker: { failOnError: false }" in your nuxt.config.'))
         process.exit(1)
       }
     })
