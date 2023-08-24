@@ -22,7 +22,8 @@
   },
   "build": {
     "externals": [
-      "ofetch"
+      "ofetch",
+      "std-env"
     ]
   },
   "main": "./dist/module.cjs",

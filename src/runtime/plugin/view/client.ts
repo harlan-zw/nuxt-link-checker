@@ -2,6 +2,7 @@ import type { UnwrapRef } from 'vue'
 import { computed, createApp, h, ref, shallowReactive, unref } from 'vue'
 import type { NuxtApp } from 'nuxt/app'
 import type { NuxtDevtoolsIframeClient } from '@nuxt/devtools-kit/types'
+import { useLocalStorage } from '@vueuse/core'
 import type { LinkInspectionResult, NuxtLinkCheckerClient } from '../../types'
 import { createFilter } from '../../sharedUtils'
 import Main from './Main.vue'
@@ -9,7 +10,7 @@ import { linkDb } from './state'
 import { useRoute, useRuntimeConfig } from '#imports'
 
 function resolveDevtoolsIframe() {
-  return document.querySelector('#nuxt-devtools-iframe')?.contentWindow?.__NUXT_DEVTOOLS__
+  return document.querySelector('#nuxt-devtools-iframe')?.contentWindow?.__NUXT_DEVTOOLS__ as NuxtDevtoolsIframeClient | undefined
 }
 
 function resolvePathsForEl(el: Element) {
@@ -35,7 +36,7 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
   const route = useRoute()
   let startQueueIdleId: number
   let startQueueTimeoutId: number | false
-  const showInspections = ref(false)
+  const showInspections = useLocalStorage('nuxt-link-checker:show-inspections', true)
 
   const runtimeConfig = useRuntimeConfig().public['nuxt-link-checker']
   const filter = createFilter({
@@ -148,7 +149,7 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
           // wait for the iframe
           const interval = setInterval(() => {
             devtoolsClient = resolveDevtoolsIframe()
-            if (devtoolsClient && devtoolsClient.host.getIframe()) {
+            if (devtoolsClient && devtoolsClient.host?.getIframe()) {
               devtoolsClient.host.getIframe()!.src = `/__nuxt_devtools__/client/modules/custom-nuxt-link-checker?link=${encodeURIComponent(link)}`
               isOpeningDevtools = false
               clearInterval(interval)
@@ -157,7 +158,12 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
         }
       }
       else {
-        devtoolsClient.host.open()
+        // devtools 0.7 <= support
+        if (typeof devtoolsClient.host.open === 'function') {
+          devtoolsClient.host.open()
+        } else {
+          devtoolsClient.host.devtools.open()
+        }
 
         const srcPath = new URL(devtoolsClient.host.getIframe()!.src).pathname
         // switch to the tab
