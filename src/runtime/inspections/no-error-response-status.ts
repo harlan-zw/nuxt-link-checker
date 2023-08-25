@@ -4,7 +4,7 @@ import { defineRule, isInvalidLinkProtocol } from './util'
 export default function RuleNoErrorResponse() {
   return defineRule({
     test({ link, response, report, pageSearch }) {
-      if (response.status.toString().startsWith('2') || response.status.toString().startsWith('3') || isInvalidLinkProtocol(link) || link.startsWith('#'))
+      if (!response.status || response.status.toString().startsWith('2') || response.status.toString().startsWith('3') || isInvalidLinkProtocol(link) || link.startsWith('#'))
         return
       const payload: RuleReport = {
         name: 'no-error-response',
