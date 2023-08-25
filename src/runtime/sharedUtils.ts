@@ -40,7 +40,7 @@ export function createFilter(options: CreateFilterOptions = {}): (path: string) 
 }
 
 export async function crawlFetch(link: string, options: { fetch?: typeof globalThis.fetch; timeout?: number } = {}) {
-  const $ = options.fetch || $fetch
+  const $ = options.fetch || $fetch.raw
   const timeout = options.timeout || 5000
   const timeoutController = new AbortController()
   const abortRequestTimeout = setTimeout(() => timeoutController.abort(), timeout)
