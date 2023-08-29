@@ -48,6 +48,7 @@ export default defineNuxtConfig({
 
   site: {
     url: 'https://nuxt-link-checker.com',
+    trailingSlash: true,
   },
 
   nitro: {
