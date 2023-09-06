@@ -9,7 +9,9 @@ export default function RuleTrailingSlash() {
         return // ignore external links
 
       const $url = parseURL(link)
-      if ($url.pathname === '/')
+      // its a file when the last segment has a dot in it
+      const isFile = $url.pathname.split('/').pop()!.includes('.')
+      if ($url.pathname === '/' || isFile)
         return
 
       const fix = fixSlashes(siteConfig.trailingSlash, link)
