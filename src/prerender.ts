@@ -51,9 +51,16 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
       nitro.logger.info('Running link inspections...')
       let routeCount = 0
       let errorCount = 0
-      await Promise.all(payloads.map(async ([route, payload]) => {
+      const allReports = (await Promise.all(payloads.map(async ([route, payload]) => {
         const reports = await Promise.all(payload.links.map(async (link) => {
-          const response = await getLinkResponse(link, config.fetchTimeout, config.fetchRemoteUrls)
+          if (!urlFilter(link))
+            return { error: [], warning: [], link }
+          const response = await getLinkResponse({
+            link,
+            timeout:
+            config.fetchTimeout,
+            fetchRemoteUrls: config.fetchRemoteUrls,
+          })
           return inspect({
             ids: linkMap[route].ids,
             fromPath: route,
