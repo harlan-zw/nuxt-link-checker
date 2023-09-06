@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref } from '#imports'
 import type { Lang } from 'shiki-es'
+import { ref } from '#imports'
 
 const props = defineProps<{
   code: string

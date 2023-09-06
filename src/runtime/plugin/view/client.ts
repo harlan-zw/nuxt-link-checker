@@ -159,11 +159,10 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
       }
       else {
         // devtools 0.7 <= support
-        if (typeof devtoolsClient.host.open === 'function') {
+        if (typeof devtoolsClient.host.open === 'function')
           devtoolsClient.host.open()
-        } else {
+        else
           devtoolsClient.host.devtools.open()
-        }
 
         const srcPath = new URL(devtoolsClient.host.getIframe()!.src).pathname
         // switch to the tab
