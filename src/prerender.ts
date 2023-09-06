@@ -7,10 +7,9 @@ import { relative, resolve } from 'pathe'
 import { load } from 'cheerio'
 import type { ModuleOptions } from './module'
 import { inspect } from './runtime/inspect'
-import { crawlFetch, createFilter } from './runtime/sharedUtils'
-import { isInvalidLinkProtocol } from './runtime/inspections/util'
+import { createFilter } from './runtime/sharedUtils'
+import { getLinkResponse, setLinkResponse } from './runtime/crawl'
 
-const responses: Record<string, Promise<{ status: number; statusText: string }>> = {}
 const linkMap: Record<string, ExtractedPayload> = {}
 
 interface ExtractedPayload {
@@ -22,23 +21,6 @@ export function extractPayload(html: string) {
   const ids = $('#__nuxt [id]').map((i, el) => $(el).attr('id')).get()
   const links = $('#__nuxt a[href]').map((i, el) => $(el).attr('href')).get()
   return { ids, links }
-}
-
-async function getLinkResponse(link: string, timeout: number, fetchRemoteUrls: boolean) {
-  const response = responses[link]
-  if (!response) {
-    if (isInvalidLinkProtocol(link) || link.startsWith('#')
-      // skip remote urls if we're not allowed to fetch them
-      || (link.startsWith('http') && fetchRemoteUrls)
-    ) {
-      responses[link] = Promise.resolve({ status: 200, statusText: 'OK', headers: {} })
-    }
-    else {
-      // do fetch
-      responses[link] = crawlFetch(link, { timeout })
-    }
-  }
-  return responses[link]
 }
 
 export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
@@ -53,10 +35,10 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
       if (ctx.contents && !ctx.error && ctx.fileName?.endsWith('.html') && !ctx.route.endsWith('.html') && urlFilter(ctx.route)) {
         linkMap[ctx.route] = extractPayload(ctx.contents)
         linkMap[ctx.route].links.forEach((link) => {
-          getLinkResponse(link, config.fetchTimeout, config.fetchRemoteUrls)
+          getLinkResponse({ link, timeout: config.fetchTimeout, fetchRemoteUrls: config.fetchRemoteUrls })
         })
       }
-      responses[ctx.route] = Promise.resolve({ status: Number(ctx.error?.statusCode) || 200, statusText: ctx.error?.statusMessage || '' })
+      setLinkResponse(ctx.route, Promise.resolve({ status: Number(ctx.error?.statusCode) || 200, statusText: ctx.error?.statusMessage || '' }))
     })
     nitro.hooks.hook('close', async () => {
       const payloads = Object.entries(linkMap)
@@ -82,9 +64,6 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
             skipInspections: config.skipInspections,
           })
         }))
-        const valid = !reports.filter(r => !r.passes).length
-        if (valid)
-          return
         const errors = reports.filter(r => r.error?.length).length
         errorCount += errors
         const warnings = reports.filter(r => r.warning?.length).length
@@ -93,7 +72,7 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
           warnings > 0 ? chalk.yellow(`${warnings} warning${warnings > 1 ? 's' : ''}`) : false,
         ].filter(Boolean).join(chalk.gray(', '))
         nitro.logger.log(chalk.gray(
-            `  ${Number(++routeCount) === payload.links.length - 1 ? '└─' : '├─'} ${chalk.white(route)} ${chalk.gray('[')}${statusString}${chalk.gray(']')}`,
+          `  ${Number(++routeCount) === payload.links.length - 1 ? '└─' : '├─'} ${chalk.white(route)} ${chalk.gray('[')}${statusString}${chalk.gray(']')}`,
         ))
         // show inspection results
         reports.forEach((report) => {
@@ -108,20 +87,36 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
             })
           }
         })
-        // emit a html report
-        if (config.report?.html) {
-          if (reports.length) {
-            // going to render a markdown table result for GitHub
-            const reportHtml = reports.map((r) => {
+        return { route, reports }
+      }))).flat()
+      // emit a html report
+      if (config.report?.html) {
+        const reportHtml = allReports
+          .map(({ route, reports }) => {
+            const reportsHtml = reports.map((r) => {
               const errors = r.error?.map((error) => {
                 return `<li class="error">${error.message} (${error.name})</li>`
-              }).join('')
+              }) || []
               const warnings = r.warning?.map((warning) => {
                 return `<li class="warning">${warning.message} (${warning.name})</li>`
-              }).join('')
-              return `<li class="link"><a href="${r.link}">${r.link}</a><ul>${errors}${warnings}</ul></li>`
-            }).join('')
-            const html = `
+              }) || []
+              const valid = (errors.length + warnings.length) === 0
+              return `<li class="link"><a href="${r.link}">${r.link}</a>${!valid ? `<ul>${[...errors, ...warnings].join('\n')}</ul>` : 'Valid'}</li>`
+            }).join('\n')
+            const errors = reports.filter(r => r.error?.length).length
+            const warnings = reports.filter(r => r.warning?.length).length
+            const statusString = [
+              errors > 0 ? `${errors} error${errors > 1 ? 's' : ''}` : false,
+              warnings > 0 ? `${warnings} warning${warnings > 1 ? 's' : ''}` : false,
+            ].filter(Boolean).join(', ')
+            return `
+            <h2><a href="${route}">${route}</a> ${statusString}</h2>
+            <ul>
+              ${reportsHtml}
+            </ul>
+            `
+          }).join('')
+        const html = `
                 <html>
                     <head>
                     <title>Link Checker Report</title>
@@ -132,11 +127,12 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
                         .link {
                         margin-bottom: 1rem;
                         }
+                        /* use a modern, tailwind colour pallet for .error and .warning, do not use red or yellow */
                         .error {
-                        color: red;
+                            color: #F87171;
                         }
                         .warning {
-                        color: yellow;
+                            color: #FBBF24;
                         }
                     </style>
                     </head>
@@ -148,36 +144,45 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
                     </body>
                 </html>
                 `
-            // write file
-            await fs.writeFile(resolve(nitro.options.output.dir, 'link-checker-report.html'), html)
-            nitro.logger.info(`Nuxt Link Checker HTML report written to ${relative(nuxt.options.rootDir, resolve(nitro.options.output.dir, 'link-checker-report.html'))}`)
-          }
-        }
-        if (config.report?.markdown) {
-          // markdown report for github
-          if (reports.length) {
-            // going to render a markdown table result for GitHub
-            const reportMarkdown = reports.map((r) => {
+        // write file
+        await fs.writeFile(resolve(nitro.options.output.dir, 'link-checker-report.html'), html)
+        nitro.logger.info(`Nuxt Link Checker HTML report written to ${relative(nuxt.options.rootDir, resolve(nitro.options.output.dir, 'link-checker-report.html'))}`)
+      }
+      if (config.report?.markdown) {
+        const reportMarkdown = allReports
+          .map(({ route, reports }) => {
+            const reportsMarkdown = reports.map((r) => {
               const errors = r.error?.map((error) => {
                 return `| ${r.link} | ${error.message} (${error.name}) |`
-              })
+              }) || []
               const warnings = r.warning?.map((warning) => {
                 return `| ${r.link} | ${warning.message} (${warning.name}) |`
-              })
-              return [errors, warnings]
+              }) || []
+              return [...errors, ...warnings].filter(Boolean)
             }).flat().filter(Boolean).join('\n')
-            const markdown = [
-              '# Link Checker Report',
-              '',
+            const errors = reports.filter(r => r.error?.length).length
+            const warnings = reports.filter(r => r.warning?.length).length
+            const statusString = [
+              errors > 0 ? `${errors} error${errors > 1 ? 's' : ''}` : false,
+              warnings > 0 ? `${warnings} warning${warnings > 1 ? 's' : ''}` : false,
+            ].filter(Boolean).join(', ')
+            return [
+              `## [${route}](${route}) ${statusString}`,
               '| Link | Message |',
               '| --- | --- |',
-            ].join('\n') + reportMarkdown
-            // write file
-            await fs.writeFile(resolve(nitro.options.output.dir, 'link-checker-report.md'), markdown)
-            nitro.logger.info(`Nuxt Link Checker Markdown report written to ${relative(nuxt.options.rootDir, resolve(nitro.options.output.dir, 'link-checker-report.md'))}`)
-          }
-        }
-      }))
+              reportsMarkdown,
+              '',
+            ].join('\n')
+          }).join('\n')
+        const markdown = [
+          '# Link Checker Report',
+          '',
+          reportMarkdown,
+        ].join('\n')
+        // write file
+        await fs.writeFile(resolve(nitro.options.output.dir, 'link-checker-report.md'), markdown)
+        nitro.logger.info(`Nuxt Link Checker Markdown report written to ${relative(nuxt.options.rootDir, resolve(nitro.options.output.dir, 'link-checker-report.md'))}`)
+      }
       if (errorCount > 0 && config.failOnError) {
         nitro.logger.error(`Nuxt Link Checker found ${errorCount} errors, failing build.`)
         nitro.logger.log(chalk.gray('You can disable this by setting "linkChecker: { failOnError: false }" in your nuxt.config.'))

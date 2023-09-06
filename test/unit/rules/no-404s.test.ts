@@ -20,7 +20,7 @@ describe('rule no-404s', () => {
           {
             "fix": "/about",
             "fixDescription": "Did you mean /about?",
-            "message": "Should not respond with 404 undefined.",
+            "message": "Should not respond with status code 404.",
             "name": "no-error-response",
             "scope": "error",
           },

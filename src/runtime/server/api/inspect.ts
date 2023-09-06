@@ -4,8 +4,7 @@ import { parseURL } from 'ufo'
 import { inspect } from '../../inspect'
 import type { RuleTestContext } from '../../types'
 import { generateFileLinkDiff, generateFileLinkPreviews } from '../util'
-import { isInvalidLinkProtocol } from '../../inspections/util'
-import { crawlFetch } from '../../sharedUtils'
+import { getLinkResponse } from '../../crawl'
 import { useNitroApp, useRuntimeConfig, useSiteConfig } from '#imports'
 
 // verify a link
@@ -25,19 +24,12 @@ export default defineEventHandler(async (e) => {
   }
   const runtimeConfig = useRuntimeConfig().public['nuxt-link-checker']
 
-  let response
-  if (isInvalidLinkProtocol(link) || link.startsWith('#')
-    // skip remote urls if we're not allowed to fetch them
-    || (link.startsWith('http') && runtimeConfig.fetchRemoteUrls)
-  ) {
-    response = { status: 200, statusText: 'OK', headers: {} }
-  }
-  else {
-    response = await crawlFetch(link, {
-      fetch: $fetch.raw,
-      timeout: runtimeConfig.timeout,
-    })
-  }
+  const response = await getLinkResponse({
+    link,
+    timeout: runtimeConfig.fetchTimeout,
+    fetchRemoteUrls: runtimeConfig.fetchRemoteUrls,
+    baseURL: useNitroOrigin(e),
+  })
   // @ts-expect-error untyped
   const result = inspect({
     ...partialCtx,

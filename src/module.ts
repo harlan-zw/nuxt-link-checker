@@ -13,7 +13,7 @@ import { prerender } from './prerender'
 import { setupDevToolsUI } from './devtools'
 import type { DefaultInspections } from './runtime/inspect'
 import { convertNuxtPagesToPaths } from './util'
-import { crawlFetch } from './runtime/sharedUtils'
+import { crawlFetch } from './runtime/crawl'
 
 export interface ModuleOptions {
   /**
@@ -108,7 +108,7 @@ export default defineNuxtModule<ModuleOptions>({
     debug: false,
     showLiveInspections: true,
     enabled: true,
-    fetchTimeout: 5000,
+    fetchTimeout: 10000,
     failOnError: false,
     excludeLinks: [],
     skipInspections: [],

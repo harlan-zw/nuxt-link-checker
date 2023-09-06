@@ -1,10 +1,10 @@
 import { joinURL } from 'ufo'
-import { defineRule, isInvalidLinkProtocol } from './util'
+import { defineRule, isNonFetchableLink } from './util'
 
 export default function RuleNoBaseLess() {
   return defineRule({
     test({ link, fromPath, report }) {
-      if (link.startsWith('/') || link.startsWith('http') || isInvalidLinkProtocol(link) || link.startsWith('#'))
+      if (link.startsWith('/') || link.startsWith('http') || isNonFetchableLink(link))
         return
 
       report({

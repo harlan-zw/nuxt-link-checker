@@ -18,6 +18,7 @@
     <LinkDebug to="/error">to an error page</LinkDebug>
     <LinkDebug to="/completely-broken/">error and warning</LinkDebug>
     <LinkDebug to="/abt">page typo with magic fix - AGAIN 123</LinkDebug>
+    <LinkDebug to="https://nuxt.com/docs/">nuxt.com - remote URL</LinkDebug>
   </div>
   <div>
     <h2 class="text-lg font-bold mb-4">Warnings test</h2>

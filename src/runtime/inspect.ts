@@ -7,7 +7,7 @@ import RuleAbsoluteSiteUrls from './inspections/absolute-site-urls'
 import RuleRedirects from './inspections/redirects'
 import RuleNoErrorResponse from './inspections/no-error-response-status'
 import type { LinkInspectionResult, Rule, RuleTestContext } from './types'
-import { isInvalidLinkProtocol } from './inspections/util'
+import { isNonFetchableLink } from './inspections/util'
 
 export const DefaultInspections = {
   'missing-hash': RuleMissingHash(),
@@ -23,7 +23,7 @@ export function inspect(ctx: RuleTestContext, rules = DefaultInspections): Parti
   const res: Partial<LinkInspectionResult> = { error: [], warning: [], fix: ctx.link, link: ctx.link }
   let link = ctx.link
   const url = parseURL(link)
-  if (!url.pathname && !url.protocol && !url.host && !isInvalidLinkProtocol(link) && !link.startsWith('mailto:') && !link.startsWith('#')) {
+  if (!url.pathname && !url.protocol && !url.host && !isNonFetchableLink(link)) {
     // @ts-expect-error untyped
     res.error.push({
       name: 'invalid-url',
