@@ -24,8 +24,6 @@ export function extractPayload(html: string) {
 }
 
 export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
-  // only runs when we build
-  // @todo
   const urlFilter = createFilter({
     exclude: config.excludeLinks,
   })
