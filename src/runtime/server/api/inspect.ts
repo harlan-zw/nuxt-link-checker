@@ -5,7 +5,7 @@ import { inspect } from '../../inspect'
 import type { RuleTestContext } from '../../types'
 import { generateFileLinkDiff, generateFileLinkPreviews } from '../util'
 import { getLinkResponse } from '../../crawl'
-import { useNitroApp, useRuntimeConfig, useSiteConfig } from '#imports'
+import { useNitroApp, useNitroOrigin, useRuntimeConfig, useSiteConfig } from '#imports'
 
 // verify a link
 export default defineEventHandler(async (e) => {
