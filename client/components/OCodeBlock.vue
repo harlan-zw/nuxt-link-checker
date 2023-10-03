@@ -9,7 +9,8 @@ const props = withDefaults(
     lang?: Lang
     lines?: boolean
     transformRendered?: (code: string) => string
-  }>(), {
+  }>(),
+  {
     lines: true,
   },
 )

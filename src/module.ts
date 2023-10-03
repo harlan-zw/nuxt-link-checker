@@ -3,8 +3,10 @@ import {
   addServerHandler,
   addServerPlugin,
   createResolver,
-  defineNuxtModule, extendPages,
-  hasNuxtModule, useLogger,
+  defineNuxtModule,
+  extendPages,
+  hasNuxtModule,
+  useLogger,
 } from '@nuxt/kit'
 import { installNuxtSiteConfig, updateSiteConfig } from 'nuxt-site-config-kit'
 import type { NuxtPage } from '@nuxt/schema'
