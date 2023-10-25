@@ -1,8 +1,8 @@
+import { resolve } from 'node:path'
 import { defineNuxtConfig } from 'nuxt/config'
+import { defineNuxtModule } from '@nuxt/kit'
+import { startSubprocess } from '@nuxt/devtools-kit'
 import NuxtLinkChecker from '../src/module'
-import {defineNuxtModule} from "@nuxt/kit";
-import {startSubprocess} from "@nuxt/devtools-kit";
-import {resolve} from "path";
 
 export default defineNuxtConfig({
   modules: [
@@ -17,9 +17,8 @@ export default defineNuxtConfig({
      */
     defineNuxtModule({
       setup(_, nuxt) {
-        if (!nuxt.options.dev) {
+        if (!nuxt.options.dev)
           return
-        }
 
         const subprocess = startSubprocess(
           {
@@ -30,10 +29,10 @@ export default defineNuxtConfig({
           {
             id: 'nuxt-link-checker:client',
             name: 'Nuxt Link Checker Client Dev',
-          }
+          },
         )
         subprocess.getProcess().stdout?.on('data', (data) => {
-          console.log(' sub: ' + data.toString())
+          console.log(` sub: ${data.toString()}`)
         })
 
         process.on('exit', () => {
@@ -54,7 +53,7 @@ export default defineNuxtConfig({
   nitro: {
     prerender: {
       failOnError: false,
-    }
+    },
   },
 
   linkChecker: {
@@ -64,7 +63,7 @@ export default defineNuxtConfig({
     report: {
       html: true,
       markdown: true,
-    }
+    },
   },
 
   devtools: {
