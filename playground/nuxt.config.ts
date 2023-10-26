@@ -8,7 +8,7 @@ export default defineNuxtConfig({
   modules: [
     NuxtLinkChecker,
     'nuxt-simple-sitemap',
-    '@nuxthq/ui',
+    '@nuxt/ui',
     'nuxt-icon',
     /**
      * Start a sub Nuxt Server for developing the client

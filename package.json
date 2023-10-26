@@ -74,6 +74,10 @@
     "eslint": "8.52.0",
     "execa": "^8.0.1",
     "nuxt": "^3.8.0",
-    "vitest": "^0.34.6"
+    "vitest": "^0.34.6",
+    "@nuxt/devtools": "^1.0.0",
+    "@nuxt/ui": "^2.7.0",
+    "nuxt-icon": "^0.6.0",
+    "nuxt-simple-sitemap": "^3.4.1"
   }
 }
