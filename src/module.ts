@@ -6,6 +6,7 @@ import {
   defineNuxtModule,
   extendPages,
   hasNuxtModule,
+  hasNuxtModuleCompatibility,
   useLogger,
 } from '@nuxt/kit'
 import { installNuxtSiteConfig, updateSiteConfig } from 'nuxt-site-config-kit'
@@ -167,7 +168,7 @@ export default defineNuxtModule<ModuleOptions>({
         handler: resolve('./runtime/server/api/links'),
       })
       nuxt.options.runtimeConfig.public['nuxt-link-checker'] = {
-        hasSitemapModule: hasNuxtModule('nuxt-simple-sitemap'),
+        hasSitemapModule: hasNuxtModule('nuxt-simple-sitemap') && await hasNuxtModuleCompatibility('nuxt-simple-sitemap', '<=3'),
         excludeLinks: config.excludeLinks,
         skipInspections: config.skipInspections,
         fetchTimeout: config.fetchTimeout,
