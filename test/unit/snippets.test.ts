@@ -60,7 +60,7 @@ describe('snippets', () => {
         {
           "code": "<template>
         <div>
-          <NuxtLink to=\\"/foo\\" data-first>
+          <NuxtLink to="/foo" data-first>
             Foo
           </NuxtLink>",
           "columnNumber": 16,
@@ -69,7 +69,7 @@ describe('snippets', () => {
         {
           "code": "      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci alias amet at commodi consectetur cum dolores, earum, eveniet id illum molestias mollitia nesciunt nisi nulla quaerat quia similique temporibus unde.
           </div>
-          <NuxtLink to=\\"/foo\\" data-second>
+          <NuxtLink to="/foo" data-second>
             Test
           </NuxtLink>",
           "columnNumber": 16,

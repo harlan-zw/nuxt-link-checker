@@ -21,7 +21,7 @@ describe('rule missing-hash', () => {
           {
             "fix": "/about#team",
             "fixDescription": "Did you mean /about#team?",
-            "message": "No element with id \\"tem\\" found.",
+            "message": "No element with id "tem" found.",
             "name": "missing-hash",
             "scope": "error",
           },
