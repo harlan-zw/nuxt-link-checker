@@ -167,7 +167,7 @@ export default defineNuxtModule<ModuleOptions>({
         handler: resolve('./runtime/server/api/links'),
       })
       nuxt.options.runtimeConfig.public['nuxt-link-checker'] = {
-        hasSitemapModule: hasNuxtModule('nuxt-simple-sitemap') && await hasNuxtModuleCompatibility('nuxt-simple-sitemap', '<=3'),
+        hasSitemapModule: hasNuxtModule('nuxt-simple-sitemap') && await hasNuxtModuleCompatibility('nuxt-simple-sitemap', '>=4'),
         excludeLinks: config.excludeLinks,
         skipInspections: config.skipInspections,
         fetchTimeout: config.fetchTimeout,

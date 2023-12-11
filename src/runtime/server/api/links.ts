@@ -11,9 +11,9 @@ export default defineEventHandler(async () => {
   ]
   if (runtimeConfig.hasSitemapModule) {
     // fetch URLs from sitemap data
-    const sitemapDebug = await $fetch('/api/__sitemap__/debug')
+    const sitemapDebug = await $fetch('/__sitemap__/debug.json')
     // iterate sources
-    const entries = sitemapDebug.sources.map(source => source.urls).flat()
+    const entries = sitemapDebug.globalSources.map(source => source.urls).flat()
     linkDb.push(...entries.map(s => s.loc))
   }
   return [...new Set([...linkDb])]
