@@ -6,6 +6,6 @@ export function defineRule(rule: Rule) {
 
 export function isNonFetchableLink(link: string) {
   return link.startsWith('javascript:') || link.startsWith('blob:') || link.startsWith('data:') || link.startsWith('mailto:')
-      || link.startsWith('tel:')
-      || link.startsWith('#')
+    || link.startsWith('tel:')
+    || link.startsWith('#')
 }

@@ -5,7 +5,7 @@ import type { Lang } from 'shiki-es'
 const props = defineProps<{
   code: string
   lang?: Lang
-  diff: { added: string[]; removed: string[]; result: string }
+  diff: { added: string[], removed: string[], result: string }
 }>()
 
 const start = ref(props.diff.added[0] - 2)

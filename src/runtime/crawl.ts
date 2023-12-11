@@ -1,8 +1,8 @@
 import { $fetch } from 'ofetch'
 import { isNonFetchableLink } from './inspections/util'
 
-const responses: Record<string, Promise<{ status: number; statusText: string; headers: Record<string, any> }>> = {}
-export async function getLinkResponse({ link, timeout, fetchRemoteUrls, baseURL }: { link: string; baseURL?: string; timeout?: number; fetchRemoteUrls?: boolean }) {
+const responses: Record<string, Promise<{ status: number, statusText: string, headers: Record<string, any> }>> = {}
+export async function getLinkResponse({ link, timeout, fetchRemoteUrls, baseURL }: { link: string, baseURL?: string, timeout?: number, fetchRemoteUrls?: boolean }) {
   // if the link has an anchor on it, do the request without the anchor
   if (link.includes('#') && !link.startsWith('#'))
     link = link.split('#')[0]
@@ -22,11 +22,11 @@ export async function getLinkResponse({ link, timeout, fetchRemoteUrls, baseURL 
   return responses[link]
 }
 
-export function setLinkResponse(link: string, response: Promise<{ status: number; statusText: string; headers: Record<string, any> }>) {
+export function setLinkResponse(link: string, response: Promise<{ status: number, statusText: string, headers: Record<string, any> }>) {
   responses[link] = response
 }
 
-export async function crawlFetch(link: string, options: { timeout?: number; baseURL?: string } = {}) {
+export async function crawlFetch(link: string, options: { timeout?: number, baseURL?: string } = {}) {
   const timeout = options.timeout || 5000
   const timeoutController = new AbortController()
   const abortRequestTimeout = setTimeout(() => timeoutController.abort(), timeout)

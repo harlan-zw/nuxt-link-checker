@@ -11,7 +11,6 @@ import {
 } from '@nuxt/kit'
 import { installNuxtSiteConfig, updateSiteConfig } from 'nuxt-site-config-kit'
 import type { NuxtPage } from '@nuxt/schema'
-import { provider } from 'std-env'
 import { prerender } from './prerender'
 import { setupDevToolsUI } from './devtools'
 import type { DefaultInspections } from './runtime/inspect'

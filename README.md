@@ -8,7 +8,6 @@
 <a href="https://github.com/harlan-zw/nuxt-link-checker" target="__blank"><img alt="GitHub stars" src="https://img.shields.io/github/stars/harlan-zw/nuxt-link-checker?flat&colorA=002438&colorB=28CF8D"></a>
 </p>
 
-
 <p align="center">
 Find and magically fix links that may be negatively effecting your Nuxt sites SEO.
 </p>
@@ -34,11 +33,9 @@ Find and magically fix links that may be negatively effecting your Nuxt sites SE
 - 🧙 Magically fix them in Nuxt Dev Tools
 - 🚩 Generate reports on build (html, markdown)
 
-
 ## Installation
 
 1. Install `nuxt-link-checker` dependency to your project:
-
 
 ```bash
 #
@@ -48,7 +45,6 @@ npm install -D nuxt-link-checker
 #
 pnpm i -D nuxt-link-checker
 ```
-
 
 2. Add it to your `modules` section in your `nuxt.config`:
 

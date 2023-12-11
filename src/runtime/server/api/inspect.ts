@@ -15,7 +15,7 @@ export default defineEventHandler(async (e) => {
   if (link.startsWith('mailto:') || link.startsWith('tel:'))
     return { passes: true }
 
-  const body = await readBody<{ paths: string[]; ids: string[] }>(e)
+  const body = await readBody<{ paths: string[], ids: string[] }>(e)
   const { ids, paths } = body
   const partialCtx: Partial<RuleTestContext> = {
     ids,

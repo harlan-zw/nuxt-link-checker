@@ -26,7 +26,7 @@ function resolvePathsForEl(el: Element) {
 }
 
 export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
-  let queue: { link: string; inspect: () => Promise<LinkInspectionResult> }[] = []
+  let queue: { link: string, inspect: () => Promise<LinkInspectionResult> }[] = []
   let queueWorkerTimer: any
   const inspectionEls = ref<UnwrapRef<NuxtLinkCheckerClient['inspectionEls']>>([])
   const visibleLinks = new Set<string>()

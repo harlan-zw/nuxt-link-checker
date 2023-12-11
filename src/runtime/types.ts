@@ -55,7 +55,7 @@ export interface LinkInspectionResult {
   warning: RuleReport[]
   passes: boolean
   sources?: InspectionSource[]
-  diff?: { diff: InspectionDiff; code: string }[]
+  diff?: { diff: InspectionDiff, code: string }[]
 }
 
 export interface NuxtLinkCheckerClient {
