@@ -1,7 +1,7 @@
 {
   "name": "nuxt-link-checker",
   "type": "module",
-  "version": "2.1.10",
+  "version": "2.1.11",
   "packageManager": "pnpm@8.12.0",
   "license": "MIT",
   "funding": "https://github.com/sponsors/harlan-zw",
