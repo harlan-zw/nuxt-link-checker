@@ -105,8 +105,8 @@ export default defineNuxtModule<ModuleOptions>({
     configKey: 'linkChecker',
   },
   defaults: {
-    fetchRemoteUrls: provider !== 'stackblitz',
-    runOnBuild: true,
+    fetchRemoteUrls: false, // provider !== 'stackblitz',
+    runOnBuild: false,
     debug: false,
     showLiveInspections: true,
     enabled: true,
