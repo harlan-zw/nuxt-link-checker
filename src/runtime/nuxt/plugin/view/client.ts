@@ -5,7 +5,7 @@ import type { NuxtDevtoolsIframeClient } from '@nuxt/devtools-kit/types'
 import { useLocalStorage } from '@vueuse/core'
 import type { LinkInspectionResult, NuxtLinkCheckerClient } from '../../../types'
 import { createFilter } from '../../../pure/sharedUtils'
-import { useRoute, useRuntimeConfig } from '../../../../../playground/.nuxt/imports'
+import { useRoute, useRuntimeConfig } from '#imports'
 import Main from './Main.vue'
 import { linkDb } from './state'
 

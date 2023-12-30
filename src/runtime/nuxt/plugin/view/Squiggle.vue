@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, ref } from '../../../../../playground/.nuxt/imports'
+import { computed, ref } from '#imports'
 
 const props = defineProps<{
   el: Element
