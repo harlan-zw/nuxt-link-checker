@@ -40,7 +40,8 @@ async function fixDialog() {
         <div text-sm op60 font-mono>
           {{ item.link }}
         </div>
-        <NTextExternalLink
+        <NLink
+          external
           type="button"
           op50
           text-xs
@@ -49,7 +50,7 @@ async function fixDialog() {
           @click.prevent="openFilePath(source.filepath)"
         >
           {{ source.filepath }}
-        </NTextExternalLink>
+        </NLink>
       </div>
       <NCard v-for="(preview, pk) in source.previews" :key="pk" items-center justify-between of-hidden>
         <div flex="~ col gap-1 items-start" px4>
