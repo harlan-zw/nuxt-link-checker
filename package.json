@@ -3,6 +3,12 @@
   "type": "module",
   "version": "2.1.11",
   "packageManager": "pnpm@8.13.1",
+  "description": "Find and magically fix links that may be negatively effecting your Nuxt sites SEO.",
+  "author": {
+    "name": "Harlan Wilton",
+    "email": "harlan@harlanzw.com",
+    "url": "https://harlanzw.com/"
+  },
   "license": "MIT",
   "funding": "https://github.com/sponsors/harlan-zw",
   "homepage": "https://github.com/harlan-zw/nuxt-link-checker#readme",
