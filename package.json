@@ -1,7 +1,7 @@
 {
   "name": "nuxt-link-checker",
   "type": "module",
-  "version": "2.1.11",
+  "version": "3.0.0-rc.0",
   "packageManager": "pnpm@8.13.1",
   "description": "Find and magically fix links that may be negatively effecting your Nuxt sites SEO.",
   "author": {
