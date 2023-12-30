@@ -1,4 +1,4 @@
-import { defineNuxtPlugin } from '#imports'
+import { defineNuxtPlugin } from '../../../../playground/.nuxt/imports'
 
 export default defineNuxtPlugin((nuxt: any) => {
   if (typeof document === 'undefined' || typeof window === 'undefined')

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { createResolver } from '@nuxt/kit'
-import { $fetch, setup } from '@nuxt/test-utils'
+import { $fetch, setup } from '@nuxt/test-utils/e2e'
 import { VueTemplateMulti, VueTemplateSingle } from './unit/snippets.test'
 
 const { resolve } = createResolver(import.meta.url)
@@ -10,8 +10,8 @@ await setup({
   dev: true,
 })
 describe('basic', () => {
-  it('endpoint inspect', async () => {
-    const singleInspect = await $fetch('/api/__link_checker__/inspect', {
+  it('endpoint inspect single', async () => {
+    const singleInspect = await $fetch('/__link-checker__/inspect', {
       method: 'POST',
       query: {
         link: '/foo',
@@ -32,8 +32,8 @@ describe('basic', () => {
     `)
   })
 
-  it('endpoint inspect', async () => {
-    const singleInspect = await $fetch('/api/__link_checker__/inspect', {
+  it('endpoint inspect multi', async () => {
+    const singleInspect = await $fetch('/__link-checker__/inspect', {
       method: 'POST',
       query: {
         link: '/foo',

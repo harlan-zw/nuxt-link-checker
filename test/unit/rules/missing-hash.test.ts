@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import RuleMissingHash from '../../../src/runtime/inspections/missing-hash'
+import RuleMissingHash from '../../../src/runtime/pure/inspections/missing-hash'
 import type { RuleTestContext } from '../../../src/runtime/types'
 import { runRule } from './util'
 

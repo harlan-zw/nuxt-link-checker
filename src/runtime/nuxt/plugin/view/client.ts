@@ -3,11 +3,11 @@ import { computed, createApp, h, ref, shallowReactive, unref } from 'vue'
 import type { NuxtApp } from 'nuxt/app'
 import type { NuxtDevtoolsIframeClient } from '@nuxt/devtools-kit/types'
 import { useLocalStorage } from '@vueuse/core'
-import type { LinkInspectionResult, NuxtLinkCheckerClient } from '../../types'
-import { createFilter } from '../../sharedUtils'
+import type { LinkInspectionResult, NuxtLinkCheckerClient } from '../../../types'
+import { createFilter } from '../../../pure/sharedUtils'
+import { useRoute, useRuntimeConfig } from '../../../../../playground/.nuxt/imports'
 import Main from './Main.vue'
 import { linkDb } from './state'
-import { useRoute, useRuntimeConfig } from '#imports'
 
 function resolveDevtoolsIframe() {
   return document.querySelector('#nuxt-devtools-iframe')?.contentWindow?.__NUXT_DEVTOOLS__ as NuxtDevtoolsIframeClient | undefined
@@ -72,7 +72,7 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
           queue.push({
             link: link!,
             async inspect() {
-              return await $fetch<LinkInspectionResult>('/api/__link_checker__/inspect', {
+              return await $fetch<LinkInspectionResult>('/__link-checker__/inspect', {
                 method: 'post',
                 query: { link: encodeURIComponent(link!) },
                 body: { paths, ids },

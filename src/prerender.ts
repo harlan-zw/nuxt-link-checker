@@ -6,9 +6,9 @@ import Fuse from 'fuse.js'
 import { relative, resolve } from 'pathe'
 import { load } from 'cheerio'
 import type { ModuleOptions } from './module'
-import { inspect } from './runtime/inspect'
-import { createFilter } from './runtime/sharedUtils'
-import { getLinkResponse, setLinkResponse } from './runtime/crawl'
+import { inspect } from './runtime/pure/inspect'
+import { createFilter } from './runtime/pure/sharedUtils'
+import { getLinkResponse, setLinkResponse } from './runtime/pure/crawl'
 
 const linkMap: Record<string, ExtractedPayload> = {}
 

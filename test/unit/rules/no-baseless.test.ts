@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import RuleNoBaseLess from '../../../src/runtime/inspections/no-baseless'
+import RuleNoBaseLess from '../../../src/runtime/pure/inspections/no-baseless'
 import type { RuleTestContext } from '../../../src/runtime/types'
 import { runRule } from './util'
 

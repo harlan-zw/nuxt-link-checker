@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import Fuse from 'fuse.js'
-import RuleNoErrorResponse from '../../../src/runtime/inspections/no-error-response-status'
+import RuleNoErrorResponse from '../../../src/runtime/pure/inspections/no-error-response-status'
 import type { RuleTestContext } from '../../../src/runtime/types'
 import { runRule } from './util'
 

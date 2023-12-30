@@ -1,4 +1,4 @@
-import { fixSlashes } from 'site-config-stack'
+import { fixSlashes } from 'site-config-stack/urls'
 import { parseURL } from 'ufo'
 import { defineRule } from './util'
 

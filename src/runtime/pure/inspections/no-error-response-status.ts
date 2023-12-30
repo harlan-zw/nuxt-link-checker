@@ -1,4 +1,4 @@
-import type { RuleReport } from '../types'
+import type { RuleReport } from '../../types'
 import { defineRule, isNonFetchableLink } from './util'
 
 export default function RuleNoErrorResponse() {

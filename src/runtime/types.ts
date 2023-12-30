@@ -1,5 +1,5 @@
 import type { FetchResponse } from 'ofetch'
-import type { SiteConfig } from 'nuxt-site-config-kit'
+import type { SiteConfigResolved } from 'site-config-stack'
 import type Fuse from 'fuse.js'
 import type { ComputedRef, Ref } from 'vue'
 import type { ParsedURL } from 'ufo'
@@ -14,7 +14,7 @@ export interface RuleTestContext {
   ids: string[]
   fromPath: string
   response: FetchResponse<any>
-  siteConfig: SiteConfig
+  siteConfig: SiteConfigResolved
   pageSearch?: Fuse<string>
   report: (report: RuleReport) => void
   skipInspections?: string[]

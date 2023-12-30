@@ -1,12 +1,12 @@
 import { parseURL } from 'ufo'
+import type { LinkInspectionResult, Rule, RuleTestContext } from '../types'
 import RuleTrailingSlash from './inspections/trailing-slash'
 import RuleMissingHash from './inspections/missing-hash'
 import RuleNoBaseLess from './inspections/no-baseless'
 import RuleNoJavascript from './inspections/no-javascript'
 import RuleAbsoluteSiteUrls from './inspections/absolute-site-urls'
-import RuleRedirects from './inspections/redirects'
+import RuleRedirects from './redirects'
 import RuleNoErrorResponse from './inspections/no-error-response-status'
-import type { LinkInspectionResult, Rule, RuleTestContext } from './types'
 import { isNonFetchableLink } from './inspections/util'
 
 export const DefaultInspections = {

@@ -1,6 +1,6 @@
 import Fuse from 'fuse.js'
-import { fixSlashes } from 'site-config-stack'
-import type { RuleReport } from '../types'
+import { fixSlashes } from 'site-config-stack/urls'
+import type { RuleReport } from '../../types'
 import { defineRule } from './util'
 
 export default function RuleMissingHash() {

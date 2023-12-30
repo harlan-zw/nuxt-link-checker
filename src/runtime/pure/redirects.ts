@@ -1,5 +1,5 @@
 import type { RuleReport } from '../types'
-import { defineRule } from './util'
+import { defineRule } from './inspections/util'
 
 export default function RuleRedirects() {
   return defineRule({
