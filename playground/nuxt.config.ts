@@ -58,7 +58,6 @@ export default defineNuxtConfig({
   },
 
   linkChecker: {
-    failOnError: true,
     excludeLinks: ['/ignored'],
     skipInspections: ['missing-hash'],
     report: {

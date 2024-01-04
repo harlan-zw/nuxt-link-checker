@@ -24,28 +24,33 @@ export default defineEventHandler(async (e) => {
   }
   const runtimeConfig = useRuntimeConfig().public['nuxt-link-checker']
 
-  const response = await getLinkResponse({
-    link,
-    timeout: runtimeConfig.fetchTimeout,
-    fetchRemoteUrls: runtimeConfig.fetchRemoteUrls,
-    baseURL: useNitroOrigin(e),
-  })
-  // @ts-expect-error untyped
-  const result = inspect({
-    ...partialCtx,
-    link,
-    pageSearch: useNitroApp()._linkCheckerPageSearch,
-    response,
-    skipInspections: runtimeConfig.skipInspections,
-  })
-  const filePaths = paths.map((p) => {
-    const [filepath] = p.split(':')
-    return filepath
-  })
-  if (!result.passes) {
-    result.sources = (await Promise.all(filePaths.map(async filepath => await generateFileLinkPreviews(filepath, link))))
-      .filter(s => s.previews.length)
-    result.diff = await Promise.all((result.sources || []).map(async ({ filepath }) => generateFileLinkDiff(filepath, link, result.fix!)))
-  }
-  return result
+      const response = await getLinkResponse({
+        link,
+        timeout: runtimeConfig.fetchTimeout,
+        fetchRemoteUrls: runtimeConfig.fetchRemoteUrls,
+        baseURL: useNitroOrigin(e),
+      })
+      const result = inspect({
+        ...partialCtx,
+        link,
+        textContent,
+        pageSearch,
+        response,
+        skipInspections: runtimeConfig.skipInspections,
+      })
+      const filePaths = [
+        ...extraPaths,
+        ...paths.map((p) => {
+          const [filepath] = p.split(':')
+          return filepath
+        }),
+      ]
+      if (!result.passes) {
+        result.sources = (await Promise.all(filePaths.map(async filepath => await generateFileLinkPreviews(filepath, link))))
+          .filter(s => s.previews.length)
+        result.diff = await Promise.all((result.sources || []).map(async ({ filepath }) => generateFileLinkDiff(filepath, link, result.fix!)))
+      }
+      return result
+    }),
+  )
 })

@@ -40,7 +40,7 @@ const showInspections = computed(() => {
       :key="i"
       :el="node.el"
       :aria-label="`Open inspection for ${node.link}`"
-      :color="node.error.length ? 'red' : 'yellow'"
+      :color="node.error.length ? '#991b1b' : '#854d0e'"
       @click="openDevtools(node.link)"
     />
   </div>

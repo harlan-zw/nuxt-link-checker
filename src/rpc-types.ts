@@ -7,6 +7,7 @@ export interface ServerFunctions {
   reset(): void
   applyLinkFixes(filepath: string, original: string, replacement: string): void
   toggleLiveInspections(enabled: boolean): void
+  connected(): void
 }
 
 export interface ClientFunctions {

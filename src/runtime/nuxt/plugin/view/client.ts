@@ -5,15 +5,15 @@ import type { NuxtDevtoolsIframeClient } from '@nuxt/devtools-kit/types'
 import { useLocalStorage } from '@vueuse/core'
 import type { LinkInspectionResult, NuxtLinkCheckerClient } from '../../../types'
 import { createFilter } from '../../../pure/sharedUtils'
-import { useRoute, useRuntimeConfig } from '#imports'
 import Main from './Main.vue'
 import { linkDb } from './state'
+import { useRoute, useRuntimeConfig } from '#imports'
 
 function resolveDevtoolsIframe() {
   return document.querySelector('#nuxt-devtools-iframe')?.contentWindow?.__NUXT_DEVTOOLS__ as NuxtDevtoolsIframeClient | undefined
 }
 
-function resolvePathsForEl(el: Element) {
+function resolvePathsForEl(el: Element): string[] {
   const parents = []
   let parent: HTMLElement | null = el.parentElement
   while (parent) {
@@ -22,14 +22,17 @@ function resolvePathsForEl(el: Element) {
       break
     parent = parent.parentElement
   }
-  return [...new Set(parents.map(p => p.getAttribute('data-v-inspector')?.split(':')?.[0] || false).filter(Boolean))]
+  return [
+    ...new Set(parents.map(p => p.getAttribute('data-v-inspector')?.split(':')?.[0] || false)),
+  ].filter(Boolean) as string[]
 }
 
 export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
-  let queue: { link: string, inspect: () => Promise<LinkInspectionResult> }[] = []
+  let queue: { link: string, paths: string[], textContent: string }[] = []
   let queueWorkerTimer: any
   const inspectionEls = ref<UnwrapRef<NuxtLinkCheckerClient['inspectionEls']>>([])
   const visibleLinks = new Set<string>()
+  let lastIds: string[] = []
   let elMap: Record<string, Element[]> = {}
   let devtoolsClient: NuxtDevtoolsIframeClient | undefined
   let isOpeningDevtools = false
@@ -45,10 +48,11 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
 
   const client: NuxtLinkCheckerClient = shallowReactive({
     isWorkingQueue: false,
+    isStarted: false,
     scanLinks() {
       elMap = {}
       visibleLinks.clear()
-      const ids = [...new Set([...document.querySelectorAll('#__nuxt [id]')].map(el => el.id))]
+      lastIds = [...new Set([...document.querySelectorAll('#__nuxt [id]')].map(el => el.id))]
       ;[...document.querySelectorAll('#__nuxt a[href]')]
         .map(el => ({ el, link: el.getAttribute('href')! }))
         .forEach(({ el, link }) => {
@@ -71,13 +75,8 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
           }
           queue.push({
             link: link!,
-            async inspect() {
-              return await $fetch<LinkInspectionResult>('/__link-checker__/inspect', {
-                method: 'post',
-                query: { link: encodeURIComponent(link!) },
-                body: { paths, ids },
-              })
-            },
+            textContent: (el.textContent || el.getAttribute('aria-label') || el.getAttribute('label') || '').trim(),
+            paths,
           })
         })
       client.broadcast('updated')
@@ -89,22 +88,33 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
           client.stopQueueWorker()
           return
         }
-        const task = queue.pop()
-        if (!task) {
+        // we want to pop the next 50 items in the queue and inspect them
+        const tasks = []
+        while (tasks.length < 50 && queue.length > 0)
+          tasks.push(queue.pop())
+        if (!tasks.length) {
           client.stopQueueWorker()
           return
         }
         client.isWorkingQueue = true
-        let payload = linkDb.value[route.path]?.find(d => d.link === task.link)
-        if (!payload) {
-          payload = await task.inspect()
-          if (payload) {
-            linkDb.value[route.path] = linkDb.value[route.path] || []
-            linkDb.value[route.path].push(payload)
-          }
-        }
-        // attach inspections to elements
-        client.maybeAttachEls(payload)
+        linkDb.value[route.path] = linkDb.value[route.path] || []
+        // create a fetch for the tasks
+        const payloads = await $fetch('/__link-checker__/inspect', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: {
+            tasks,
+            ids: lastIds,
+          },
+        })
+        payloads.forEach((payload: LinkInspectionResult) => {
+          if (!payload)
+            return
+          linkDb.value[route.path].push(payload)
+          client.maybeAttachEls(payload)
+        })
         client.broadcast('queueWorking', { queueLength: queue.length })
         queueWorkerTimer = setTimeout(workQueue, 200)
       }
@@ -112,7 +122,7 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
     },
     maybeAttachEls(payload?: LinkInspectionResult) {
       // must not pass
-      if (!payload || payload.passes || !runtimeConfig.showLiveInspections)
+      if (!payload || payload.passes)
         return
       const els = elMap?.[payload.link] || []
       for (const el of els)
@@ -199,6 +209,9 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
       })
     },
     start() {
+      if (client.isStarted)
+        return
+      client.isStarted = true
       // attach reactivity
       if (import.meta.hot) {
         import.meta.hot.on('nuxt-link-checker:reset', () => {
@@ -224,8 +237,6 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
         attributeFilter: ['href'],
       })
 
-      if (nuxt.vueApp._instance)
-        nuxt.vueApp._instance.appContext.provides.linkChecker = client
       const holder = document.createElement('div')
       holder.id = 'nuxt-link-checker-container'
       holder.setAttribute('data-v-inspector-ignore', 'true')
@@ -244,5 +255,13 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
     showInspections,
   })
 
-  client.start()
+  if (nuxt.vueApp._instance)
+    nuxt.vueApp._instance.appContext.provides.linkChecker = client
+
+  // don't start until we open the tab
+  if (import.meta.hot) {
+    import.meta.hot.on('nuxt-link-checker:connected', () => {
+      client.start()
+    })
+  }
 }

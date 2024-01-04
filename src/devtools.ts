@@ -59,6 +59,7 @@ export function setupDevToolsUI(options: ModuleOptions, resolve: Resolver['resol
     })
   })
 
+  let isConnected = false
   const viteServerWs = useViteWebSocket()
   const rpc = new Promise<BirpcGroup<ClientFunctions, ServerFunctions>>((resolve) => {
     onDevToolsInitialized(async () => {
@@ -83,25 +84,33 @@ export function setupDevToolsUI(options: ModuleOptions, resolve: Resolver['resol
           const ws = await viteServerWs
           ws.send('nuxt-link-checker:live-inspections', { enabled })
         },
+        async connected() {
+          const ws = await viteServerWs
+          ws.send('nuxt-link-checker:connected')
+          isConnected = true
+        },
       })
       resolve(rpc)
     })
   })
   viteServerWs.then((ws) => {
     ws.on('nuxt-link-checker:queueWorking', async (payload) => {
-      const _rpc = await rpc
-      if (_rpc.clients?.length)
+      if (isConnected) {
+        const _rpc = await rpc
         _rpc.broadcast.queueWorking(payload).catch(() => {})
+      }
     })
     ws.on('nuxt-link-checker:updated', async () => {
-      const _rpc = await rpc
-      if (_rpc.clients?.length)
+      if (isConnected) {
+        const _rpc = await rpc
         _rpc.broadcast.updated().catch(() => {})
+      }
     })
     ws.on('nuxt-link-checker:filter', async (payload) => {
-      const _rpc = await rpc
-      if (_rpc.clients?.length)
+      if (isConnected) {
+        const _rpc = await rpc
         _rpc.broadcast.filter(payload).catch(() => {})
+      }
     })
 
     let lastRoutes: string[] = []
