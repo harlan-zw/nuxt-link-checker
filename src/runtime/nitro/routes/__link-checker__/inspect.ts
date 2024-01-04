@@ -1,28 +1,40 @@
-import { defineEventHandler, getHeader, getQuery, readBody } from 'h3'
+import { defineEventHandler, getHeader, readBody } from 'h3'
 import { fixSlashes } from 'site-config-stack/urls'
 import { parseURL } from 'ufo'
+import { resolve } from 'pathe'
 import { inspect } from '../../../pure/inspect'
 import type { RuleTestContext } from '../../../types'
-import { generateFileLinkDiff, generateFileLinkPreviews } from '../../../pure/diff'
+import { generateFileLinkDiff, generateFileLinkPreviews, lruFsCache } from '../../../pure/diff'
 import { getLinkResponse } from '../../../pure/crawl'
+import { isNonFetchableLink } from '../../../pure/inspections/util'
+import { isInternalRoute } from '../../util'
 import { useNitroApp, useNitroOrigin, useRuntimeConfig, useSiteConfig } from '#imports'
+import nuxtContentServer from '#content/server'
 
 // verify a link
 export default defineEventHandler(async (e) => {
-  const link = decodeURIComponent(getQuery(e).link as string)
-
-  // do a quick check for links that are always safe
-  if (link.startsWith('mailto:') || link.startsWith('tel:'))
-    return { passes: true }
-
-  const body = await readBody<{ paths: string[], ids: string[] }>(e)
-  const { ids, paths } = body
+  const { tasks, ids } = await readBody<{ tasks: { link: string, textContent: string, paths: string[] }[], ids: string[] }>(e)
+  const runtimeConfig = useRuntimeConfig().public['nuxt-link-checker']
   const partialCtx: Partial<RuleTestContext> = {
     ids,
     fromPath: fixSlashes(false, parseURL(getHeader(e, 'referer') || '/').pathname),
     siteConfig: useSiteConfig(e),
   }
-  const runtimeConfig = useRuntimeConfig().public['nuxt-link-checker']
+  const extraPaths: string[] = []
+  // we stubbed out #content/server with unenv empty if module isn't enabled
+  if (runtimeConfig.isNuxtContentDocumentDriven && !nuxtContentServer.__unenv__) {
+    // let's fetch from the content document
+    const contentDocument = await nuxtContentServer.serverQueryContent(e).findOne()
+    extraPaths.push(resolve(runtimeConfig.rootDir, 'content', contentDocument._file))
+  }
+  // allow editing files to trigger a cache clear
+  lruFsCache.clear()
+  const pageSearch = useNitroApp()._linkCheckerPageSearch
+  return Promise.all(
+    tasks.map(async ({ link, paths, textContent }) => {
+      // do a quick check for links that are always safe
+      if (isNonFetchableLink(link) || isInternalRoute(link))
+        return { passes: true }
 
       const response = await getLinkResponse({
         link,

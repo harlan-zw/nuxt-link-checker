@@ -5,7 +5,9 @@ import MagicString from 'magic-string'
 export function generateLinkSources(s: string, link: string) {
   // escape link for regex
   const regEscapedLink = link.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
-  const LinkRegExp = new RegExp(`(['"])${regEscapedLink}(['"])`)
+  const VueLinkRegExp = new RegExp(`(['"])${regEscapedLink}(['"])`)
+  // need to match links like [About Us](/about-us)
+  const MdLinkRegExp = new RegExp(`\\[.*\\]\\((${regEscapedLink})\\)`)
   // split the file into lines
   const lines = s.split('\n')
   const sources = []
