@@ -92,7 +92,7 @@ export default defineNuxtModule<ModuleOptions>({
   },
   defaults: {
     fetchRemoteUrls: false, // provider !== 'stackblitz',
-    runOnBuild: false,
+    runOnBuild: true,
     debug: false,
     showLiveInspections: false,
     enabled: true,
