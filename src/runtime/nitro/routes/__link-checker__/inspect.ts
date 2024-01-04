@@ -1,10 +1,10 @@
 import { defineEventHandler, getHeader, getQuery, readBody } from 'h3'
 import { fixSlashes } from 'site-config-stack/urls'
 import { parseURL } from 'ufo'
-import { inspect } from '../../pure/inspect'
-import type { RuleTestContext } from '../../types'
-import { generateFileLinkDiff, generateFileLinkPreviews } from '../../pure/diff'
-import { getLinkResponse } from '../../pure/crawl'
+import { inspect } from '../../../pure/inspect'
+import type { RuleTestContext } from '../../../types'
+import { generateFileLinkDiff, generateFileLinkPreviews } from '../../../pure/diff'
+import { getLinkResponse } from '../../../pure/crawl'
 import { useNitroApp, useNitroOrigin, useRuntimeConfig, useSiteConfig } from '#imports'
 
 // verify a link

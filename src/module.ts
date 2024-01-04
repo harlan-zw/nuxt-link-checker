@@ -16,6 +16,7 @@ import { setupDevToolsUI } from './devtools'
 import type { DefaultInspections } from './runtime/pure/inspect'
 import { convertNuxtPagesToPaths } from './util'
 import { crawlFetch } from './runtime/pure/crawl'
+import { version } from '../package.json'
 
 export interface ModuleOptions {
   /**
@@ -125,8 +126,17 @@ export default defineNuxtModule<ModuleOptions>({
       })
       addServerHandler({
         route: '/__link-checker__/inspect',
-        handler: resolve('./runtime/nitro/api/inspect'),
+        handler: resolve('./runtime/nitro/routes/__link-checker__/inspect'),
       })
+      addServerHandler({
+        route: '/__link-checker__/links',
+        handler: resolve('./runtime/nitro/routes/__link-checker__/links'),
+      })
+      addServerHandler({
+        route: '/__link-checker__/debug.json',
+        handler: resolve('./runtime/nitro/routes/__link-checker__/debug'),
+      })
+      addServerPlugin(resolve('./runtime/nuxt/plugin/search.nitro'))
       const pagePromise = new Promise<NuxtPage[]>((_resolve) => {
         extendPages((pages) => {
           _resolve(pages)
@@ -139,15 +149,11 @@ export default defineNuxtModule<ModuleOptions>({
           return `export default ${JSON.stringify(convertNuxtPagesToPaths(pages), null, 2)}`
         }
       })
-      addServerPlugin(resolve('./runtime/nuxt/plugin/search.nitro'))
-      addServerHandler({
-        route: '/__link-checker__/links',
-        handler: resolve('./runtime/nitro/api/links'),
-      })
       const hasSitemapModule = hasNuxtModule('nuxt-simple-sitemap') && await hasNuxtModuleCompatibility('nuxt-simple-sitemap', '>=4')
         //  @ts-expect-error runtime
         && nuxt.options.sitemap?.enabled !== false
       nuxt.options.runtimeConfig.public['nuxt-link-checker'] = {
+        version,
         hasSitemapModule,
         excludeLinks: config.excludeLinks,
         skipInspections: config.skipInspections,
