@@ -75,21 +75,6 @@ export interface ModuleOptions {
    * @default false
    */
   debug: boolean
-  /**
-   * Should the URLs be inserted with a trailing slash.
-   *
-   * @default false
-   * @deprecated use site config
-   */
-  trailingSlash?: boolean
-  /**
-   * Your site hostname. Used to determine if absolute links are internal.
-   *
-   * @default false
-   *
-   * @deprecated use site config
-   */
-  host?: string
 }
 
 export interface ModuleHooks {
@@ -125,13 +110,6 @@ export default defineNuxtModule<ModuleOptions>({
     const { resolve } = createResolver(import.meta.url)
 
     await installNuxtSiteConfig()
-    if (config.trailingSlash || config.host) {
-      updateSiteConfig({
-        _context: 'nuxt-link-checker',
-        trailingSlash: config.trailingSlash,
-        host: config.host,
-      })
-    }
 
     if (config.fetchRemoteUrls) {
       config.fetchRemoteUrls = (await crawlFetch('https://google.com')).status === 200
