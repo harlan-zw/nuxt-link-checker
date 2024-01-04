@@ -9,7 +9,7 @@ import {
   hasNuxtModuleCompatibility,
   useLogger,
 } from '@nuxt/kit'
-import { installNuxtSiteConfig, updateSiteConfig } from 'nuxt-site-config-kit'
+import { installNuxtSiteConfig } from 'nuxt-site-config-kit'
 import type { NuxtPage } from '@nuxt/schema'
 import { prerender } from './prerender'
 import { setupDevToolsUI } from './devtools'
@@ -84,7 +84,7 @@ export default defineNuxtModule<ModuleOptions>({
   meta: {
     name: 'nuxt-link-checker',
     compatibility: {
-      nuxt: '^3.6.2',
+      nuxt: '^3.9.0',
       bridge: false,
     },
     configKey: 'linkChecker',
