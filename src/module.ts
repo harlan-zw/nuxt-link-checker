@@ -11,12 +11,12 @@ import {
 } from '@nuxt/kit'
 import { installNuxtSiteConfig } from 'nuxt-site-config-kit'
 import type { NuxtPage } from '@nuxt/schema'
+import { version } from '../package.json'
 import { prerender } from './prerender'
 import { setupDevToolsUI } from './devtools'
 import type { DefaultInspections } from './runtime/pure/inspect'
 import { convertNuxtPagesToPaths } from './util'
 import { crawlFetch } from './runtime/pure/crawl'
-import { version } from '../package.json'
 
 export interface ModuleOptions {
   /**

@@ -1,5 +1,5 @@
 import { defineEventHandler } from 'h3'
-import { useNitroApp, useRuntimeConfig } from '#imports'
+import { useRuntimeConfig } from '#imports'
 
 // verify a link
 export default defineEventHandler(async (e) => {
