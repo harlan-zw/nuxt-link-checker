@@ -9,7 +9,10 @@ import { getLinkResponse } from '../../../pure/crawl'
 import { isNonFetchableLink } from '../../../pure/inspections/util'
 import { isInternalRoute } from '../../util'
 import { useNitroApp, useNitroOrigin, useRuntimeConfig, useSiteConfig } from '#imports'
-import nuxtContentServer from '#content/server'
+
+// this is stubbed with content-mock.ts
+// @ts-expect-error optional module
+import { serverQueryContent } from '#content/server'
 
 // verify a link
 export default defineEventHandler(async (e) => {
@@ -21,11 +24,11 @@ export default defineEventHandler(async (e) => {
     siteConfig: useSiteConfig(e),
   }
   const extraPaths: string[] = []
-  // we stubbed out #content/server with unenv empty if module isn't enabled
-  if (runtimeConfig.isNuxtContentDocumentDriven && !nuxtContentServer.__unenv__) {
+  if (runtimeConfig.isNuxtContentDocumentDriven && serverQueryContent) {
     // let's fetch from the content document
-    const contentDocument = await nuxtContentServer.serverQueryContent(e).findOne()
-    extraPaths.push(resolve(runtimeConfig.rootDir, 'content', contentDocument._file))
+    const contentDocument = await serverQueryContent(e).findOne()
+    if (contentDocument)
+      extraPaths.push(resolve(runtimeConfig.rootDir, 'content', contentDocument._file))
   }
   // allow editing files to trigger a cache clear
   lruFsCache.clear()

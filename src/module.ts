@@ -155,7 +155,7 @@ export default defineNuxtModule<ModuleOptions>({
       if (!hasNuxtModule('@nuxt/content')) {
         // we need to add a nitro alias for #content/server to avoid errors
         nuxt.options.nitro.alias = nuxt.options.nitro.alias || {}
-        nuxt.options.nitro.alias['#content/server'] = 'unenv/runtime/mock/empty'
+        nuxt.options.nitro.alias['#content/server'] = resolve('./runtime/nitro/composables/content-mock')
       }
       nuxt.options.runtimeConfig.public['nuxt-link-checker'] = {
         version,
