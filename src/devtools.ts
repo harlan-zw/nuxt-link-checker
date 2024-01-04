@@ -5,6 +5,7 @@ import type { Resolver } from '@nuxt/kit'
 import { extendServerRpc, onDevToolsInitialized } from '@nuxt/devtools-kit'
 import { diffArrays } from 'diff'
 import { extendPages, useNuxt } from '@nuxt/kit'
+import type { BirpcGroup } from 'birpc'
 import { generateLinkDiff } from './runtime/pure/diff'
 import type { ClientFunctions, ServerFunctions } from './rpc-types'
 import { convertNuxtPagesToPaths, useViteWebSocket } from './util'
@@ -59,45 +60,60 @@ export function setupDevToolsUI(options: ModuleOptions, resolve: Resolver['resol
   })
 
   const viteServerWs = useViteWebSocket()
-  onDevToolsInitialized(async () => {
-    const rpc = extendServerRpc<ClientFunctions, ServerFunctions>(RPC_NAMESPACE, {
-      getOptions() {
-        return options
-      },
-      async reset() {
-        const ws = await viteServerWs
-        ws.send('nuxt-link-checker:reset')
-      },
-      async applyLinkFixes(filepath, original, replacement) {
-        filepath = resolve(nuxt.options.rootDir, filepath)
-        const contents = await readFile(filepath, 'utf8')
-        const diff = generateLinkDiff(contents, original, replacement)
-        await writeFile(filepath, diff.code, 'utf8')
+  const rpc = new Promise<BirpcGroup<ClientFunctions, ServerFunctions>>((resolve) => {
+    onDevToolsInitialized(async () => {
+      const rpc = extendServerRpc<ClientFunctions, ServerFunctions>(RPC_NAMESPACE, {
+        getOptions() {
+          return options
+        },
+        async reset() {
+          const ws = await viteServerWs
+          ws.send('nuxt-link-checker:reset')
+        },
+        async applyLinkFixes(filepath, original, replacement) {
+          filepath = resolve(nuxt.options.rootDir, filepath)
+          const contents = await readFile(filepath, 'utf8')
+          const diff = generateLinkDiff(contents, original, replacement)
+          await writeFile(filepath, diff.code, 'utf8')
 
-        const ws = await viteServerWs
-        ws.send('nuxt-link-checker:reset')
-      },
-      async toggleLiveInspections(enabled) {
-        const ws = await viteServerWs
-        ws.send('nuxt-link-checker:live-inspections', { enabled })
-      },
-    })
-    viteServerWs.then((ws) => {
-      ws.on('nuxt-link-checker:queueWorking', payload => rpc.broadcast.queueWorking(payload).catch(() => {}))
-      ws.on('nuxt-link-checker:updated', () => rpc.broadcast.updated().catch(() => {}))
-      ws.on('nuxt-link-checker:filter', payload => rpc.broadcast.filter(payload).catch(() => {}))
-
-      let lastRoutes: string[] = []
-      extendPages(async (pages) => {
-        // convert pages to routes
-        const routes = convertNuxtPagesToPaths(pages)
-        if (lastRoutes.length) {
-          const routeDiff = diffArrays(lastRoutes, routes)
-          if (routeDiff.some(diff => diff.added || diff.removed))
-            ws.send('nuxt-link-checker:reset')
-        }
-        lastRoutes = routes
+          const ws = await viteServerWs
+          ws.send('nuxt-link-checker:reset')
+        },
+        async toggleLiveInspections(enabled) {
+          const ws = await viteServerWs
+          ws.send('nuxt-link-checker:live-inspections', { enabled })
+        },
       })
+      resolve(rpc)
+    })
+  })
+  viteServerWs.then((ws) => {
+    ws.on('nuxt-link-checker:queueWorking', async (payload) => {
+      const _rpc = await rpc
+      if (_rpc.clients?.length)
+        _rpc.broadcast.queueWorking(payload).catch(() => {})
+    })
+    ws.on('nuxt-link-checker:updated', async () => {
+      const _rpc = await rpc
+      if (_rpc.clients?.length)
+        _rpc.broadcast.updated().catch(() => {})
+    })
+    ws.on('nuxt-link-checker:filter', async (payload) => {
+      const _rpc = await rpc
+      if (_rpc.clients?.length)
+        _rpc.broadcast.filter(payload).catch(() => {})
+    })
+
+    let lastRoutes: string[] = []
+    extendPages(async (pages) => {
+      // convert pages to routes
+      const routes = convertNuxtPagesToPaths(pages)
+      if (lastRoutes.length) {
+        const routeDiff = diffArrays(lastRoutes, routes)
+        if (routeDiff.some(diff => diff.added || diff.removed))
+          ws.send('nuxt-link-checker:reset')
+      }
+      lastRoutes = routes
     })
   })
 }
