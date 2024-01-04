@@ -28,6 +28,7 @@ describe('rule no-404s', () => {
         "fix": "/about",
         "link": "/abot",
         "passes": false,
+        "textContent": undefined,
         "warning": [],
       }
     `)

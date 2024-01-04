@@ -19,6 +19,7 @@ describe('rule trailing-slash', () => {
         "fix": "/test/",
         "link": "/test",
         "passes": false,
+        "textContent": undefined,
         "warning": [
           {
             "fix": "/test/",

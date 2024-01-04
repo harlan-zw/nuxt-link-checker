@@ -5,8 +5,8 @@ import { generateLinkSourcePreviews, generateLinkSources } from '../../src/runti
 
 const { resolve } = createResolver(import.meta.url)
 
-export const VueTemplateSingle = resolve('../fixture/components/VueTemplateSingle.vue')
-export const VueTemplateMulti = resolve('../fixture/components/VueTemplateMulti.vue')
+export const VueTemplateSingle = resolve('../fixtures/basic/components/VueTemplateSingle.vue')
+export const VueTemplateMulti = resolve('../fixtures/basic/components/VueTemplateMulti.vue')
 
 describe('snippets', () => {
   it('sources single', async () => {

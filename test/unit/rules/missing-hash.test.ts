@@ -29,6 +29,7 @@ describe('rule missing-hash', () => {
         "fix": "/about#team",
         "link": "/about#tem",
         "passes": false,
+        "textContent": undefined,
         "warning": [],
       }
     `)

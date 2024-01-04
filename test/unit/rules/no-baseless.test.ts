@@ -17,6 +17,7 @@ describe('rule no-baseless', () => {
         "fix": "/my-blog/my-post",
         "link": "my-post",
         "passes": false,
+        "textContent": undefined,
         "warning": [
           {
             "fix": "/my-blog/my-post",

@@ -27,6 +27,9 @@
       <h2 class="text-lg font-bold mb-4">
         Errors
       </h2>
+      <LinkDebug to="/about">
+        here
+      </LinkDebug>
       <LinkDebug to="this is a very bad link">
         very bad link
       </LinkDebug>
