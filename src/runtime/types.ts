@@ -61,6 +61,7 @@ export interface LinkInspectionResult {
 }
 
 export interface NuxtLinkCheckerClient {
+  isStarted: boolean
   reset(hard: boolean): void
   start(): void
   restart(): void

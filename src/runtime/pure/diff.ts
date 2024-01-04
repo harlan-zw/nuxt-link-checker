@@ -2,6 +2,9 @@ import { readFile } from 'node:fs/promises'
 import { diffLines } from 'diff'
 import MagicString from 'magic-string'
 
+// 100 max size
+export const lruFsCache = new Map<string, string>()
+
 export function generateLinkSources(s: string, link: string) {
   // escape link for regex
   const regEscapedLink = link.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
@@ -14,7 +17,9 @@ export function generateLinkSources(s: string, link: string) {
   // scan all lines for the link
   for (const [i, line] of lines.entries()) {
     // need to get the line index using the LinkRegExp
-    const index = line.search(LinkRegExp)
+    let index = line.search(VueLinkRegExp)
+    if (index === -1)
+      index = line.search(MdLinkRegExp)
     if (index !== -1) {
       // get the line number
       const lineNumber = i + 1
@@ -33,16 +38,23 @@ export function generateLinkSources(s: string, link: string) {
 const LINE_PREVIEW_OFFSET = 2
 
 export async function generateFileLinkPreviews(filepath: string, link: string) {
-  const contents = await readFile(filepath, 'utf8')
+  // use lruFsCache
+  const contents = lruFsCache.has(filepath) ? lruFsCache.get(filepath)! : await readFile(filepath, 'utf8')
   const previews = generateLinkSourcePreviews(contents, link)
   let lang = filepath.split('.').pop()
   if (!lang)
     lang = 'vue'
+  lruFsCache.set(filepath, contents)
+  if (lruFsCache.size > 100)
+    lruFsCache.delete(lruFsCache.keys().next().value)
   return { previews, lang, filepath }
 }
 
 export async function generateFileLinkDiff(filepath: string, original: string, replacement: string) {
-  const contents = await readFile(filepath, 'utf8')
+  const contents = lruFsCache.has(filepath) ? lruFsCache.get(filepath)! : await readFile(filepath, 'utf8')
+  lruFsCache.set(filepath, contents)
+  if (lruFsCache.size > 100)
+    lruFsCache.delete(lruFsCache.keys().next().value)
   return generateLinkDiff(contents, original, replacement)
 }
 
