@@ -13,13 +13,20 @@ import { getLinkResponse, setLinkResponse } from './runtime/pure/crawl'
 const linkMap: Record<string, ExtractedPayload> = {}
 
 interface ExtractedPayload {
-  links: string[]
+  links: { link: string, textContent: string }[]
   ids: string[]
 }
 export function extractPayload(html: string) {
   const $ = load(html)
   const ids = $('#__nuxt [id]').map((i, el) => $(el).attr('id')).get()
-  const links = $('#__nuxt a[href]').map((i, el) => $(el).attr('href')).get()
+  const links = $('#__nuxt a[href]').map((i, el) => {
+    return {
+      link: $(el).attr('href'),
+      textContent: ($(el).attr('aria-label') || $(el).attr('label') || $(el).text()).trim() || '',
+    }
+  }).get()
+    // make sure the link has a href
+    .filter(l => !!l.link)
   return { ids, links }
 }
 
@@ -30,15 +37,12 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
   nuxt.hooks.hook('nitro:init', async (nitro) => {
     const siteConfig = useSiteConfig()
     nitro.hooks.hook('prerender:generate', async (ctx) => {
-      if (ctx.contents && !ctx.error && ctx.fileName?.endsWith('.html') && !ctx.route.endsWith('.html') && urlFilter(ctx.route)) {
+      if (ctx.contents && !ctx.error && ctx.fileName?.endsWith('.html') && !ctx.route.endsWith('.html') && urlFilter(ctx.route))
         linkMap[ctx.route] = extractPayload(ctx.contents)
-        linkMap[ctx.route].links.forEach((link) => {
-          getLinkResponse({ link, timeout: config.fetchTimeout, fetchRemoteUrls: config.fetchRemoteUrls })
-        })
-      }
-      setLinkResponse(ctx.route, Promise.resolve({ status: Number(ctx.error?.statusCode) || 200, statusText: ctx.error?.statusMessage || '' }))
+
+      setLinkResponse(ctx.route, Promise.resolve({ status: Number(ctx.error?.statusCode) || 200, statusText: ctx.error?.statusMessage || '', headers: {} }))
     })
-    nitro.hooks.hook('close', async () => {
+    nitro.hooks.hook('prerender:done', async () => {
       const payloads = Object.entries(linkMap)
       if (!payloads.length)
         return
@@ -50,7 +54,7 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
       let routeCount = 0
       let errorCount = 0
       const allReports = (await Promise.all(payloads.map(async ([route, payload]) => {
-        const reports = await Promise.all(payload.links.map(async (link) => {
+        const reports = await Promise.all(payload.links.map(async ({ link, textContent }) => {
           if (!urlFilter(link))
             return { error: [], warning: [], link }
           const response = await getLinkResponse({
@@ -65,6 +69,7 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
             pageSearch: pageSearcher,
             siteConfig,
             link,
+            textContent,
             response,
             skipInspections: config.skipInspections,
           })
@@ -72,26 +77,29 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
         const errors = reports.filter(r => r.error?.length).length
         errorCount += errors
         const warnings = reports.filter(r => r.warning?.length).length
-        const statusString = [
-          errors > 0 ? chalk.red(`${errors} error${errors > 1 ? 's' : ''}`) : false,
-          warnings > 0 ? chalk.yellow(`${warnings} warning${warnings > 1 ? 's' : ''}`) : false,
-        ].filter(Boolean).join(chalk.gray(', '))
-        nitro.logger.log(chalk.gray(
-          `  ${Number(++routeCount) === payload.links.length - 1 ? '└─' : '├─'} ${chalk.white(route)} ${chalk.gray('[')}${statusString}${chalk.gray(']')}`,
-        ))
-        // show inspection results
-        reports.forEach((report) => {
-          if (!report.passes) {
-            nitro.logger.log(chalk.gray(`    ${report.link}`))
-            report.error?.forEach((error) => {
-              // show code
-              nitro.logger.log(chalk.red(`        ✖ ${error.message}`) + chalk.gray(` (${error.name})`))
-            })
-            report.warning?.forEach((warning) => {
-              nitro.logger.log(chalk.yellow(`        ⚠ ${warning.message}`) + chalk.gray(` (${warning.name})`))
-            })
-          }
-        })
+        // only show debug if there's issues
+        if (errors || warnings) {
+          const statusString = [
+            errors > 0 ? chalk.red(`${errors} error${errors > 1 ? 's' : ''}`) : false,
+            warnings > 0 ? chalk.yellow(`${warnings} warning${warnings > 1 ? 's' : ''}`) : false,
+          ].filter(Boolean).join(chalk.gray(', '))
+          nitro.logger.log(chalk.gray(
+            `  ${Number(++routeCount) === payload.links.length - 1 ? '└─' : '├─'} ${chalk.white(route)} ${chalk.gray('[')}${statusString}${chalk.gray(']')}`,
+          ))
+          // show inspection results
+          reports.forEach((report) => {
+            if (report.error?.length || report.warning?.length) {
+              nitro.logger.log(chalk.dim(`    ${report.textContent} ${report.link}`))
+              report.error?.forEach((error) => {
+                // show code
+                nitro.logger.log(chalk.red(`        ✖ ${error.message}`) + chalk.gray(` (${error.name})`))
+              })
+              report.warning?.forEach((warning) => {
+                nitro.logger.log(chalk.yellow(`        ⚠ ${warning.message}`) + chalk.gray(` (${warning.name})`))
+              })
+            }
+          })
+        }
         return { route, reports }
       }))).flat()
       // emit a html report

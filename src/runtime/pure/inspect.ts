@@ -7,6 +7,7 @@ import RuleNoJavascript from './inspections/no-javascript'
 import RuleAbsoluteSiteUrls from './inspections/absolute-site-urls'
 import RuleRedirects from './redirects'
 import RuleNoErrorResponse from './inspections/no-error-response-status'
+import RuleDescriptiveLinkText from './inspections/descriptive-link-text'
 import { isNonFetchableLink } from './inspections/util'
 
 export const DefaultInspections = {
@@ -17,6 +18,7 @@ export const DefaultInspections = {
   'trailing-slash': RuleTrailingSlash(),
   'absolute-site-urls': RuleAbsoluteSiteUrls(),
   'redirects': RuleRedirects(),
+  'link-text': RuleDescriptiveLinkText(),
 } as const
 
 export function inspect(ctx: RuleTestContext, rules = DefaultInspections): Partial<LinkInspectionResult> {
@@ -50,5 +52,6 @@ export function inspect(ctx: RuleTestContext, rules = DefaultInspections): Parti
   }
   res.passes = !res.error?.length && !res.warning?.length
   res.fix = link
+  res.textContent = ctx.textContent
   return res
 }

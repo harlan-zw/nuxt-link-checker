@@ -11,6 +11,7 @@ export interface Rule {
 export interface RuleTestContext {
   link: string
   url: ParsedURL
+  textContent: string
   ids: string[]
   fromPath: string
   response: FetchResponse<any>
@@ -51,6 +52,7 @@ export interface InspectionDiff {
 export interface LinkInspectionResult {
   link: string
   fix: string
+  textContent: string
   error: RuleReport[]
   warning: RuleReport[]
   passes: boolean
