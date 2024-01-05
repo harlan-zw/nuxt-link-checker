@@ -201,7 +201,7 @@ async function refresh() {
             </NLink>
           </div>
           <div class="opacity-80 text-sm">
-            <NLink href="https://github.com/harlan-zw/link-checker" target="_blank">
+            <NLink href="https://github.com/harlan-zw/nuxt-link-checker" target="_blank">
               <NIcon icon="logos:github-icon" class="mr-[2px]" />
               Submit an issue
             </NLink>
