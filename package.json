@@ -78,13 +78,13 @@
     "@nuxt/test-utils": "^3.9.0",
     "@nuxt/ui": "^2.11.1",
     "@nuxtjs/eslint-config-typescript": "^12.1.0",
+    "@nuxtjs/sitemap": "^5.0.0",
     "@types/diff": "^5.0.9",
     "bumpp": "^9.2.1",
     "eslint": "8.56.0",
     "execa": "^8.0.1",
     "nuxt": "^3.9.1",
     "nuxt-icon": "^0.6.8",
-    "@nuxtjs/sitemap": "^5.0.0",
     "vitest": "^1.1.3"
   }
 }

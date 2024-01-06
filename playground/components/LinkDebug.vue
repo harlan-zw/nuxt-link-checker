@@ -7,6 +7,7 @@ defineProps<{
 <template>
   <div class="flex items-center">
     <div class="w-50 border-gray-100 border-solid border-b-2" style="width: 250px;">
+      <slot name="pre" />
       <NuxtLink v-bind="$attrs" :to="to">
         <slot />
       </NuxtLink>

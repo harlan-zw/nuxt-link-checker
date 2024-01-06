@@ -29,6 +29,9 @@
       </h2>
       <LinkDebug to="/about">
         here
+        <template #pre>
+          test before link
+        </template>
       </LinkDebug>
       <LinkDebug to="this is a very bad link">
         very bad link
