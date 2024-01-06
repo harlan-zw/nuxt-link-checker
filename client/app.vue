@@ -94,7 +94,7 @@ async function refresh() {
         <div class="flex space-x-5">
           <h1 text-xl flex items-center gap-2>
             <NIcon icon="carbon:cloud-satellite-link" class="text-blue-300" />
-            Nuxt Link Checker <NBadge class="text-sm">
+            Link Checker <NBadge class="text-sm">
               {{ data?.runtimeConfig?.version }}
             </NBadge>
           </h1>
@@ -208,7 +208,6 @@ async function refresh() {
           </div>
           <a href="https://nuxtseo.com" target="_blank" class="flex items-end gap-1.5 font-semibold text-xl dark:text-white font-title">
             <NuxtSeoLogo />
-            <span class="hidden sm:block">Nuxt</span><span class="sm:text-green-500 dark:sm:text-green-400">SEO</span>
           </a>
         </div>
       </div>
