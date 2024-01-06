@@ -201,7 +201,7 @@ async function refresh() {
             </NLink>
           </div>
           <div class="opacity-80 text-sm">
-            <NLink href="https://github.com/harlan-zw/link-checker" target="_blank">
+            <NLink href="https://github.com/harlan-zw/nuxt-link-checker" target="_blank">
               <NIcon icon="logos:github-icon" class="mr-[2px]" />
               Submit an issue
             </NLink>
@@ -241,7 +241,7 @@ async function refresh() {
               </div>
             </div>
             <div class="space-y-3">
-              <LinkInspection v-for="(item, index) of [...nodes.filter(n => n.error.length), ...nodes.filter(n => n.warning.length)]" :key="index" :item="item" class=" odd:bg-white even:bg-slate-50 px-2 py-1" />
+              <LinkInspection v-for="(item, index) of [...nodes.filter(n => n.error.length), ...nodes.filter(n => n.warning.length)]" :key="index" :item="item" class=" odd:bg-white dark:odd:bg-[#151515] even:bg-slate-50 dark:even:bg-[#222223] px-2 py-1" />
             </div>
           </div>
           <div v-else>
