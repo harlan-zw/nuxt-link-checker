@@ -7,7 +7,7 @@ import NuxtLinkChecker from '../src/module'
 export default defineNuxtConfig({
   modules: [
     NuxtLinkChecker,
-    'nuxt-simple-sitemap',
+    '@nuxtjs/sitemap',
     '@nuxt/ui',
     'nuxt-icon',
     /**

@@ -149,7 +149,7 @@ export default defineNuxtModule<ModuleOptions>({
           return `export default ${JSON.stringify(convertNuxtPagesToPaths(pages), null, 2)}`
         }
       })
-      const hasSitemapModule = hasNuxtModule('nuxt-simple-sitemap') && await hasNuxtModuleCompatibility('nuxt-simple-sitemap', '>=4')
+      const hasSitemapModule = (hasNuxtModule('@nuxtjs/sitemap') || (hasNuxtModule('nuxt-simple-sitemap') && await hasNuxtModuleCompatibility('nuxt-simple-sitemap', '>=4')))
         //  @ts-expect-error runtime
         && nuxt.options.sitemap?.enabled !== false
       if (!hasNuxtModule('@nuxt/content')) {
