@@ -1,10 +1,13 @@
 import fs from 'node:fs/promises'
+import { existsSync } from 'node:fs'
 import chalk from 'chalk'
 import { useNuxt } from '@nuxt/kit'
 import { useSiteConfig } from 'nuxt-site-config-kit'
 import Fuse from 'fuse.js'
 import { relative, resolve } from 'pathe'
 import { load } from 'cheerio'
+import type { Nuxt } from 'nuxt/schema'
+import { withoutLeadingSlash } from 'ufo'
 import type { ModuleOptions } from './module'
 import { inspect } from './runtime/pure/inspect'
 import { createFilter } from './runtime/pure/sharedUtils'
@@ -61,11 +64,15 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
         const reports = await Promise.all(payload.links.map(async ({ link, textContent }) => {
           if (!urlFilter(link))
             return { error: [], warning: [], link }
+
           const response = await getLinkResponse({
             link,
             timeout:
             config.fetchTimeout,
             fetchRemoteUrls: config.fetchRemoteUrls,
+            isInStorage() {
+              return existsSync(resolve(nuxt.options.rootDir, nuxt.options.dir.public, withoutLeadingSlash(link)))
+            },
           })
           return inspect({
             ids: linkMap[route].ids,

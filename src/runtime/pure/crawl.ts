@@ -2,7 +2,7 @@ import { $fetch } from 'ofetch'
 import { isNonFetchableLink } from './inspections/util'
 
 const responses: Record<string, Promise<{ status: number, statusText: string, headers: Record<string, any> }>> = {}
-export async function getLinkResponse({ link, timeout, fetchRemoteUrls, baseURL }: { link: string, baseURL?: string, timeout?: number, fetchRemoteUrls?: boolean }) {
+export async function getLinkResponse({ link, timeout, fetchRemoteUrls, baseURL, isInStorage }: { link: string, baseURL?: string, timeout?: number, fetchRemoteUrls?: boolean, isInStorage: () => boolean }) {
   // if the link has an anchor on it, do the request without the anchor
   if (link.includes('#') && !link.startsWith('#'))
     link = link.split('#')[0]
@@ -11,6 +11,7 @@ export async function getLinkResponse({ link, timeout, fetchRemoteUrls, baseURL 
     if (isNonFetchableLink(link)
       // skip remote urls if we're not allowed to fetch them
       || (link.startsWith('http') && !fetchRemoteUrls)
+      || isInStorage()
     ) {
       responses[link] = Promise.resolve({ status: 200, statusText: 'OK', headers: {} })
     }

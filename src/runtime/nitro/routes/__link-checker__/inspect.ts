@@ -44,6 +44,9 @@ export default defineEventHandler(async (e) => {
         timeout: runtimeConfig.fetchTimeout,
         fetchRemoteUrls: runtimeConfig.fetchRemoteUrls,
         baseURL: useNitroOrigin(e),
+        isInStorage() {
+          return false
+        },
       })
       const result = inspect({
         ...partialCtx,
