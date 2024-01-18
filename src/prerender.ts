@@ -22,7 +22,7 @@ export function extractPayload(html: string) {
   const links = $('#__nuxt a[href]').map((i, el) => {
     return {
       link: $(el).attr('href'),
-      textContent: ($(el).attr('aria-label') || $(el).attr('label') || $(el).text()).trim() || '',
+      textContent: ($(el).attr('aria-label') || $(el).attr('title') || $(el).text()).trim() || '',
     }
   }).get()
     // make sure the link has a href

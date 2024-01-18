@@ -75,7 +75,7 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
           }
           queue.push({
             link: link!,
-            textContent: (el.textContent || el.getAttribute('aria-label') || el.getAttribute('label') || '').trim(),
+            textContent: (el.textContent || el.getAttribute('aria-label') || el.getAttribute('title') || '').trim(),
             paths,
           })
         })
