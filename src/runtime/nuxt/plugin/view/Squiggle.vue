@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, ref } from '#imports'
+import { onMounted, ref, watchEffect } from '#imports'
 
 const props = defineProps<{
   el: Element
@@ -8,15 +8,19 @@ const props = defineProps<{
 
 defineEmits(['click'])
 
-const box = ref(props.el.getBoundingClientRect())
+const box = ref({ x: 0, y: 0, width: 0, height: 0 })
+const position = ref({ top: '0px', left: '0px', width: '0px' })
 
-const position = computed(() => {
-  const { x, y, width, height } = box.value
-  return {
-    top: `${y + height}px`,
-    left: `${x}px`,
-    width: `${width}px`,
-  }
+onMounted(() => {
+  box.value = props.el.getBoundingClientRect()
+  watchEffect(() => {
+    const { x, y, width, height } = box.value
+    position.value = {
+      top: `${document.documentElement.scrollTop + y + height}px`,
+      left: `${x}px`,
+      width: `${width}px`,
+    }
+  })
 })
 </script>
 
@@ -31,6 +35,7 @@ const position = computed(() => {
 
 <style scoped>
 .root {
+  z-index: 0;
   position: absolute;
 }
 .squiggle {
