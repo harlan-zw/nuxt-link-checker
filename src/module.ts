@@ -65,6 +65,13 @@ export interface ModuleOptions {
    */
   fetchRemoteUrls: boolean
   /**
+   * Enable when your nuxt/content files match your pages. This will automatically detect link sources
+   * for the current page.
+   *
+   * This is the same behavior to using `nuxt/content` with `documentDriven: true`.
+   */
+  strictNuxtContentPaths: boolean
+  /**
    * Whether the module is enabled.
    *
    * @default true
@@ -162,7 +169,7 @@ export default defineNuxtModule<ModuleOptions>({
         hasSitemapModule,
         rootDir: nuxt.options.rootDir,
         // @ts-expect-error untyped
-        isNuxtContentDocumentDriven: hasNuxtModule('@nuxt/content') && nuxt.options.content?.documentDriven,
+        isNuxtContentDocumentDriven: config.strictNuxtContentPaths || (hasNuxtModule('@nuxt/content') && nuxt.options.content?.documentDriven),
         excludeLinks: config.excludeLinks,
         skipInspections: config.skipInspections,
         fetchTimeout: config.fetchTimeout,
