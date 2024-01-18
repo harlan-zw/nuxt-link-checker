@@ -53,10 +53,17 @@ export default defineNuxtConfig({
 
   nitro: {
     prerender: {
+      routes: [
+        '/',
+      ],
       failOnError: false,
     },
   },
-
+  routeRules: {
+    redirect: {
+      redirect: '/valid',
+    },
+  },
   linkChecker: {
     excludeLinks: ['/ignored'],
     skipInspections: ['missing-hash'],

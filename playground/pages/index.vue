@@ -3,6 +3,14 @@
 
 <template>
   <div>
+    <div class="py-20 text-center">
+      <h1 class="text-4xl mb-5 font-bold">
+        Nuxt Link Checker
+      </h1>
+      <p class="text-lg">
+        Checking all the links
+      </p>
+    </div>
     <div class="mb-5">
       <h2 class="text-lg font-bold mb-4">
         Valid
@@ -12,6 +20,9 @@
       </LinkDebug>
       <LinkDebug to="/valid">
         valid link
+      </LinkDebug>
+      <LinkDebug to="/redirect">
+        valid link to redirect
       </LinkDebug>
       <LinkDebug to="/ignored">
         valid because ignored
