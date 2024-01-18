@@ -29,18 +29,10 @@ describe('nuxt/content documentDriven', () => {
     expect(singleInspect).toMatchInlineSnapshot(`
       [
         {
-          "diff": [],
-          "error": [
-            {
-              "message": "Should not respond with status code 404 (Not Found).",
-              "name": "no-error-response",
-              "scope": "error",
-            },
-          ],
+          "error": [],
           "fix": "/about-us",
           "link": "/about-us",
-          "passes": false,
-          "sources": [],
+          "passes": true,
           "textContent": "About Us",
           "warning": [],
         },
