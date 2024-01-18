@@ -16,10 +16,19 @@ async function fixDialog() {
   // do fix
   await linkCheckerRpc.value!.applyLinkFixes(props.item.sources[0].filepath, props.item.link, props.item.fix)
 }
+
+async function scrollToLink() {
+  await linkCheckerRpc.value!.scrollToLink(props.item.link)
+}
 </script>
 
 <template>
   <div v-if="item" text-sm class="flex w-full gap-5">
+    <div class="flex-shrink">
+      <NButton class="px-2 py-1" @click="scrollToLink">
+        <NIcon icon="carbon:cursor-2" class="text-gray-500" />
+      </NButton>
+    </div>
     <div style="min-width: 600px;">
       <div class="flex space-x-2">
         <VTooltip>

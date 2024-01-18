@@ -31,6 +31,7 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
   let queue: { link: string, paths: string[], textContent: string }[] = []
   let queueWorkerTimer: any
   const inspectionEls = ref<UnwrapRef<NuxtLinkCheckerClient['inspectionEls']>>([])
+  const highlightedLink = ref<string | null>(null)
   const visibleLinks = new Set<string>()
   let lastIds: string[] = []
   let elMap: Record<string, Element[]> = {}
@@ -217,6 +218,18 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
         import.meta.hot.on('nuxt-link-checker:reset', () => {
           client.reset(true)
         })
+        import.meta.hot.on('nuxt-link-checker:scroll-to-link', (link) => {
+          const inspection = inspectionEls.value.find(i => i.link === link)
+          if (inspection) {
+            inspection.el.scrollIntoView({
+              behavior: 'smooth',
+            })
+            highlightedLink.value = inspection.link
+            setTimeout(() => {
+              highlightedLink.value = null
+            }, 5000)
+          }
+        })
         import.meta.hot.on('nuxt-link-checker:live-inspections', ({ enabled }) => {
           showInspections.value = enabled
         })
@@ -243,7 +256,7 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
       document.body.appendChild(holder)
 
       const app = createApp({
-        render: () => h(Main, { client, inspections: client.inspectionEls }),
+        render: () => h(Main, { client, inspections: client.inspectionEls, highlightedLink }),
       })
       app.mount(holder)
 

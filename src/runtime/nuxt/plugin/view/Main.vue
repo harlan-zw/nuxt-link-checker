@@ -6,6 +6,7 @@ import { useEventListener } from './utils'
 
 const props = defineProps<{
   client: NuxtLinkCheckerClient
+  highlightedLink: string | null
   inspections: NuxtLinkCheckerClient['inspectionEls']
 }>()
 
@@ -38,6 +39,7 @@ const showInspections = computed(() => {
     <Squiggle
       v-for="(node, i) in inspections.value"
       :key="i"
+      :highlighted="highlightedLink?.value === node.link"
       :el="node.el"
       :aria-label="`Open inspection for ${node.link}`"
       :color="node.error.length ? '#c31616' : '#b1ac18'"

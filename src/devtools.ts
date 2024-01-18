@@ -71,6 +71,10 @@ export function setupDevToolsUI(options: ModuleOptions, resolve: Resolver['resol
           const ws = await viteServerWs
           ws.send('nuxt-link-checker:reset')
         },
+        async scrollToLink(link: string) {
+          const ws = await viteServerWs
+          ws.send('nuxt-link-checker:scroll-to-link', link)
+        },
         async applyLinkFixes(filepath, original, replacement) {
           filepath = resolve(nuxt.options.rootDir, filepath)
           const contents = await readFile(filepath, 'utf8')

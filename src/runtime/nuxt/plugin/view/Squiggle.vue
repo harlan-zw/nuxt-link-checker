@@ -4,6 +4,7 @@ import { onMounted, ref, watchEffect } from '#imports'
 const props = defineProps<{
   el: Element
   color: string
+  highlighted: boolean
 }>()
 
 defineEmits(['click'])
@@ -25,7 +26,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div :style="position" class="root">
+  <div :style="position" class="root" :class="highlighted ? ['highlighted'] : ''">
     <div class="squiggle" />
     <a role="button" title="Open Link Inspection" v-bind="$attrs" @click="$emit('click')">
       <span class="icon" />
@@ -37,6 +38,18 @@ onMounted(() => {
 .root {
   z-index: 0;
   position: absolute;
+}
+@keyframes highlight {
+  0% {
+    background-color: transparent;
+  }
+  100% {
+    background-color: v-bind(color);
+    padding: 3px;
+  }
+}
+.highlighted {
+  animation: highlight 0.5s ease-in-out alternate-reverse infinite;
 }
 .squiggle {
   bottom: 0;
