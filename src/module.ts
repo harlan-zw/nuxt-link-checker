@@ -12,7 +12,7 @@ import {
 import { installNuxtSiteConfig } from 'nuxt-site-config-kit'
 import type { NuxtPage } from '@nuxt/schema'
 import { version } from '../package.json'
-import { prerender } from './prerender'
+import { isNuxtGenerate, prerender } from './prerender'
 import { setupDevToolsUI } from './devtools'
 import type { DefaultInspections } from './runtime/pure/inspect'
 import { convertNuxtPagesToPaths } from './util'
@@ -179,7 +179,16 @@ export default defineNuxtModule<ModuleOptions>({
       setupDevToolsUI(config, resolve)
     }
 
-    if (config.runOnBuild)
+    if (config.runOnBuild) {
+      const isRenderingAllRoutes = isNuxtGenerate(nuxt) && !nuxt.options.nitro.prerender?.crawlLinks
+      if (nuxt.options.build && !isRenderingAllRoutes) {
+        // disable no-error-response
+        config.skipInspections.push('no-error-response')
+        nuxt.hooks.hook('modules:done', () => {
+          logger.info('Disabling \`error-response` inspection because we need all routes.')
+        })
+      }
       prerender(config)
+    }
   },
 })
