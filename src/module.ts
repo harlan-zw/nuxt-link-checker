@@ -182,11 +182,11 @@ export default defineNuxtModule<ModuleOptions>({
 
     if (config.runOnBuild) {
       const isRenderingAllRoutes = isNuxtGenerate(nuxt) && !nuxt.options.nitro.prerender?.crawlLinks
-      if (nuxt.options.build && !isRenderingAllRoutes) {
+      if (!nuxt.options._prepare && !nuxt.options.dev && nuxt.options.build && !isRenderingAllRoutes) {
         // disable no-error-response
         config.skipInspections.push('no-error-response')
         nuxt.hooks.hook('modules:done', () => {
-          logger.info('Disabling \`error-response` inspection because we need all routes.')
+          logger.info('The \`error-response` inspection has been disabled for build mode.')
         })
       }
       prerender(config)
