@@ -15,8 +15,15 @@ export default function RuleDescriptiveLinkText() {
       }
       const uniformLinkText = textContent.trim().toLowerCase()
       const listOfBadDescriptiveLinkTexts = [
+        'click here',
+        'click this',
+        'go',
         'here',
         'this',
+        'start',
+        'right here',
+        'more',
+        'learn more',
       ]
       if (listOfBadDescriptiveLinkTexts.includes(uniformLinkText)) {
         report({
