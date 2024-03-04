@@ -185,9 +185,6 @@ export default defineNuxtModule<ModuleOptions>({
       if (!nuxt.options._prepare && !nuxt.options.dev && nuxt.options.build && !isRenderingAllRoutes) {
         // disable no-error-response
         config.skipInspections.push('no-error-response')
-        nuxt.hooks.hook('modules:done', () => {
-          logger.info('The \`error-response` inspection has been disabled for build mode.')
-        })
       }
       prerender(config)
     }
