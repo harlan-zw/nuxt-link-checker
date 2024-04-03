@@ -38,12 +38,7 @@ Find and magically fix links that may be negatively effecting your Nuxt sites SE
 1. Install `nuxt-link-checker` dependency to your project:
 
 ```bash
-#
-yarn add -D nuxt-link-checker
-#
-npm install -D nuxt-link-checker
-#
-pnpm i -D nuxt-link-checker
+npx nuxi@latest module add link-checker
 ```
 
 2. Add it to your `modules` section in your `nuxt.config`:
