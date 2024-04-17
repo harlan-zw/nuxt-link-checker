@@ -5,7 +5,7 @@ import type { ComputedRef, Ref } from 'vue'
 import type { ParsedURL } from 'ufo'
 
 export interface Rule {
-  test(ctx: RuleTestContext): void
+  test: (ctx: RuleTestContext) => void
 }
 
 export interface RuleTestContext {
@@ -62,15 +62,15 @@ export interface LinkInspectionResult {
 
 export interface NuxtLinkCheckerClient {
   isStarted: boolean
-  reset(hard: boolean): void
-  start(): void
-  restart(): void
-  scanLinks(): void
-  startQueueWorker(): void
-  stopQueueWorker(): void
-  broadcast(event: string, payload?: any): void
-  openDevtoolsToLink(link: string): void
-  maybeAttachEls(payload?: LinkInspectionResult): void
+  reset: (hard: boolean) => void
+  start: () => void
+  restart: () => void
+  scanLinks: () => void
+  startQueueWorker: () => void
+  stopQueueWorker: () => void
+  broadcast: (event: string, payload?: any) => void
+  openDevtoolsToLink: (link: string) => void
+  maybeAttachEls: (payload?: LinkInspectionResult) => void
   inspectionEls: Ref<(LinkInspectionResult & { el: Element })[]>
   visibleLinks: Set<string>
   isWorkingQueue: boolean
