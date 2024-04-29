@@ -60,9 +60,9 @@ export default defineNuxtConfig({
     },
   },
   routeRules: {
-    redirect: {
-      redirect: '/valid',
-    },
+    // redirect: {
+    //   redirect: '/valid',
+    // },
   },
   linkChecker: {
     excludeLinks: ['/ignored'],

@@ -44,10 +44,11 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
   nuxt.hooks.hook('nitro:init', async (nitro) => {
     const siteConfig = useSiteConfig()
     nitro.hooks.hook('prerender:generate', async (ctx) => {
-      if (ctx.contents && !ctx.error && ctx.fileName?.endsWith('.html') && !ctx.route.endsWith('.html') && urlFilter(ctx.route))
-        linkMap[ctx.route] = extractPayload(ctx.contents)
+      const route = decodeURI(ctx.route)
+      if (ctx.contents && !ctx.error && ctx.fileName?.endsWith('.html') && !route.endsWith('.html') && urlFilter(route))
+        linkMap[route] = extractPayload(ctx.contents)
 
-      setLinkResponse(ctx.route, Promise.resolve({ status: Number(ctx.error?.statusCode) || 200, statusText: ctx.error?.statusMessage || '', headers: {} }))
+      setLinkResponse(route, Promise.resolve({ status: Number(ctx.error?.statusCode) || 200, statusText: ctx.error?.statusMessage || '', headers: {} }))
     })
     nitro.hooks.hook('prerender:done', async () => {
       const payloads = Object.entries(linkMap)

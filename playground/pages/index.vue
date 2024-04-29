@@ -33,6 +33,7 @@
       <LinkDebug to="/some-file.pdf">
         file link
       </LinkDebug>
+      <LinkDebug to="/about/Billy%20Bob">Dynamic Encoded Path</LinkDebug>
     </div>
     <div class="mb-5">
       <h2 class="text-lg font-bold mb-4">
