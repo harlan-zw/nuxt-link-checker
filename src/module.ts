@@ -11,7 +11,7 @@ import {
 } from '@nuxt/kit'
 import { installNuxtSiteConfig } from 'nuxt-site-config-kit'
 import type { NuxtPage } from '@nuxt/schema'
-import { version } from '../package.json'
+import { readPackageJSON } from 'pkg-types'
 import { isNuxtGenerate, prerender } from './prerender'
 import { setupDevToolsUI } from './devtools'
 import type { DefaultInspections } from './runtime/pure/inspect'
@@ -110,13 +110,14 @@ export default defineNuxtModule<ModuleOptions>({
     skipInspections: [],
   },
   async setup(config, nuxt) {
+    const { resolve } = createResolver(import.meta.url)
     const logger = useLogger('nuxt-link-checker')
     logger.level = (config.debug || nuxt.options.debug) ? 4 : 3
+    const { name, version } = await readPackageJSON(resolve('../package.json'))
     if (config.enabled === false) {
-      logger.debug('The module is disabled, skipping setup.')
+      logger.debug(`The ${name} module is disabled, skipping setup.`)
       return
     }
-    const { resolve } = createResolver(import.meta.url)
 
     await installNuxtSiteConfig()
 
