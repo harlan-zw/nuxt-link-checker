@@ -240,7 +240,7 @@ async function refresh() {
                 Warnings</div>
               </div>
               <div v-if="!warningCount && !errorCount" class="flex items-center gap-1">
-                <NIcon icon="carbon:checkmark-outline opacity-50" />
+                <NIcon icon="carbon:checkmark-outline" h-4 w-4 text-green-500 />
                 <div>All links passing</div>
               </div>
             </div>
