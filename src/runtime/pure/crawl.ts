@@ -3,10 +3,10 @@ import { isNonFetchableLink } from './inspections/util'
 
 const responses: Record<string, Promise<{ status: number, statusText: string, headers: Record<string, any> }>> = {}
 export async function getLinkResponse({ link, timeout, fetchRemoteUrls, baseURL, isInStorage }: { link: string, baseURL?: string, timeout?: number, fetchRemoteUrls?: boolean, isInStorage: () => boolean }) {
-  link = decodeURI(link)
   // if the link has an anchor on it, do the request without the anchor
   if (link.includes('#') && !link.startsWith('#'))
     link = link.split('#')[0]
+  link = decodeURI(link)
   const response = responses[link]
   if (!response) {
     if (isNonFetchableLink(link)
