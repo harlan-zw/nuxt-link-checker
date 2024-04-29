@@ -223,20 +223,25 @@ async function refresh() {
             </button>
           </p>
           <div v-if="!linkFilter">
-            <div flex items-center px3 gap-3 mb3 text-sm>
+            <div flex items-center p3 gap-3 mb3 text-sm>
               <div v-if="queueLength" mr5>
                 <NIcon icon="carbon:progress-bar-round" class="animated animate-spin op50 text-xs" />
                 {{ Math.round((Math.abs(queueLength - visibleLinkCount) / visibleLinkCount) * 100) }}%
               </div>
-              <div text-xs>
+              <div v-if="errorCount" text-xs flex items-center gap-1>
                 <NIcon icon="carbon:error" h-4 w-4 text-red-500 />
-                {{ errorCount }}
+                <div>{{ errorCount }}
                 Errors
+                  </div>
               </div>
-              <div text-xs>
-                <NIcon icon="carbon:warning" h-4 w-4 text-red-500 />
-                {{ warningCount }}
-                Warnings
+              <div v-if="warningCount" text-xs flex items-center gap-1>
+                <NIcon icon="carbon:warning" h-4 w-4 text-yellow-500 />
+                <div>{{ warningCount }}
+                Warnings</div>
+              </div>
+              <div v-if="!warningCount && !errorCount" class="flex items-center gap-1">
+                <NIcon icon="carbon:checkmark-outline opacity-50" />
+                <div>All links passing</div>
               </div>
             </div>
             <div class="space-y-3">
