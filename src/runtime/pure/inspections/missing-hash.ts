@@ -7,7 +7,7 @@ export default function RuleMissingHash() {
   return defineRule({
     test({ link, report, ids, fromPath }) {
       const [path, hash] = link.split('#')
-      if (!link.includes('#') || fixSlashes(false, path) !== fromPath)
+      if (!link.includes('#') || link.endsWith('#top') || fixSlashes(false, path) !== fromPath)
         return
 
       if (ids.includes(hash))

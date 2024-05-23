@@ -34,4 +34,22 @@ describe('rule missing-hash', () => {
       }
     `)
   })
+  it('works with #top', () => {
+    const ctx = {
+      link: '/about#top',
+      ids: [],
+      fromPath: '/about',
+    } as RuleTestContext
+
+    expect(runRule(ctx, RuleMissingHash())).toMatchInlineSnapshot(`
+      {
+        "error": [],
+        "fix": "/about#top",
+        "link": "/about#top",
+        "passes": true,
+        "textContent": undefined,
+        "warning": [],
+      }
+    `)
+  })
 })
