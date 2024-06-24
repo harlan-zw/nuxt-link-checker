@@ -230,14 +230,17 @@ async function refresh() {
               </div>
               <div v-if="errorCount" text-xs flex items-center gap-1>
                 <NIcon icon="carbon:error" h-4 w-4 text-red-500 />
-                <div>{{ errorCount }}
-                Errors
-                  </div>
+                <div>
+                  {{ errorCount }}
+                  Errors
+                </div>
               </div>
               <div v-if="warningCount" text-xs flex items-center gap-1>
                 <NIcon icon="carbon:warning" h-4 w-4 text-yellow-500 />
-                <div>{{ warningCount }}
-                Warnings</div>
+                <div>
+                  {{ warningCount }}
+                  Warnings
+                </div>
               </div>
               <div v-if="!warningCount && !errorCount" class="flex items-center gap-1">
                 <NIcon icon="carbon:checkmark-outline" h-4 w-4 text-green-500 />
