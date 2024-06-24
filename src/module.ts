@@ -92,7 +92,7 @@ export default defineNuxtModule<ModuleOptions>({
   meta: {
     name: 'nuxt-link-checker',
     compatibility: {
-      nuxt: '^3.9.0',
+      nuxt: '>=3.9.0',
       bridge: false,
     },
     configKey: 'linkChecker',
