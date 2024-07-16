@@ -39,7 +39,7 @@ const showInspections = computed(() => {
     <Squiggle
       v-for="(node, i) in inspections.value"
       :key="i"
-      :highlighted="highlightedLink?.value === node.link"
+      :highlighted="highlightedLink === node.link"
       :el="node.el"
       :aria-label="`Open inspection for ${node.link}`"
       :color="node.error.length ? '#c31616' : '#b1ac18'"
