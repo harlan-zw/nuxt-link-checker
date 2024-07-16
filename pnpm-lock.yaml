@@ -47,9 +47,6 @@ importers:
       radix3:
         specifier: ^1.1.2
         version: 1.1.2
-      shiki:
-        specifier: ^1.10.3
-        version: 1.10.3
       sirv:
         specifier: ^2.0.4
         version: 2.0.4
@@ -123,6 +120,9 @@ importers:
       nuxt:
         specifier: latest
         version: 3.12.3(@opentelemetry/api@1.9.0)(@parcel/watcher@2.4.1)(@types/node@20.14.10)(encoding@0.1.13)(eslint@9.7.0)(ioredis@5.4.1)(magicast@0.3.4)(optionator@0.9.4)(rollup@4.18.0)(terser@5.31.2)(typescript@5.5.3)(vite@5.3.3(@types/node@20.14.10)(terser@5.31.2))
+      shiki:
+        specifier: ^1.10.3
+        version: 1.10.3
       vue:
         specifier: 3.4.31
         version: 3.4.31(typescript@5.5.3)
