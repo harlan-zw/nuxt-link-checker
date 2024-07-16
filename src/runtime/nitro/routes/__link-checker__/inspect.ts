@@ -24,9 +24,9 @@ export default defineEventHandler(async (e) => {
     siteConfig: useSiteConfig(e),
   }
   const extraPaths: string[] = []
-  if (runtimeConfig.isNuxtContentDocumentDriven && serverQueryContent) {
+  if (serverQueryContent) {
     // let's fetch from the content document
-    const contentDocument = await serverQueryContent(e).findOne()
+    const contentDocument = await serverQueryContent(e, partialCtx.fromPath).findOne()
     if (contentDocument)
       extraPaths.push(resolve(runtimeConfig.rootDir, 'content', contentDocument._file))
   }
@@ -66,7 +66,7 @@ export default defineEventHandler(async (e) => {
       if (!result.passes) {
         result.sources = (await Promise.all(filePaths.map(async filepath => await generateFileLinkPreviews(filepath, link))))
           .filter(s => s.previews.length)
-        result.diff = await Promise.all((result.sources || []).map(async ({ filepath }) => generateFileLinkDiff(filepath, link, result.fix!)))
+        result.diff = (await Promise.all((result.sources || []).map(async ({ filepath }) => generateFileLinkDiff(filepath, link, result.fix!))))
       }
       return result
     }),

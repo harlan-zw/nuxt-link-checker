@@ -16,19 +16,31 @@ export function generateLinkSources(s: string, link: string) {
   const sources = []
   // scan all lines for the link
   for (const [i, line] of lines.entries()) {
+    const lineNumber = i + 1
+    const preLineLength = lines.slice(0, lineNumber - 1).join('\n').length + 1
     // need to get the line index using the LinkRegExp
     let index = line.search(VueLinkRegExp)
-    if (index === -1)
-      index = line.search(MdLinkRegExp)
     if (index !== -1) {
       // get the line number
-      const lineNumber = i + 1
       // get the column number
       const columnNumber = index - 1
       // need to correct offsets for quotes
-      const start = lines.slice(0, lineNumber - 1).join('\n').length + index + 2
+      const start = preLineLength + index + 1
       const end = start + link.length
       sources.push({ start, end, lineNumber, columnNumber })
+    }
+    else {
+      index = line.search(MdLinkRegExp)
+      if (index !== -1) {
+        const substr = line.slice(index)
+        // we need to start from the first ( from [About Us](/about-us/)
+        const start = preLineLength + index + substr.indexOf('(', index) + 1
+        const end = start + link.length
+        // sanity check, should match
+        if (s.substring(start, end) === link) {
+          sources.push({ start, end, lineNumber: i + 1, columnNumber: start })
+        }
+      }
     }
   }
   return sources
@@ -55,7 +67,10 @@ export async function generateFileLinkDiff(filepath: string, original: string, r
   lruFsCache.set(filepath, contents)
   if (lruFsCache.size > 100)
     lruFsCache.delete(lruFsCache.keys().next().value)
-  return generateLinkDiff(contents, original, replacement)
+  return {
+    ...generateLinkDiff(contents, original, replacement),
+    filepath,
+  }
 }
 
 export function generateLinkSourcePreviews(s: string, link: string) {

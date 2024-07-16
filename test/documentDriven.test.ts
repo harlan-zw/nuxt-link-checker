@@ -26,10 +26,42 @@ describe('nuxt/content documentDriven', () => {
         ids: [],
       },
     })
-    expect(singleInspect).toMatchInlineSnapshot(`
+    const res = singleInspect.map((r) => {
+      return {
+        ...r,
+        diff: r.diff.map((d) => {
+          return {
+            ...d,
+            filepath: d.filepath.split('/').pop(),
+          }
+        }),
+        sources: r.sources.map((s) => {
+          return {
+            ...s,
+            filepath: s.filepath.split('/').pop(),
+          }
+        }),
+      }
+    })
+    expect(res).toMatchInlineSnapshot(`
       [
         {
-          "diff": [],
+          "diff": [
+            {
+              "code": "This is a link to an about page that does not exist:
+
+      - [About Us](/about-us)
+      ",
+              "diff": {
+                "added": [],
+                "removed": [],
+                "result": "This is a link to an about page that does not exist:
+
+      - [About Us](/about-us)",
+              },
+              "filepath": "index.md",
+            },
+          ],
           "error": [
             {
               "message": "Should not respond with status code 404 (Not Found).",
@@ -40,7 +72,22 @@ describe('nuxt/content documentDriven', () => {
           "fix": "/about-us",
           "link": "/about-us",
           "passes": false,
-          "sources": [],
+          "sources": [
+            {
+              "filepath": "index.md",
+              "lang": "md",
+              "previews": [
+                {
+                  "code": "This is a link to an about page that does not exist:
+
+      - [About Us](/about-us)
+      ",
+                  "columnNumber": 67,
+                  "lineNumber": 3,
+                },
+              ],
+            },
+          ],
           "textContent": "About Us",
           "warning": [],
         },

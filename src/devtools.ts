@@ -6,6 +6,7 @@ import { extendServerRpc, onDevToolsInitialized } from '@nuxt/devtools-kit'
 import { diffArrays } from 'diff'
 import { extendPages, useNuxt } from '@nuxt/kit'
 import type { BirpcGroup } from 'birpc'
+import { resolve } from 'pathe'
 import { generateLinkDiff } from './runtime/pure/diff'
 import type { ClientFunctions, ServerFunctions } from './rpc-types'
 import { convertNuxtPagesToPaths, useViteWebSocket } from './util'
@@ -15,8 +16,8 @@ const DEVTOOLS_UI_ROUTE = '/__nuxt-link-checker'
 const DEVTOOLS_UI_LOCAL_PORT = 3030
 const RPC_NAMESPACE = 'nuxt-link-checker-rpc'
 
-export function setupDevToolsUI(options: ModuleOptions, resolve: Resolver['resolve'], nuxt: Nuxt = useNuxt()) {
-  const clientPath = resolve('./client')
+export function setupDevToolsUI(options: ModuleOptions, moduleResolve: Resolver['resolve'], nuxt: Nuxt = useNuxt()) {
+  const clientPath = moduleResolve('./client')
   const isProductionBuild = existsSync(clientPath)
 
   // Serve production-built client (used when package is published)
@@ -61,7 +62,7 @@ export function setupDevToolsUI(options: ModuleOptions, resolve: Resolver['resol
 
   let isConnected = false
   const viteServerWs = useViteWebSocket()
-  const rpc = new Promise<BirpcGroup<ClientFunctions, ServerFunctions>>((resolve) => {
+  const rpc = new Promise<BirpcGroup<ClientFunctions, ServerFunctions>>((promiseResolve) => {
     onDevToolsInitialized(async () => {
       const rpc = extendServerRpc<ClientFunctions, ServerFunctions>(RPC_NAMESPACE, {
         getOptions() {
@@ -75,12 +76,19 @@ export function setupDevToolsUI(options: ModuleOptions, resolve: Resolver['resol
           const ws = await viteServerWs
           ws.send('nuxt-link-checker:scroll-to-link', link)
         },
-        async applyLinkFixes(filepath, original, replacement) {
-          filepath = resolve(nuxt.options.rootDir, filepath)
-          const contents = await readFile(filepath, 'utf8')
-          const diff = generateLinkDiff(contents, original, replacement)
-          await writeFile(filepath, diff.code, 'utf8')
-
+        async applyLinkFixes(diff, original, replacement) {
+          for (const { filepath } of diff) {
+            // if filepath contains the same segment as the last root dir, we remove it
+            const rootDirFolderName = nuxt.options.rootDir.split('/').pop()
+            const filepathWithoutRoot = filepath
+              .replace(new RegExp(`^${nuxt.options.rootDir}/`), '')
+              // need to replace dirname only if the string starts with it, use regex
+              .replace(new RegExp(`^${rootDirFolderName}/`), '')
+            const fp = resolve(nuxt.options.rootDir, filepathWithoutRoot)
+            const contents = await readFile(fp, 'utf8')
+            const diff = generateLinkDiff(contents, original, replacement)
+            await writeFile(fp, diff.code, 'utf8')
+          }
           const ws = await viteServerWs
           ws.send('nuxt-link-checker:reset')
         },
@@ -94,7 +102,7 @@ export function setupDevToolsUI(options: ModuleOptions, resolve: Resolver['resol
           isConnected = true
         },
       })
-      resolve(rpc)
+      promiseResolve(rpc)
     })
   })
   viteServerWs.then((ws) => {

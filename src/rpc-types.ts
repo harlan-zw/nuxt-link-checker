@@ -5,7 +5,7 @@ import type { ModuleOptions } from './module'
 export interface ServerFunctions {
   getOptions: () => ModuleOptions
   reset: () => void
-  applyLinkFixes: (filepath: string, original: string, replacement: string) => void
+  applyLinkFixes: (diff: { filepath: string }[], original: string, replacement: string) => void
   scrollToLink: (link: string) => void
   toggleLiveInspections: (enabled: boolean) => void
   connected: () => void

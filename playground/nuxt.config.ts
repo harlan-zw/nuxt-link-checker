@@ -9,6 +9,8 @@ export default defineNuxtConfig({
     NuxtLinkChecker,
     '@nuxtjs/sitemap',
     '@nuxt/ui',
+    '@nuxt/content',
+
     /**
      * Start a sub Nuxt Server for developing the client
      *

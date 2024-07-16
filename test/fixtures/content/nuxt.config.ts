@@ -14,7 +14,10 @@ export default defineNuxtConfig({
   content: {
     documentDriven: true,
   },
+
   devtools: {
     enabled: true,
   },
+
+  compatibilityDate: '2024-07-16',
 })
