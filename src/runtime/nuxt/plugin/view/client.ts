@@ -133,7 +133,8 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
       if (client.isWorkingQueue) {
         queue = []
         client.isWorkingQueue = false
-        queueWorkerTimer && clearInterval(queueWorkerTimer)
+        if (queueWorkerTimer)
+          clearInterval(queueWorkerTimer)
       }
     },
     broadcast(event: string, payload?: any) {
@@ -195,7 +196,8 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
       client.restart()
     },
     restart() {
-      startQueueIdleId && cancelIdleCallback(startQueueIdleId)
+      if (startQueueIdleId)
+        cancelIdleCallback(startQueueIdleId)
       // debounce to add to idle callback
       startQueueIdleId = requestIdleCallback(() => {
         client.stopQueueWorker()

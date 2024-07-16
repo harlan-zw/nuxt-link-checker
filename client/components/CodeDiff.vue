@@ -21,8 +21,10 @@ function transformRendered(code: string) {
       const hasRemoved = props.diff.removed.includes(count - 1)
       // add 3 before and 3 after to linesToInclude
       if (hasAdded || hasRemoved) {
-        for (let i = count - 3; i < count + 3; i++)
-          i >= 0 && linesToInclude.add(i)
+        for (let i = count - 3; i < count + 3; i++) {
+          if (i >= 0)
+            linesToInclude.add(i)
+        }
       }
       if (hasAdded)
         return 'class="line line-added"'

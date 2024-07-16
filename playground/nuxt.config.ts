@@ -9,7 +9,6 @@ export default defineNuxtConfig({
     NuxtLinkChecker,
     '@nuxtjs/sitemap',
     '@nuxt/ui',
-    'nuxt-icon',
     /**
      * Start a sub Nuxt Server for developing the client
      *
@@ -59,11 +58,13 @@ export default defineNuxtConfig({
       failOnError: false,
     },
   },
+
   routeRules: {
     // redirect: {
     //   redirect: '/valid',
     // },
   },
+
   linkChecker: {
     excludeLinks: ['/ignored'],
     skipInspections: ['missing-hash'],
@@ -77,4 +78,5 @@ export default defineNuxtConfig({
     enabled: true,
   },
 
+  compatibilityDate: '2024-07-16',
 })

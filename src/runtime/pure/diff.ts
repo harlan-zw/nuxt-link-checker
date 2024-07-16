@@ -7,7 +7,7 @@ export const lruFsCache = new Map<string, string>()
 
 export function generateLinkSources(s: string, link: string) {
   // escape link for regex
-  const regEscapedLink = link.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
+  const regEscapedLink = link.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
   const VueLinkRegExp = new RegExp(`(['"])${regEscapedLink}(['"])`)
   // need to match links like [About Us](/about-us)
   const MdLinkRegExp = new RegExp(`\\[.*\\]\\((${regEscapedLink})\\)`)

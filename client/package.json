@@ -1,4 +1,14 @@
 {
-  "name": "nuxt-link-checker-client",
-  "private": true
+  "name": "nuxt-link-checker-devtools",
+  "private": true,
+  "devDependencies": {
+    "@iconify-json/carbon": "^1.1.36",
+    "@nuxt/devtools-kit": "^1.3.9",
+    "@nuxt/devtools-ui-kit": "latest",
+    "@nuxt/kit": "^3.12.3",
+    "floating-vue": "5.2.2",
+    "nuxt": "latest",
+    "vue": "3.4.31",
+    "vue-router": "latest"
+  }
 }
