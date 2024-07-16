@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { Lang } from 'shiki-es'
+import type { BundledLanguage } from 'shiki'
 import { ref } from '#imports'
 
 const props = defineProps<{
   code: string
-  lang: Lang
+  lang: BundledLanguage
   link: string
 }>()
 

@@ -22,7 +22,7 @@ const rendered = computed(() => {
 
 <template>
   <pre
-    class="n-code-block"
+    class="n-code-block w-full"
     :class="lines ? 'n-code-block-lines' : ''"
     v-html="rendered"
   />

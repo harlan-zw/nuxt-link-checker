@@ -14,7 +14,7 @@ async function fixDialog() {
   if (!await FixDialog.start(props.item))
     return
   // do fix
-  await linkCheckerRpc.value!.applyLinkFixes(props.item.sources[0].filepath, props.item.link, props.item.fix)
+  await linkCheckerRpc.value!.applyLinkFixes(props.item.diff, props.item.link, props.item.fix)
 }
 
 async function scrollToLink() {
@@ -23,7 +23,7 @@ async function scrollToLink() {
 </script>
 
 <template>
-  <div v-if="item" text-sm class="flex w-full gap-5">
+  <div v-if="item" text-sm class="lg:flex w-full gap-5">
     <div class="flex-shrink">
       <NButton class="px-2 py-1" @click="scrollToLink">
         <NIcon icon="carbon:cursor-2" class="text-gray-500" />
@@ -39,7 +39,7 @@ async function scrollToLink() {
             {{ item.textContent }}
           </template>
         </VTooltip>
-        <NLink external target="_blank" :to="item.link" font-mono mb3>
+        <NLink external target="_blank" :to="item.link" font-mono mb3 class="truncate">
           {{ item.link }}
         </NLink>
       </div>
@@ -96,7 +96,7 @@ async function scrollToLink() {
         </div>
       </div>
       <div v-for="(source, i) in item.sources" :key="i" mb4>
-        <div flex mb3 items-center gap-3>
+        <div flex mb1 items-center>
           <NLink
             external
             type="button"
@@ -104,15 +104,14 @@ async function scrollToLink() {
             text-xs
             font-mono
             :link="source.filepath"
+            class="cursor-pointer"
             @click.prevent="openFilePath(source.filepath)"
           >
             {{ source.filepath }}
           </NLink>
         </div>
         <NCard v-for="(preview, pk) in source.previews" :key="pk" items-center justify-between of-hidden>
-          <div flex="~ col gap-1 items-start" px4>
-            <CodeHighlight :link="item.link" :code="preview.code" lang="vue-html" class="overflow-auto" :style="{ '--start': preview.lineNumber }" />
-          </div>
+          <CodeHighlight :link="item.link" :code="preview.code" lang="vue-html" class="overflow-auto" :style="{ '--start': Math.max(preview.lineNumber - 2, 1) }" />
         </NCard>
       </div>
     </div>

@@ -93,8 +93,8 @@ async function refresh() {
       <div class="flex justify-between items-start" mb2>
         <div class="flex space-x-5">
           <h1 text-xl flex items-center gap-2>
-            <NIcon icon="carbon:cloud-satellite-link" class="text-blue-300" />
-            Link Checker <NBadge class="text-sm">
+            <NIcon icon="carbon:cloud-satellite-link" class="text-blue-300 hidden md:block" />
+            Link Checker <NBadge class="hidden md:block text-sm">
               {{ data?.runtimeConfig?.version }}
             </NBadge>
           </h1>
@@ -188,7 +188,7 @@ async function refresh() {
             @click="toggleLiveInspections"
           >
             <NIcon :icon="`${showLiveInspections ? 'carbon:view-off' : 'carbon:view'}`" />
-            <div>
+            <div class="hidden md:block">
               Inspections
             </div>
           </button>
@@ -222,8 +222,8 @@ async function refresh() {
               Show All
             </button>
           </p>
-          <div v-if="!linkFilter">
-            <div flex items-center p3 gap-3 mb3 text-sm>
+          <div v-if="!linkFilter" class="">
+            <div flex items-center p3 gap-3 text-sm>
               <div v-if="queueLength" mr5>
                 <NIcon icon="carbon:progress-bar-round" class="animated animate-spin op50 text-xs" />
                 {{ Math.round((Math.abs(queueLength - visibleLinkCount) / visibleLinkCount) * 100) }}%
@@ -247,8 +247,8 @@ async function refresh() {
                 <div>All links passing</div>
               </div>
             </div>
-            <div class="space-y-3">
-              <LinkInspection v-for="(item, index) of [...nodes.filter(n => n.error.length), ...nodes.filter(n => n.warning.length)]" :key="index" :item="item" class=" odd:bg-white dark:odd:bg-[#151515] even:bg-slate-50 dark:even:bg-[#222223] px-2 py-1" />
+            <div>
+              <LinkInspection v-for="(item, index) of [...nodes.filter(n => n.error.length), ...nodes.filter(n => n.warning.length)]" :key="index" :item="item" class=" odd:bg-white dark:odd:bg-[#151515] even:bg-slate-50 dark:even:bg-[#222223] p-2" />
             </div>
           </div>
           <div v-else>
