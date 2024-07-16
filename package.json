@@ -42,7 +42,7 @@
     "client:build": "nuxi generate client",
     "client:dev": "nuxi dev client --port 3300",
     "dev": "npm run play:dev",
-    "dev:prepare": "nuxt-module-build --stub && nuxi prepare client",
+    "dev:prepare": "nuxt-module-build build --stub && nuxi prepare client",
     "play:dev": "nuxi dev playground",
     "play:prod": "npm run build && nuxi dev playground",
     "release": "pnpm build && bumpp && pnpm -r publish",
