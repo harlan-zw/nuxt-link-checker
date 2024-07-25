@@ -221,6 +221,12 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
         await fs.writeFile(resolve(nitro.options.output.dir, 'link-checker-report.md'), markdown)
         nitro.logger.info(`Nuxt Link Checker Markdown report written to ${relative(nuxt.options.rootDir, resolve(nitro.options.output.dir, 'link-checker-report.md'))}`)
       }
+      if (config.report?.json) {
+        const json = JSON.stringify(reportsWithContent, null, 2)
+        // write file
+        await fs.writeFile(resolve(nitro.options.output.dir, 'link-checker-report.json'), json)
+        nitro.logger.info(`Nuxt Link Checker JSON report written to ${relative(nuxt.options.rootDir, resolve(nitro.options.output.dir, 'link-checker-report.json'))}`)
+      }
       if (errorCount > 0 && config.failOnError) {
         nitro.logger.error(`Nuxt Link Checker found ${errorCount} errors, failing build.`)
         nitro.logger.log(chalk.gray('You can disable this by setting "linkChecker: { failOnError: false }" in your nuxt.config.'))

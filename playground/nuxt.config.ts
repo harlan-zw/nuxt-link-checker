@@ -73,6 +73,7 @@ export default defineNuxtConfig({
     report: {
       html: true,
       markdown: true,
+      json: true,
     },
   },
 

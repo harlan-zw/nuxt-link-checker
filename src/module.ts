@@ -47,6 +47,10 @@ export interface ModuleOptions {
      * Whether to output a JSON report.
      */
     markdown?: boolean
+    /**
+     * Whether to output a JSON report.
+     */
+    json?: boolean
   }
   /**
    * Whether to show live inspections in your Nuxt app.

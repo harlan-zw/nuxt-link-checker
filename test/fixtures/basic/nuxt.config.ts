@@ -10,6 +10,14 @@ export default defineNuxtConfig({
     url: 'https://nuxt-link-checker.com',
   },
 
+  linkChecker: {
+    report: {
+      markdown: true,
+      json: true,
+      html: true,
+    },
+  },
+
   devtools: {
     enabled: true,
   },
