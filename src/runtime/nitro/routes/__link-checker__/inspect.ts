@@ -32,7 +32,7 @@ export default defineEventHandler(async (e) => {
   }
   // allow editing files to trigger a cache clear
   lruFsCache.clear()
-  const pageSearch = useNitroApp()._linkCheckerPageSearch
+  const links = await $fetch('/__link-checker__/links')
   return Promise.all(
     tasks.map(async ({ link, paths, textContent }) => {
       // do a quick check for links that are always safe
