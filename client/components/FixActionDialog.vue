@@ -3,10 +3,10 @@ import { FixDialog } from '../composables/dialog'
 import { devtoolsRpc } from '../composables/rpc'
 
 function openFilePath(filepath: string) {
-  devtoolsRpc.value.openInEditor(filepath)
+  devtoolsRpc.value?.openInEditor(filepath)
 }
 
-function handleClose(a, resolve) {
+function handleClose(a: any, resolve: (value: boolean) => void) {
   resolve(false)
 }
 </script>

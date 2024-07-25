@@ -7,7 +7,7 @@ const props = defineProps<{
 }>()
 
 function openFilePath(filepath: string) {
-  devtoolsRpc.value.openInEditor(filepath)
+  devtoolsRpc.value?.openInEditor(filepath)
 }
 
 async function fixDialog() {

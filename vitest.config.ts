@@ -16,12 +16,5 @@ export default defineConfig({
       },
     },
     testTimeout: 60000,
-    watchExclude: [
-      'dist',
-      'playground',
-      'test/**/*',
-      '**/.nuxt/**/*',
-      '**/.output/**/*',
-    ],
   },
 })

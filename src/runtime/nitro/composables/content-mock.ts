@@ -4,5 +4,8 @@ export function serverQueryContent() {
     async findOne() {
       return false
     },
+    async find() {
+      return []
+    },
   }
 }

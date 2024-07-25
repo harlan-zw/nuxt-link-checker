@@ -1,7 +1,7 @@
 import { onDevtoolsClientConnected } from '@nuxt/devtools-kit/iframe-client'
 import type { BirpcReturn } from 'birpc'
 import { ref, unref } from 'vue'
-import type { NuxtDevtoolsClient } from '@nuxt/devtools-kit/dist/types'
+import type { NuxtDevtoolsClient } from '@nuxt/devtools-kit/types'
 import { getQuery } from 'ufo'
 import type { $Fetch } from 'nitropack'
 import type { ClientFunctions, ServerFunctions } from '../../src/rpc-types'
@@ -27,6 +27,7 @@ onDevtoolsClientConnected(async (client) => {
   devtools.value = client.devtools
   linkFilter.value = getQuery(client.host.getIframe()?.src || '').link as string
 
+  // @ts-expect-error untyped
   linkCheckerRpc.value = client.devtools.extendClientRpc<ServerFunctions, ClientFunctions>(RPC_NAMESPACE, {
     queueWorking(payload) {
       queueLength.value = payload.queueLength

@@ -2,11 +2,10 @@ import { resolve } from 'node:path'
 import { defineNuxtConfig } from 'nuxt/config'
 import { defineNuxtModule } from '@nuxt/kit'
 import { startSubprocess } from '@nuxt/devtools-kit'
-import NuxtLinkChecker from '../src/module'
 
 export default defineNuxtConfig({
   modules: [
-    NuxtLinkChecker,
+    'nuxt-link-checker',
     '@nuxtjs/sitemap',
     '@nuxt/ui',
     '@nuxt/content',
@@ -47,6 +46,7 @@ export default defineNuxtConfig({
     }),
   ],
 
+  // @ts-expect-error untyped
   site: {
     url: 'https://nuxt-link-checker.com',
     // trailingSlash: true,

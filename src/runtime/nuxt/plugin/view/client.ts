@@ -11,7 +11,10 @@ import type { useRoute } from '#imports'
 import { useRuntimeConfig } from '#imports'
 
 function resolveDevtoolsIframe() {
-  return document.querySelector('#nuxt-devtools-iframe')?.contentWindow?.__NUXT_DEVTOOLS__ as NuxtDevtoolsIframeClient | undefined
+  const iframe = document.querySelector('#nuxt-devtools-iframe') as Element & { contentWindow: { __NUXT_DEVTOOLS__: NuxtDevtoolsIframeClient } }
+  if (!iframe)
+    return
+  return iframe?.contentWindow?.__NUXT_DEVTOOLS__
 }
 
 function resolvePathsForEl(el: Element): string[] {
@@ -42,7 +45,7 @@ export async function setupLinkCheckerClient({ nuxt, route }: { nuxt: NuxtApp, r
   let startQueueTimeoutId: number | false
   const showInspections = useLocalStorage('nuxt-link-checker:show-inspections', true)
 
-  const runtimeConfig = useRuntimeConfig().public['nuxt-link-checker']
+  const runtimeConfig = useRuntimeConfig().public['nuxt-link-checker'] || {} as any
   const filter = createFilter({
     exclude: runtimeConfig.excludeLinks,
   })
@@ -170,11 +173,7 @@ export async function setupLinkCheckerClient({ nuxt, route }: { nuxt: NuxtApp, r
         }
       }
       else {
-        // devtools 0.7 <= support
-        if (typeof devtoolsClient.host.open === 'function')
-          devtoolsClient.host.open()
-        else
-          devtoolsClient.host.devtools.open()
+        devtoolsClient.host.devtools.open()
 
         const srcPath = new URL(devtoolsClient.host.getIframe()!.src).pathname
         // switch to the tab
@@ -203,7 +202,7 @@ export async function setupLinkCheckerClient({ nuxt, route }: { nuxt: NuxtApp, r
         client.stopQueueWorker()
         // debounce for 500ms
         if (!startQueueTimeoutId) {
-          startQueueTimeoutId = setTimeout(() => {
+          startQueueTimeoutId = window.setTimeout(() => {
             client.scanLinks()
             client.startQueueWorker()
             startQueueTimeoutId = false

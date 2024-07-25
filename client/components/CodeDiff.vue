@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import type { Lang } from 'shiki-es'
+import type { BundledLanguage } from 'shiki'
 
 const props = defineProps<{
   code: string
-  lang?: Lang
-  diff: { added: string[], removed: string[], result: string }
+  lang?: BundledLanguage
+  diff: { added: number[], removed: number[], result: string }
 }>()
 
 const start = ref(props.diff.added[0] - 2)
@@ -35,7 +35,7 @@ function transformRendered(code: string) {
   // get inner contents of pre and replace lines
   return diffed.replace(/<code>([\s\S]*)<\/code>/, (_, p1) => {
     const lines = p1.split('\n')
-    const filtered = lines.filter((_, i) => linesToInclude.has(i + 1))
+    const filtered = lines.filter((_: any, i: number) => linesToInclude.has(i + 1))
     return `<code>${filtered.join('\n')}</code>`
   })
 }

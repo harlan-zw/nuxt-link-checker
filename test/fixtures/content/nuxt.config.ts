@@ -1,12 +1,12 @@
 import { defineNuxtConfig } from 'nuxt/config'
-import NuxtLinkChecker from '../../../src/module'
 
 export default defineNuxtConfig({
   modules: [
-    NuxtLinkChecker,
+    'nuxt-link-checker',
     '@nuxt/content',
   ],
 
+  // @ts-expect-error untyped
   site: {
     url: 'https://nuxt-link-checker.com',
   },

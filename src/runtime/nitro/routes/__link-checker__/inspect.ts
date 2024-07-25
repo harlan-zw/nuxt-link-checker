@@ -17,12 +17,12 @@ import { serverQueryContent } from '#content/server'
 // verify a link
 export default defineEventHandler(async (e) => {
   const { tasks, ids } = await readBody<{ tasks: { link: string, textContent: string, paths: string[] }[], ids: string[] }>(e)
-  const runtimeConfig = useRuntimeConfig().public['nuxt-link-checker']
-  const partialCtx: Partial<RuleTestContext> = {
+  const runtimeConfig = useRuntimeConfig().public['nuxt-link-checker'] || {} as any
+  const partialCtx = {
     ids,
     fromPath: fixSlashes(false, parseURL(getHeader(e, 'referer') || '/').pathname),
     siteConfig: useSiteConfig(e),
-  }
+  } as const
   const extraPaths: string[] = []
   if (serverQueryContent) {
     // let's fetch from the content document
