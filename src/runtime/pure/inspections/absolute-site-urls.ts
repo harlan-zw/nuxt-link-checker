@@ -1,4 +1,3 @@
-import { parseURL } from 'ufo'
 import { defineRule } from './util'
 
 export default function RuleAbsoluteSiteUrls() {

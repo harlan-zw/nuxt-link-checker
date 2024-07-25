@@ -34,15 +34,15 @@ export default defineCachedEventHandler(async (e) => {
     const sitemapDebug = (await $fetch('/__sitemap__/debug.json')) as { globalSources: { urls: { loc: string }[] }[] }
     // iterate sources
     const entries = sitemapDebug.globalSources.map(source => source.urls).flat()
-    linkDb.push(...entries.map(s => ({ link: s.loc, textContent: '' })))
+    linkDb.push(...entries.map(s => ({ path: s.loc, title: '' })))
   }
   if (serverQueryContent) {
     // let's fetch from the content document
     const contentDocuments = await serverQueryContent(e).find()
     if (contentDocuments) {
-      linkDb.push(...contentDocuments.map(doc => ({
-        link: doc._path,
-        textContent: doc.title,
+      linkDb.push(...contentDocuments.map((doc: any) => ({
+        path: doc._path,
+        title: doc.title,
       })))
     }
   }

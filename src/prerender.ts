@@ -16,21 +16,23 @@ import { getLinkResponse, setLinkResponse } from './runtime/pure/crawl'
 const linkMap: Record<string, ExtractedPayload> = {}
 
 interface ExtractedPayload {
+  title: string
   links: { link: string, textContent: string }[]
   ids: string[]
 }
 export function extractPayload(html: string) {
   const $ = load(html)
   const ids = $('#__nuxt [id]').map((i, el) => $(el).attr('id')).get()
+  const title = $('title').text()
   const links = $('#__nuxt a[href]').map((i, el) => {
     return {
-      link: $(el).attr('href'),
+      link: $(el).attr('href') || '',
       textContent: ($(el).attr('aria-label') || $(el).attr('title') || $(el).text()).trim() || '',
     }
   }).get()
     // make sure the link has a href
     .filter(l => !!l.link)
-  return { ids, links }
+  return { title, ids, links }
 }
 
 export function isNuxtGenerate(nuxt: Nuxt = useNuxt()) {
@@ -54,8 +56,14 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
       const payloads = Object.entries(linkMap)
       if (!payloads.length)
         return
-      const links = payloads.map(([, payloads]) => payloads.links).flat()
+      const links = payloads.map(([route, payload]) => {
+        return {
+          path: route,
+          title: payload.title,
+        }
+      }).flat()
       const pageSearcher = new Fuse(links, {
+        keys: ['path', 'title'],
         threshold: 0.5,
       })
       nitro.logger.info('Running link inspections...')

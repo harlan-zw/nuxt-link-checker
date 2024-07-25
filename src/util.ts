@@ -18,7 +18,10 @@ export function convertNuxtPagesToPaths(pages: NuxtPage[]) {
     })
     .flat()
     .filter(p => !p.path.includes(':'))
-    .map(p => p.path)
+    .map(p => ({
+      title: p.page?.meta?.title || '',
+      link: p.path,
+    }))
 }
 
 export function useViteWebSocket(nuxt: Nuxt = useNuxt()) {

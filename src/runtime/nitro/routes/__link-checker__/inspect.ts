@@ -2,13 +2,13 @@ import { defineEventHandler, getHeader, readBody } from 'h3'
 import { fixSlashes } from 'site-config-stack/urls'
 import { parseURL } from 'ufo'
 import { resolve } from 'pathe'
-import { inspect } from '../../../pure/inspect'
-import type { RuleTestContext } from '../../../types'
+import Fuse from 'fuse.js'
+import { AllInspections, inspect } from '../../../pure/inspect'
 import { generateFileLinkDiff, generateFileLinkPreviews, lruFsCache } from '../../../pure/diff'
 import { getLinkResponse } from '../../../pure/crawl'
 import { isNonFetchableLink } from '../../../pure/inspections/util'
 import { isInternalRoute } from '../../util'
-import { useNitroApp, useNitroOrigin, useRuntimeConfig, useSiteConfig } from '#imports'
+import { useNitroOrigin, useRuntimeConfig, useSiteConfig } from '#imports'
 
 // this is stubbed with content-mock.ts
 // @ts-expect-error optional module
@@ -52,10 +52,13 @@ export default defineEventHandler(async (e) => {
         ...partialCtx,
         link,
         textContent,
-        pageSearch,
+        pageSearch: new Fuse(links, {
+          keys: ['path', 'title'],
+          threshold: 0.5,
+        }),
         response,
         skipInspections: runtimeConfig.skipInspections,
-      })
+      }, AllInspections)
       const filePaths = [
         ...extraPaths,
         ...paths.map((p) => {

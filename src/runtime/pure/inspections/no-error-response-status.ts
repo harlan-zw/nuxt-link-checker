@@ -14,10 +14,10 @@ export default function RuleNoErrorResponse() {
       }
       // only for relative links
       if (link.startsWith('/') && pageSearch) {
-        const fix = pageSearch.search(link)?.[0]?.item
-        if (fix && fix !== link) {
-          payload.fix = fix
-          payload.fixDescription = `Did you mean ${fix}?`
+        const related = pageSearch.search(link)?.[0]?.item
+        if (related?.path && related.path !== link) {
+          payload.fix = related.path
+          payload.fixDescription = `Did you mean ${related.path}?`
         }
       }
       else {
