@@ -13,7 +13,7 @@ export const FooMarkdown = resolve('./fixtures/content/content/foo.md')
 
 describe('nuxt/content documentDriven', () => {
   it('basic', async () => {
-    const singleInspect = await $fetch('/__link-checker__/inspect', {
+    const singleInspect = await $fetch<{ diff: [], sources: [] }[]>('/__link-checker__/inspect', {
       method: 'POST',
       body: {
         tasks: [
@@ -29,13 +29,13 @@ describe('nuxt/content documentDriven', () => {
     const res = singleInspect.map((r) => {
       return {
         ...r,
-        diff: r.diff.map((d) => {
+        diff: r.diff.map((d: { filepath: string }) => {
           return {
             ...d,
             filepath: d.filepath.split('/').pop(),
           }
         }),
-        sources: r.sources.map((s) => {
+        sources: r.sources.map((s: { filepath: string }) => {
           return {
             ...s,
             filepath: s.filepath.split('/').pop(),
@@ -51,13 +51,17 @@ describe('nuxt/content documentDriven', () => {
               "code": "This is a link to an about page that does not exist:
 
       - [About Us](/about-us)
+      - [Foos](/foos)
+      - [Foos](/foo)
       ",
               "diff": {
                 "added": [],
                 "removed": [],
                 "result": "This is a link to an about page that does not exist:
 
-      - [About Us](/about-us)",
+      - [About Us](/about-us)
+      - [Foos](/foos)
+      - [Foos](/foo)",
               },
               "filepath": "index.md",
             },
@@ -81,7 +85,8 @@ describe('nuxt/content documentDriven', () => {
                   "code": "This is a link to an about page that does not exist:
 
       - [About Us](/about-us)
-      ",
+      - [Foos](/foos)
+      - [Foos](/foo)",
                   "columnNumber": 67,
                   "lineNumber": 3,
                 },

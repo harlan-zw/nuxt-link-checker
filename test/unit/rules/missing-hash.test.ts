@@ -39,7 +39,7 @@ describe('rule missing-hash', () => {
       link: '/about#top',
       ids: [],
       fromPath: '/about',
-    } as RuleTestContext
+    } as any as RuleTestContext
 
     expect(runRule(ctx, RuleMissingHash())).toMatchInlineSnapshot(`
       {

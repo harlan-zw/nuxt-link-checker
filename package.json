@@ -40,14 +40,15 @@
   "scripts": {
     "build": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build && npm run client:build",
     "client:build": "nuxi generate client",
-    "client:dev": "nuxi dev client --port 3300",
+    "client:dev": "nuxi dev client --port 3030",
     "dev": "npm run play:dev",
-    "dev:prepare": "nuxt-module-build build --stub && nuxi prepare client",
+    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare client",
     "play:dev": "nuxi dev playground",
     "play:prod": "npm run build && nuxi dev playground",
     "release": "pnpm build && bumpp && pnpm -r publish",
     "lint": "eslint . --fix",
     "test": "vitest run",
+    "test:types": "npx nuxi typecheck",
     "test:watch": "vitest watch"
   },
   "dependencies": {

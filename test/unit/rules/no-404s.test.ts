@@ -9,10 +9,11 @@ describe('rule no-404s', () => {
     const ctx = {
       link: '/abot',
       response: { status: 404 },
-      pageSearch: new Fuse(['/about'], {
+      pageSearch: new Fuse([{ link: '/about', textContent: 'About' }], {
+        keys: ['link', 'textContent'],
         threshold: 0.5,
       }),
-    } as RuleTestContext
+    } as any as RuleTestContext
 
     expect(runRule(ctx, RuleNoErrorResponse())).toMatchInlineSnapshot(`
       {
