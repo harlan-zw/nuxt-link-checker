@@ -113,9 +113,13 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
               report.error?.forEach((error) => {
                 // show code
                 nitro.logger.log(chalk.red(`        ✖ ${error.message}`) + chalk.gray(` (${error.name})`))
+                if (error.fix)
+                  nitro.logger.log(chalk.gray(`          ${error.fixDescription}`))
               })
               report.warning?.forEach((warning) => {
                 nitro.logger.log(chalk.yellow(`        ⚠ ${warning.message}`) + chalk.gray(` (${warning.name})`))
+                if (warning.fix)
+                  nitro.logger.log(chalk.gray(`          ${warning.fixDescription}`))
               })
             }
           })
