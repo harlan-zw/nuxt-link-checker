@@ -21,7 +21,8 @@ export const AllInspections = [
   RuleDescriptiveLinkText(),
 ]
 
-export function inspect(ctx: Pick<Required<RuleTestContext>, 'link'> & Omit<Partial<RuleTestContext>, 'link'>, rules: Rule[]): Partial<LinkInspectionResult> {
+export function inspect(ctx: Pick<Required<RuleTestContext>, 'link'> & Omit<Partial<RuleTestContext>, 'link'>, rules?: Rule[]): Partial<LinkInspectionResult> {
+  rules = rules || AllInspections
   const res: Partial<LinkInspectionResult> = { error: [], warning: [], fix: ctx.link, link: ctx.link }
   let link = ctx.link
   const url = parseURL(link)

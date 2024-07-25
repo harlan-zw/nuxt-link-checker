@@ -10,7 +10,7 @@ import { withoutLeadingSlash } from 'ufo'
 import { createStorage } from 'unstorage'
 import fsDriver from 'unstorage/drivers/fs'
 import type { ModuleOptions } from './module'
-import { AllInspections, inspect } from './runtime/pure/inspect'
+import { inspect } from './runtime/pure/inspect'
 import { createFilter } from './runtime/pure/sharedUtils'
 import { getLinkResponse, setLinkResponse } from './runtime/pure/crawl'
 
@@ -103,7 +103,7 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
             textContent,
             response,
             skipInspections: config.skipInspections,
-          }, AllInspections)
+          })
         }))
         const errors = reports.filter(r => r.error?.length).length
         errorCount += errors

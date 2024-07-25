@@ -3,16 +3,18 @@ import { fixSlashes } from 'site-config-stack/urls'
 import { parseURL } from 'ufo'
 import { resolve } from 'pathe'
 import Fuse from 'fuse.js'
-import { AllInspections, inspect } from '../../../pure/inspect'
-import { generateFileLinkDiff, generateFileLinkPreviews, lruFsCache } from '../../../pure/diff'
-import { getLinkResponse } from '../../../pure/crawl'
-import { isNonFetchableLink } from '../../../pure/inspections/util'
-import { isInternalRoute } from '../../util'
+// @ts-expect-error untyped
+import { generateFileLinkDiff, generateFileLinkPreviews, getLinkResponse, inspect, isNonFetchableLink, lruFsCache } from '#link-checker/pure'
 import { useNitroOrigin, useRuntimeConfig, useSiteConfig } from '#imports'
 
 // this is stubbed with content-mock.ts
 // @ts-expect-error optional module
 import { serverQueryContent } from '#content/server'
+
+function isInternalRoute(path: string) {
+  const lastSegment = path.split('/').pop() || path
+  return lastSegment.includes('.') || path.startsWith('/__') || path.startsWith('@')
+}
 
 // verify a link
 export default defineEventHandler(async (e) => {
@@ -58,7 +60,7 @@ export default defineEventHandler(async (e) => {
         }),
         response,
         skipInspections: runtimeConfig.skipInspections,
-      }, AllInspections)
+      })
       const filePaths = [
         ...extraPaths,
         ...paths.map((p) => {

@@ -171,11 +171,12 @@ export default defineNuxtModule<ModuleOptions>({
       const hasSitemapModule = (hasNuxtModule('@nuxtjs/sitemap') || (hasNuxtModule('nuxt-simple-sitemap') && await hasNuxtModuleCompatibility('nuxt-simple-sitemap', '>=4')))
         //  @ts-expect-error runtime
         && nuxt.options.sitemap?.enabled !== false
+      nuxt.options.nitro.alias = nuxt.options.nitro.alias || {}
       if (!hasNuxtModule('@nuxt/content')) {
         // we need to add a nitro alias for #content/server to avoid errors
-        nuxt.options.nitro.alias = nuxt.options.nitro.alias || {}
         nuxt.options.nitro.alias['#content/server'] = resolve('./runtime/nitro/composables/content-mock')
       }
+      nuxt.options.nitro.alias['#link-checker/pure'] = resolve('./runtime/pure')
       nuxt.options.runtimeConfig.public['nuxt-link-checker'] = {
         version,
         hasSitemapModule,
