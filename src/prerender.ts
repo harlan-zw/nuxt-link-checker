@@ -126,9 +126,10 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
         }
         return { route, reports }
       }))).flat()
+      const reportsWithContent = allReports.filter(({ reports }) => reports.some(r => r.error?.length || r.warning?.length))
       // emit a html report
       if (config.report?.html) {
-        const reportHtml = allReports
+        const reportHtml = reportsWithContent
           .map(({ route, reports }) => {
             const reportsHtml = reports.map((r) => {
               const errors = r.error?.map((error) => {
@@ -186,7 +187,7 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
         nitro.logger.info(`Nuxt Link Checker HTML report written to ${relative(nuxt.options.rootDir, resolve(nitro.options.output.dir, 'link-checker-report.html'))}`)
       }
       if (config.report?.markdown) {
-        const reportMarkdown = allReports
+        const reportMarkdown = reportsWithContent
           .map(({ route, reports }) => {
             const reportsMarkdown = reports.map((r) => {
               const errors = r.error?.map((error) => {
