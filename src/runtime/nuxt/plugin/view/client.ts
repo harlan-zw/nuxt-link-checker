@@ -27,7 +27,7 @@ function resolvePathsForEl(el: Element): string[] {
   ].filter(Boolean) as string[]
 }
 
-export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
+export async function setupLinkCheckerClient({ nuxt, route }: { nuxt: NuxtApp, route: ReturnType<typeof useRoute> }) {
   let queue: { link: string, paths: string[], textContent: string }[] = []
   let queueWorkerTimer: any
   const inspectionEls = ref<UnwrapRef<NuxtLinkCheckerClient['inspectionEls']>>([])
@@ -37,7 +37,6 @@ export async function setupLinkCheckerClient({ nuxt }: { nuxt: NuxtApp }) {
   let elMap: Record<string, Element[]> = {}
   let devtoolsClient: NuxtDevtoolsIframeClient | undefined
   let isOpeningDevtools = false
-  const route = useRoute()
   let startQueueIdleId: number
   let startQueueTimeoutId: number | false
   const showInspections = useLocalStorage('nuxt-link-checker:show-inspections', true)

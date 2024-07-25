@@ -1,4 +1,4 @@
-import { defineNuxtPlugin } from '#imports'
+import { defineNuxtPlugin, useRoute } from '#imports'
 
 export default defineNuxtPlugin((nuxt: any) => {
   if (typeof document === 'undefined' || typeof window === 'undefined')
@@ -18,9 +18,11 @@ export default defineNuxtPlugin((nuxt: any) => {
     console.error(e)
   }
 
+  const route = useRoute()
   import('./view/client')
     .then(({ setupLinkCheckerClient }) => {
       setupLinkCheckerClient({
+        route,
         nuxt,
       })
     })
