@@ -7,7 +7,8 @@ import type { LinkInspectionResult, NuxtLinkCheckerClient } from '../../../types
 import { createFilter } from '../../../pure/sharedUtils'
 import Main from './Main.vue'
 import { linkDb } from './state'
-import { useRoute, useRuntimeConfig } from '#imports'
+import type { useRoute } from '#imports'
+import { useRuntimeConfig } from '#imports'
 
 function resolveDevtoolsIframe() {
   return document.querySelector('#nuxt-devtools-iframe')?.contentWindow?.__NUXT_DEVTOOLS__ as NuxtDevtoolsIframeClient | undefined
