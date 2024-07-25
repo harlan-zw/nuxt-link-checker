@@ -42,5 +42,8 @@ jobs:
       - name: Build
         run: pnpm run build
 
+      - name: Prepare playground
+        run: nuxi prepare playground
+
       - name: Test
         run: pnpm run test
