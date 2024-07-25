@@ -1,4 +1,3 @@
-import fs from 'node:fs/promises'
 import { existsSync } from 'node:fs'
 import chalk from 'chalk'
 import { useNuxt } from '@nuxt/kit'
