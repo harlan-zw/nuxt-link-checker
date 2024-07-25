@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { type Ref, computed, ref } from 'vue'
 import type { NuxtLinkCheckerClient } from '../../../types'
 import Squiggle from './Squiggle.vue'
 import { useEventListener } from './utils'
 
 const props = defineProps<{
   client: NuxtLinkCheckerClient
-  highlightedLink: string | null
+  highlightedLink: Ref<string | null>
   inspections: NuxtLinkCheckerClient['inspectionEls']
 }>()
 
