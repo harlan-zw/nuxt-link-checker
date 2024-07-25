@@ -4,6 +4,7 @@ import { defineRule } from './util'
 
 export default function RuleTrailingSlash() {
   return defineRule({
+    id: 'trailing-slash',
     test({ report, link, siteConfig }) {
       if (!link.startsWith('/') && !link.startsWith(siteConfig.url!))
         return // ignore external links

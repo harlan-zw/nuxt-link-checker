@@ -3,6 +3,7 @@ import { defineRule } from './inspections/util'
 
 export default function RuleRedirects() {
   return defineRule({
+    id: 'redirects',
     test({ report, response }) {
       if (response.status !== 301 && response.status !== 302)
         return

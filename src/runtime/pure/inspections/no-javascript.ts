@@ -2,6 +2,7 @@ import { defineRule } from './util'
 
 export default function RuleNoJavascript() {
   return defineRule({
+    id: 'no-javascript',
     test({ link, report }) {
       if (link.startsWith('javascript:')) {
         report({

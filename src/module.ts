@@ -26,7 +26,7 @@ export interface ModuleOptions {
   /**
    * Skip specific inspections from running.
    */
-  skipInspections: (Partial<keyof typeof DefaultInspections>)[]
+  skipInspections: string[]
   /**
    * The timeout for fetching a URL.
    *

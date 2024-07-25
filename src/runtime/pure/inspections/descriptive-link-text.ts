@@ -2,6 +2,7 @@ import { defineRule } from './util'
 
 export default function RuleDescriptiveLinkText() {
   return defineRule({
+    id: 'link-text',
     test({ textContent, report }) {
       if (typeof textContent === 'undefined')
         return

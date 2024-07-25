@@ -9,7 +9,7 @@ import { load } from 'cheerio'
 import type { Nuxt } from 'nuxt/schema'
 import { withoutLeadingSlash } from 'ufo'
 import type { ModuleOptions } from './module'
-import { inspect } from './runtime/pure/inspect'
+import { AllInspections, inspect } from './runtime/pure/inspect'
 import { createFilter } from './runtime/pure/sharedUtils'
 import { getLinkResponse, setLinkResponse } from './runtime/pure/crawl'
 
@@ -84,7 +84,7 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
             textContent,
             response,
             skipInspections: config.skipInspections,
-          })
+          }, AllInspections)
         }))
         const errors = reports.filter(r => r.error?.length).length
         errorCount += errors

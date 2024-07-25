@@ -10,18 +10,18 @@ import RuleNoErrorResponse from './inspections/no-error-response-status'
 import RuleDescriptiveLinkText from './inspections/descriptive-link-text'
 import { isNonFetchableLink } from './inspections/util'
 
-export const DefaultInspections = {
-  'missing-hash': RuleMissingHash(),
-  'no-error-response': RuleNoErrorResponse(),
-  'no-baseless': RuleNoBaseLess(),
-  'no-javascript': RuleNoJavascript(),
-  'trailing-slash': RuleTrailingSlash(),
-  'absolute-site-urls': RuleAbsoluteSiteUrls(),
-  'redirects': RuleRedirects(),
-  'link-text': RuleDescriptiveLinkText(),
-} as const
+export const AllInspections = [
+  RuleMissingHash(),
+  RuleNoErrorResponse(),
+  RuleNoBaseLess(),
+  RuleNoJavascript(),
+  RuleTrailingSlash(),
+  RuleAbsoluteSiteUrls(),
+  RuleRedirects(),
+  RuleDescriptiveLinkText(),
+]
 
-export function inspect(ctx: RuleTestContext, rules = DefaultInspections): Partial<LinkInspectionResult> {
+export function inspect(ctx: Pick<Required<RuleTestContext>, 'link'> & Omit<Partial<RuleTestContext>, 'link'>, rules: Rule[]): Partial<LinkInspectionResult> {
   const res: Partial<LinkInspectionResult> = { error: [], warning: [], fix: ctx.link, link: ctx.link }
   let link = ctx.link
   const url = parseURL(link)
@@ -39,7 +39,7 @@ export function inspect(ctx: RuleTestContext, rules = DefaultInspections): Parti
     .map(([, rule]) => rule) as Rule[]
   for (const rule of validInspections) {
     rule.test({
-      ...ctx,
+      ...(ctx as RuleTestContext),
       link,
       url,
       report(obj) {

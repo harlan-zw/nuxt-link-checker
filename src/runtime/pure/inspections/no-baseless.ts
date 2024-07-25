@@ -3,6 +3,7 @@ import { defineRule, isNonFetchableLink } from './util'
 
 export default function RuleNoBaseLess() {
   return defineRule({
+    id: 'no-baseless',
     test({ link, fromPath, report }) {
       if (link.startsWith('/') || link.startsWith('http') || isNonFetchableLink(link))
         return

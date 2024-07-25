@@ -5,6 +5,7 @@ import type { ComputedRef, Ref } from 'vue'
 import type { ParsedURL } from 'ufo'
 
 export interface Rule {
+  id: string
   test: (ctx: RuleTestContext) => void
 }
 

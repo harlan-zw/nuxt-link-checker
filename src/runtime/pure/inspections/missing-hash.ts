@@ -5,6 +5,7 @@ import { defineRule } from './util'
 
 export default function RuleMissingHash() {
   return defineRule({
+    id: 'missing-hash',
     test({ link, report, ids, fromPath }) {
       const [path, hash] = link.split('#')
       if (!link.includes('#') || link.endsWith('#top') || fixSlashes(false, path) !== fromPath)
