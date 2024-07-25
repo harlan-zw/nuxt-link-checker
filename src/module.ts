@@ -1,7 +1,6 @@
 import {
   addPlugin,
   addServerHandler,
-  addServerPlugin,
   createResolver,
   defineNuxtModule,
   extendPages,
@@ -14,7 +13,6 @@ import type { NuxtPage } from '@nuxt/schema'
 import { readPackageJSON } from 'pkg-types'
 import { isNuxtGenerate, prerender } from './prerender'
 import { setupDevToolsUI } from './devtools'
-import type { DefaultInspections } from './runtime/pure/inspect'
 import { convertNuxtPagesToPaths } from './util'
 import { crawlFetch } from './runtime/pure/crawl'
 
@@ -145,7 +143,6 @@ export default defineNuxtModule<ModuleOptions>({
         route: '/__link-checker__/debug.json',
         handler: resolve('./runtime/nitro/routes/__link-checker__/debug'),
       })
-      addServerPlugin(resolve('./runtime/nuxt/plugin/search.nitro'))
       const pagePromise = new Promise<NuxtPage[]>((_resolve) => {
         extendPages((pages) => {
           _resolve(pages)

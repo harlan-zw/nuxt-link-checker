@@ -71,7 +71,7 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
       let errorCount = 0
       const allReports = (await Promise.all(payloads.map(async ([route, payload]) => {
         const reports = await Promise.all(payload.links.map(async ({ link, textContent }) => {
-          if (!urlFilter(link))
+          if (!urlFilter(link) || !link)
             return { error: [], warning: [], link }
 
           const response = await getLinkResponse({

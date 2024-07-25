@@ -1,4 +1,3 @@
-import type { FetchResponse } from 'ofetch'
 import type { SiteConfigResolved } from 'site-config-stack'
 import type Fuse from 'fuse.js'
 import type { ComputedRef, Ref } from 'vue'
@@ -15,7 +14,7 @@ export interface RuleTestContext {
   textContent: string
   ids: string[]
   fromPath: string
-  response: FetchResponse<any>
+  response: any
   siteConfig: SiteConfigResolved
   pageSearch?: Fuse<{ path: string, title: string }>
   report: (report: RuleReport) => void

@@ -15,7 +15,6 @@ export default function RuleRedirects() {
         tip: 'Redirects use up your crawl budget and increase loading times, it\'s recommended to avoid them when possible.',
       }
 
-      // @ts-expect-error untyped
       const fix = typeof response.headers?.get === 'function' ? response.headers.get('location') : response.headers?.location || false
       if (fix) {
         payload.fix = fix
