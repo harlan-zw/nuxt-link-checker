@@ -30,7 +30,8 @@
     "externals": [
       "ofetch",
       "std-env",
-      "unstorage"
+      "unstorage",
+      "unstorage/drivers/fs"
     ]
   },
   "main": "./dist/module.cjs",
