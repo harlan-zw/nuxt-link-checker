@@ -8,6 +8,8 @@ import { relative, resolve } from 'pathe'
 import { load } from 'cheerio'
 import type { Nuxt } from 'nuxt/schema'
 import { withoutLeadingSlash } from 'ufo'
+import { createStorage } from 'unstorage'
+import fsDriver from 'unstorage/drivers/fs'
 import type { ModuleOptions } from './module'
 import { AllInspections, inspect } from './runtime/pure/inspect'
 import { createFilter } from './runtime/pure/sharedUtils'
@@ -56,6 +58,16 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
       const payloads = Object.entries(linkMap)
       if (!payloads.length)
         return
+
+      const storageFilepath = typeof config.report?.storage === 'string' ? resolve(nuxt.options.rootDir, config.report?.storage) : nitro.options.output.dir
+      const storage = createStorage(config.report?.storage && typeof config.report.storage !== 'string'
+        ? config.report?.storage
+        : {
+            driver: fsDriver({
+              base: storageFilepath,
+            }),
+          })
+
       const links = payloads.map(([route, payload]) => {
         return {
           path: route,
@@ -182,9 +194,10 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
                     </body>
                 </html>
                 `
-        // write file
-        await fs.writeFile(resolve(nitro.options.output.dir, 'link-checker-report.html'), html)
-        nitro.logger.info(`Nuxt Link Checker HTML report written to ${relative(nuxt.options.rootDir, resolve(nitro.options.output.dir, 'link-checker-report.html'))}`)
+        await storage.setItem('link-checker-report.html', html)
+        if (storageFilepath) {
+          nitro.logger.info(`Nuxt Link Checker HTML report written to ./${relative(nuxt.options.rootDir, resolve(storageFilepath, 'link-checker-report.html'))}`)
+        }
       }
       if (config.report?.markdown) {
         const reportMarkdown = reportsWithContent
@@ -218,14 +231,18 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
           reportMarkdown,
         ].join('\n')
         // write file
-        await fs.writeFile(resolve(nitro.options.output.dir, 'link-checker-report.md'), markdown)
-        nitro.logger.info(`Nuxt Link Checker Markdown report written to ${relative(nuxt.options.rootDir, resolve(nitro.options.output.dir, 'link-checker-report.md'))}`)
+        await storage.setItem('link-checker-report.md', markdown)
+        if (storageFilepath) {
+          nitro.logger.info(`Nuxt Link Checker Markdown report written to ./${relative(nuxt.options.rootDir, resolve(storageFilepath, 'link-checker-report.md'))}`)
+        }
       }
       if (config.report?.json) {
         const json = JSON.stringify(reportsWithContent, null, 2)
         // write file
-        await fs.writeFile(resolve(nitro.options.output.dir, 'link-checker-report.json'), json)
-        nitro.logger.info(`Nuxt Link Checker JSON report written to ${relative(nuxt.options.rootDir, resolve(nitro.options.output.dir, 'link-checker-report.json'))}`)
+        await storage.setItem('link-checker-report.json', json)
+        if (storageFilepath) {
+          nitro.logger.info(`Nuxt Link Checker JSON report written to ./${relative(nuxt.options.rootDir, resolve(storageFilepath, 'link-checker-report.json'))}`)
+        }
       }
       if (errorCount > 0 && config.failOnError) {
         nitro.logger.error(`Nuxt Link Checker found ${errorCount} errors, failing build.`)

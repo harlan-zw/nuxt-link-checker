@@ -11,6 +11,7 @@ import {
 import { installNuxtSiteConfig } from 'nuxt-site-config-kit'
 import type { NuxtPage } from '@nuxt/schema'
 import { readPackageJSON } from 'pkg-types'
+import type { CreateStorageOptions } from 'unstorage'
 import { isNuxtGenerate, prerender } from './prerender'
 import { setupDevToolsUI } from './devtools'
 import { convertNuxtPagesToPaths } from './util'
@@ -51,6 +52,14 @@ export interface ModuleOptions {
      * Whether to output a JSON report.
      */
     json?: boolean
+    /**
+     * Where to store the files.
+     *
+     * Either provide a path relative to the nuxt root or an object with options for `unstorage`.
+     *
+     * By default, they'll be in your .output directory.
+     */
+    storage?: string | CreateStorageOptions
   }
   /**
    * Whether to show live inspections in your Nuxt app.
