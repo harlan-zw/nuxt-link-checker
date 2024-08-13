@@ -58,10 +58,10 @@
     "@nuxt/kit": "^3.12.4",
     "@vueuse/core": "^11.0.0-beta.2",
     "chalk": "^5.3.0",
-    "cheerio": "1.0.0-rc.12",
+    "cheerio": "1.0.0",
     "diff": "^5.2.0",
     "fuse.js": "^7.0.0",
-    "magic-string": "^0.30.10",
+    "magic-string": "^0.30.11",
     "nuxt-site-config": "2.2.15",
     "nuxt-site-config-kit": "2.2.15",
     "pathe": "^1.1.2",
@@ -72,20 +72,20 @@
     "ufo": "^1.5.4"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^2.23.2",
+    "@antfu/eslint-config": "^2.25.1",
     "@nuxt/content": "^2.13.2",
     "@nuxt/devtools": "^1.3.9",
-    "@nuxt/module-builder": "0.8.1",
-    "@nuxt/test-utils": "^3.13.1",
-    "@nuxt/ui": "^2.18.1",
+    "@nuxt/module-builder": "0.8.3",
+    "@nuxt/test-utils": "^3.14.1",
+    "@nuxt/ui": "^2.18.4",
     "@nuxtjs/eslint-config-typescript": "^12.1.0",
-    "@nuxtjs/sitemap": "^5.3.5",
+    "@nuxtjs/sitemap": "6.0.0-beta.1",
     "@types/diff": "^5.2.1",
-    "bumpp": "^9.4.1",
-    "eslint": "9.7.0",
+    "bumpp": "^9.5.1",
+    "eslint": "9.9.0",
     "execa": "^9.3.0",
     "nuxt": "^3.12.4",
-    "vitest": "^2.0.4"
+    "vitest": "^2.0.5"
   },
   "resolutions": {
     "nuxt-link-checker": "workspace:*"
