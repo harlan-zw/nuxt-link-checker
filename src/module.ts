@@ -72,7 +72,7 @@ export interface ModuleOptions {
   /**
    * Should remote URLs be fetched.
    *
-   * @default true (disabled in stackblitz)
+   * @default false
    */
   fetchRemoteUrls: boolean
   /**
@@ -135,7 +135,7 @@ export default defineNuxtModule<ModuleOptions>({
     if (config.fetchRemoteUrls) {
       config.fetchRemoteUrls = (await crawlFetch('https://google.com')).status === 200
       if (!config.fetchRemoteUrls)
-        logger.warn('Remote URL fetching is disabled because https://google.com could not be fetched.')
+        logger.warn('Remote URL fetching is disabled because you appear to be offline.')
     }
 
     const isDevToolsEnabled = typeof nuxt.options.devtools === 'boolean' ? nuxt.options.devtools : nuxt.options.devtools.enabled
