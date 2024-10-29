@@ -96,7 +96,7 @@ describe('generate', () => {
                 {
                   "name": "link-text",
                   "scope": "warning",
-                  "message": "Should have descriptive text.",
+                  "message": "Link text \\"here\\" should be more descriptive.",
                   "tip": "The here descriptive text does not provide any context to the link."
                 }
               ],
@@ -464,7 +464,7 @@ describe('generate', () => {
       ## [/](/) 7 errors, 4 warnings
       | Link | Message |
       | --- | --- |
-      | /about | Should have descriptive text. (link-text) |
+      | /about | Link text "here" should be more descriptive. (link-text) |
       | this is a very bad link | Should not respond with status code 404 (Not Found). (no-error-response) |
       | this is a very bad link | Should not have a base. (no-baseless) |
       | /abot | Should not respond with status code 404 (Page not found: /abot). (no-error-response) |
