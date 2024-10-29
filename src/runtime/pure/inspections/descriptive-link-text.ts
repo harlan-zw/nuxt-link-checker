@@ -30,7 +30,7 @@ export default function RuleDescriptiveLinkText() {
         report({
           name: 'link-text',
           scope: 'warning',
-          message: `Link text ${textContent} should be more descriptive.`,
+          message: `Link text "${textContent}" should be more descriptive.`,
           tip: `The ${textContent} descriptive text does not provide any context to the link.`,
         })
       }
