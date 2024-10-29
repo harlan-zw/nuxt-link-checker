@@ -1,6 +1,6 @@
+import type { RuleTestContext } from '../../../src/runtime/types'
 import { describe, expect, it } from 'vitest'
 import RuleNoBaseLess from '../../../src/runtime/pure/inspections/no-baseless'
-import type { RuleTestContext } from '../../../src/runtime/types'
 import { runRule } from './util'
 
 describe('rule no-baseless', () => {

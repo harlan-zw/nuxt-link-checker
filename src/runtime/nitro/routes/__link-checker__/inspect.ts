@@ -1,11 +1,11 @@
+import { useNitroOrigin, useRuntimeConfig, useSiteConfig } from '#imports'
+import Fuse from 'fuse.js'
 import { defineEventHandler, getHeader, readBody } from 'h3'
+import { resolve } from 'pathe'
 import { fixSlashes } from 'site-config-stack/urls'
 import { parseURL } from 'ufo'
-import { resolve } from 'pathe'
-import Fuse from 'fuse.js'
 // @ts-expect-error untyped
 import { generateFileLinkDiff, generateFileLinkPreviews, getLinkResponse, inspect, isNonFetchableLink, lruFsCache } from '#link-checker/pure'
-import { useNitroOrigin, useRuntimeConfig, useSiteConfig } from '#imports'
 
 // this is stubbed with content-mock.ts
 // @ts-expect-error optional module

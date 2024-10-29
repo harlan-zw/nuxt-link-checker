@@ -1,5 +1,5 @@
-import { createDefu } from 'defu'
 import { defineCachedEventHandler, useRuntimeConfig } from '#imports'
+import { createDefu } from 'defu'
 
 // @ts-expect-error untyped
 import pagePaths from '#nuxt-link-checker-sitemap/pages.mjs'

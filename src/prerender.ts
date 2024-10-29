@@ -1,18 +1,18 @@
-import { existsSync } from 'node:fs'
-import chalk from 'chalk'
-import { useNuxt } from '@nuxt/kit'
-import { useSiteConfig } from 'nuxt-site-config-kit'
-import Fuse from 'fuse.js'
-import { relative, resolve } from 'pathe'
-import { load } from 'cheerio'
 import type { Nuxt } from 'nuxt/schema'
+import type { ModuleOptions } from './module'
+import { existsSync } from 'node:fs'
+import { useNuxt } from '@nuxt/kit'
+import chalk from 'chalk'
+import { load } from 'cheerio'
+import Fuse from 'fuse.js'
+import { useSiteConfig } from 'nuxt-site-config-kit'
+import { relative, resolve } from 'pathe'
 import { withoutLeadingSlash } from 'ufo'
 import { createStorage } from 'unstorage'
 import fsDriver from 'unstorage/drivers/fs'
-import type { ModuleOptions } from './module'
+import { getLinkResponse, setLinkResponse } from './runtime/pure/crawl'
 import { inspect } from './runtime/pure/inspect'
 import { createFilter } from './runtime/pure/sharedUtils'
-import { getLinkResponse, setLinkResponse } from './runtime/pure/crawl'
 
 const linkMap: Record<string, ExtractedPayload> = {}
 
@@ -31,9 +31,7 @@ export function extractPayload(html: string, rootNodeId = '#__nuxt') {
       link: $(el).attr('href') || '',
       textContent: ($(el).attr('aria-label') || $(el).attr('title') || $(el).text()).trim() || '',
     }
-  }).get()
-    // make sure the link has a href
-    .filter(l => !!l.link)
+  }).get().filter(l => !!l.link)
   return { title, ids, links }
 }
 
@@ -165,7 +163,8 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
               ${reportsHtml}
             </ul>
             `
-          }).join('')
+          })
+          .join('')
         const html = `
                 <html>
                     <head>
@@ -224,7 +223,8 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
               reportsMarkdown,
               '',
             ].join('\n')
-          }).join('\n')
+          })
+          .join('\n')
         const markdown = [
           '# Link Checker Report',
           '',

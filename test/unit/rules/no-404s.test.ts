@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest'
-import Fuse from 'fuse.js'
-import RuleNoErrorResponse from '../../../src/runtime/pure/inspections/no-error-response-status'
 import type { RuleTestContext } from '../../../src/runtime/types'
+import Fuse from 'fuse.js'
+import { describe, expect, it } from 'vitest'
+import RuleNoErrorResponse from '../../../src/runtime/pure/inspections/no-error-response-status'
 import { runRule } from './util'
 
 describe('rule no-404s', () => {

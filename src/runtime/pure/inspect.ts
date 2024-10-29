@@ -1,14 +1,14 @@
-import { parseURL } from 'ufo'
 import type { LinkInspectionResult, Rule, RuleTestContext } from '../types'
-import RuleTrailingSlash from './inspections/trailing-slash'
+import { parseURL } from 'ufo'
+import RuleAbsoluteSiteUrls from './inspections/absolute-site-urls'
+import RuleDescriptiveLinkText from './inspections/descriptive-link-text'
 import RuleMissingHash from './inspections/missing-hash'
 import RuleNoBaseLess from './inspections/no-baseless'
-import RuleNoJavascript from './inspections/no-javascript'
-import RuleAbsoluteSiteUrls from './inspections/absolute-site-urls'
-import RuleRedirects from './redirects'
 import RuleNoErrorResponse from './inspections/no-error-response-status'
-import RuleDescriptiveLinkText from './inspections/descriptive-link-text'
+import RuleNoJavascript from './inspections/no-javascript'
+import RuleTrailingSlash from './inspections/trailing-slash'
 import { isNonFetchableLink } from './inspections/util'
+import RuleRedirects from './redirects'
 
 export const AllInspections = [
   RuleMissingHash(),

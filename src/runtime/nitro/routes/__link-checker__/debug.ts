@@ -1,5 +1,5 @@
-import { defineEventHandler } from 'h3'
 import { useRuntimeConfig } from '#imports'
+import { defineEventHandler } from 'h3'
 
 // verify a link
 export default defineEventHandler(async (e) => {

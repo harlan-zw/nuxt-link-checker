@@ -1,13 +1,13 @@
-import { inspect } from './inspect'
-import { generateFileLinkDiff, generateFileLinkPreviews, lruFsCache } from './diff'
 import { getLinkResponse } from './crawl'
+import { generateFileLinkDiff, generateFileLinkPreviews, lruFsCache } from './diff'
+import { inspect } from './inspect'
 import { isNonFetchableLink } from './inspections/util'
 
 export {
-  inspect,
   generateFileLinkDiff,
   generateFileLinkPreviews,
-  lruFsCache,
   getLinkResponse,
+  inspect,
   isNonFetchableLink,
+  lruFsCache,
 }

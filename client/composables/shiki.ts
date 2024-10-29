@@ -1,7 +1,7 @@
+import type { MaybeRef } from '@vueuse/core'
 import type { BundledLanguage, Highlighter } from 'shiki'
 import { getHighlighter } from 'shiki'
 import { computed, ref, toValue } from 'vue'
-import type { MaybeRef } from '@vueuse/core'
 import { devtools } from './rpc'
 
 export const shiki = ref<Highlighter>()

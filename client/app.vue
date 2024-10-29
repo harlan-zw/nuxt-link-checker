@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import 'floating-vue/dist/style.css'
 import { computed, ref } from 'vue'
 import FixActionDialog from './components/FixActionDialog.vue'
 import { linkCheckerRpc } from './composables/rpc'
+import { loadShiki, renderCodeHighlight } from './composables/shiki'
 import {
   data,
   linkDb,
@@ -12,7 +12,7 @@ import {
   showLiveInspections,
   visibleLinks,
 } from './composables/state'
-import { loadShiki, renderCodeHighlight } from './composables/shiki'
+import 'floating-vue/dist/style.css'
 
 await loadShiki()
 

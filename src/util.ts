@@ -1,8 +1,8 @@
-import { joinURL } from 'ufo'
 import type { NuxtPage } from '@nuxt/schema'
-import type { WebSocketServer } from 'vite'
 import type { Nuxt } from 'nuxt/schema'
+import type { WebSocketServer } from 'vite'
 import { useNuxt } from '@nuxt/kit'
+import { joinURL } from 'ufo'
 
 export function convertNuxtPagesToPaths(pages: NuxtPage[]) {
   return pages

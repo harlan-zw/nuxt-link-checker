@@ -1,14 +1,14 @@
-import type { UnwrapRef } from 'vue'
-import { computed, createApp, h, ref, shallowReactive, unref } from 'vue'
-import type { NuxtApp } from 'nuxt/app'
+import type { useRoute } from '#imports'
 import type { NuxtDevtoolsIframeClient } from '@nuxt/devtools-kit/types'
-import { useLocalStorage } from '@vueuse/core'
+import type { NuxtApp } from 'nuxt/app'
+import type { UnwrapRef } from 'vue'
 import type { LinkInspectionResult, NuxtLinkCheckerClient } from '../../../types'
+import { useRuntimeConfig } from '#imports'
+import { useLocalStorage } from '@vueuse/core'
+import { computed, createApp, h, ref, shallowReactive, unref } from 'vue'
 import { createFilter } from '../../../pure/sharedUtils'
 import Main from './Main.vue'
 import { linkDb } from './state'
-import type { useRoute } from '#imports'
-import { useRuntimeConfig } from '#imports'
 
 function resolveDevtoolsIframe() {
   const iframe = document.querySelector('#nuxt-devtools-iframe') as Element & { contentWindow: { __NUXT_DEVTOOLS__: NuxtDevtoolsIframeClient } }

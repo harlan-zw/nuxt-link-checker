@@ -1,7 +1,7 @@
-import type { SiteConfigResolved } from 'site-config-stack'
 import type Fuse from 'fuse.js'
-import type { ComputedRef, Ref } from 'vue'
+import type { SiteConfigResolved } from 'site-config-stack'
 import type { ParsedURL } from 'ufo'
+import type { ComputedRef, Ref } from 'vue'
 
 export interface Rule {
   id: string

@@ -1,7 +1,7 @@
 import { resolve } from 'node:path'
-import { defineNuxtConfig } from 'nuxt/config'
-import { defineNuxtModule } from '@nuxt/kit'
 import { startSubprocess } from '@nuxt/devtools-kit'
+import { defineNuxtModule } from '@nuxt/kit'
+import { defineNuxtConfig } from 'nuxt/config'
 
 export default defineNuxtConfig({
   modules: [
@@ -32,7 +32,6 @@ export default defineNuxtConfig({
           },
         )
         subprocess.getProcess().stdout?.on('data', (data) => {
-          // eslint-disable-next-line no-console
           console.log(` sub: ${data.toString()}`)
         })
 

@@ -1,3 +1,5 @@
+import type { NuxtPage } from '@nuxt/schema'
+import type { CreateStorageOptions } from 'unstorage'
 import {
   addPlugin,
   addServerHandler,
@@ -9,13 +11,11 @@ import {
   useLogger,
 } from '@nuxt/kit'
 import { installNuxtSiteConfig } from 'nuxt-site-config-kit'
-import type { NuxtPage } from '@nuxt/schema'
 import { readPackageJSON } from 'pkg-types'
-import type { CreateStorageOptions } from 'unstorage'
-import { isNuxtGenerate, prerender } from './prerender'
 import { setupDevToolsUI } from './devtools'
-import { convertNuxtPagesToPaths } from './util'
+import { isNuxtGenerate, prerender } from './prerender'
 import { crawlFetch } from './runtime/pure/crawl'
+import { convertNuxtPagesToPaths } from './util'
 
 export interface ModuleOptions {
   /**
