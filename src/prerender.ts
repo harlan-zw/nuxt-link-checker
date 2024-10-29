@@ -21,11 +21,12 @@ interface ExtractedPayload {
   links: { link: string, textContent: string }[]
   ids: string[]
 }
-export function extractPayload(html: string) {
+export function extractPayload(html: string, rootNodeId = '#__nuxt') {
+  rootNodeId = rootNodeId[0] === '#' ? rootNodeId : `#${rootNodeId}`
   const $ = load(html)
-  const ids = $('#__nuxt [id]').map((i, el) => $(el).attr('id')).get()
+  const ids = $(`${rootNodeId} [id]`.trim()).map((i, el) => $(el).attr('id')).get()
   const title = $('title').text()
-  const links = $('#__nuxt a[href]').map((i, el) => {
+  const links = $(`${rootNodeId} a[href]`.trim()).map((i, el) => {
     return {
       link: $(el).attr('href') || '',
       textContent: ($(el).attr('aria-label') || $(el).attr('title') || $(el).text()).trim() || '',
@@ -49,7 +50,7 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
     nitro.hooks.hook('prerender:generate', async (ctx) => {
       const route = decodeURI(ctx.route)
       if (ctx.contents && !ctx.error && ctx.fileName?.endsWith('.html') && !route.endsWith('.html') && urlFilter(route))
-        linkMap[route] = extractPayload(ctx.contents)
+        linkMap[route] = extractPayload(ctx.contents, nuxt.options.app.rootAttrs?.id || '')
 
       setLinkResponse(route, Promise.resolve({ status: Number(ctx.error?.statusCode) || 200, statusText: ctx.error?.statusMessage || '', headers: {} }))
     })
