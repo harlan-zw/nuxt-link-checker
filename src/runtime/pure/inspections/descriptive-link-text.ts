@@ -10,7 +10,7 @@ export default function RuleDescriptiveLinkText() {
         report({
           name: 'link-text',
           scope: 'warning',
-          message: 'Should have descriptive text.',
+          message: 'Missing link textContent, title or aria-label.',
           tip: 'Links with descriptive text are easier to understand for screen readers and search engines.',
         })
       }
@@ -30,7 +30,7 @@ export default function RuleDescriptiveLinkText() {
         report({
           name: 'link-text',
           scope: 'warning',
-          message: 'Should have descriptive text.',
+          message: `Link text ${textContent} should be more descriptive.`,
           tip: `The ${textContent} descriptive text does not provide any context to the link.`,
         })
       }
