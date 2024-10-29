@@ -22,7 +22,9 @@ interface ExtractedPayload {
   ids: string[]
 }
 export function extractPayload(html: string, rootNodeId = '#__nuxt') {
-  rootNodeId = rootNodeId[0] === '#' ? rootNodeId : `#${rootNodeId}`
+  if (String(rootNodeId).length) {
+    rootNodeId = rootNodeId[0] === '#' ? rootNodeId : `#${rootNodeId}`
+  }
   const $ = load(html)
   const ids = $(`${rootNodeId} [id]`.trim()).map((i, el) => $(el).attr('id')).get()
   const title = $('title').text()
