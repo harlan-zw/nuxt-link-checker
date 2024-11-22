@@ -1,4 +1,5 @@
 import type { RuleTestContext } from '../../../src/runtime/types'
+import { parseURL } from 'ufo'
 import { describe, expect, it } from 'vitest'
 import RuleNoDoubleSlashes from '../../../src/runtime/shared/inspections/no-double-slashes'
 import { runRule } from './util'
@@ -7,6 +8,7 @@ describe('rule double-slash', () => {
   it('no double slashes', () => {
     const ctx = {
       link: '/this/is//a/test',
+      url: parseURL('/this/is//a/test'),
       textContent: 'Click me',
     } as RuleTestContext
     expect(runRule(ctx, RuleNoDoubleSlashes())).toMatchInlineSnapshot(`
@@ -31,6 +33,7 @@ describe('rule double-slash', () => {
   it('no triple slashes + combined', () => {
     const ctx = {
       link: '/this///is//a/////test/test',
+      url: parseURL('/this///is//a/////test/test'),
       textContent: 'Click me',
     } as RuleTestContext
     expect(runRule(ctx, RuleNoDoubleSlashes())).toMatchInlineSnapshot(`
@@ -56,6 +59,7 @@ describe('rule double-slash', () => {
     const ctx = {
       link: '//this/is/a/test',
       textContent: 'Click me',
+      url: parseURL('//this/is/a/test'),
     } as RuleTestContext
     expect(runRule(ctx, RuleNoDoubleSlashes())).toMatchInlineSnapshot(`
       {
@@ -76,11 +80,11 @@ describe('rule double-slash', () => {
       }
     `)
   })
-
   it('no double slashes root solo', () => {
     const ctx = {
       link: '//',
       textContent: 'Click me',
+      url: parseURL('//'),
     } as RuleTestContext
     expect(runRule(ctx, RuleNoDoubleSlashes())).toMatchInlineSnapshot(`
       {
@@ -98,6 +102,23 @@ describe('rule double-slash', () => {
             "scope": "warning",
           },
         ],
+      }
+    `)
+  })
+  it('ignores protocol', () => {
+    const ctx = {
+      link: 'https://nuxtseo.com/test',
+      url: parseURL('https://nuxtseo.com/test'),
+      textContent: 'Click me',
+    } as RuleTestContext
+    expect(runRule(ctx, RuleNoDoubleSlashes())).toMatchInlineSnapshot(`
+      {
+        "error": [],
+        "fix": "https://nuxtseo.com/test",
+        "link": "https://nuxtseo.com/test",
+        "passes": true,
+        "textContent": "Click me",
+        "warning": [],
       }
     `)
   })
