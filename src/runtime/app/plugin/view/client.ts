@@ -32,7 +32,7 @@ function resolvePathsForEl(el: Element): string[] {
 }
 
 export async function setupLinkCheckerClient({ nuxt, route }: { nuxt: NuxtApp, route: ReturnType<typeof useRoute> }) {
-  let queue: { link: string, paths: string[], textContent: string }[] = []
+  let queue: { link: string, paths: string[], textContent: string, role: string }[] = []
   let queueWorkerTimer: any
   const inspectionEls = ref<UnwrapRef<NuxtLinkCheckerClient['inspectionEls']>>([])
   const highlightedLink = ref<string | null>(null)
@@ -57,7 +57,7 @@ export async function setupLinkCheckerClient({ nuxt, route }: { nuxt: NuxtApp, r
       elMap = {}
       visibleLinks.clear()
       lastIds = [...new Set([...document.querySelectorAll('#__nuxt [id]')].map(el => el.id))]
-      ;[...document.querySelectorAll('#__nuxt a[href]')]
+      ;[...document.querySelectorAll('#__nuxt a')]
         .map(el => ({ el, link: el.getAttribute('href')! }))
         .forEach(({ el, link }) => {
           if (!link)
@@ -79,6 +79,7 @@ export async function setupLinkCheckerClient({ nuxt, route }: { nuxt: NuxtApp, r
           }
           queue.push({
             link: link!,
+            role: el.getAttribute('role') || '',
             textContent: (el.textContent || el.getAttribute('aria-label') || el.getAttribute('title') || '').trim(),
             paths,
           })

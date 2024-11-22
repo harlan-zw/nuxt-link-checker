@@ -11,13 +11,14 @@ export interface Rule {
 export interface RuleTestContext {
   link: string
   url: ParsedURL
+  role: string
   textContent: string
   ids: string[]
   fromPath: string
   response: any
   siteConfig: SiteConfigResolved
   pageSearch?: Fuse<{ path: string, title: string }>
-  report: (report: RuleReport) => void
+  report: (report: RuleReport, stop?: boolean) => void
   skipInspections?: string[]
 }
 

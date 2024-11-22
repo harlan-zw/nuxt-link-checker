@@ -28,12 +28,13 @@ export function extractPayload(html: string, rootNodeId = '#__nuxt') {
   const $ = load(html)
   const ids = $(`${rootNodeId} [id]`.trim()).map((i, el) => $(el).attr('id')).get()
   const title = $('title').text()
-  const links = $(`${rootNodeId} a[href]`.trim()).map((i, el) => {
+  const links = $(`${rootNodeId} a`.trim()).map((i, el) => {
     return {
+      role: $(el).attr('role') || '',
       link: $(el).attr('href') || '',
       textContent: ($(el).attr('aria-label') || $(el).attr('title') || $(el).text()).trim() || '',
     }
-  }).get().filter(l => !!l.link)
+  }).get()
   return { title, ids, links }
 }
 
