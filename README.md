@@ -1,26 +1,22 @@
-<h1 align='center'>nuxt-link-checker</h1>
+<h1>nuxt-link-checker</h1>
 
-<p align="center">
-<a href='https://github.com/harlan-zw/nuxt-link-checker/actions/workflows/test.yml'>
-</a>
-<a href="https://www.npmjs.com/package/nuxt-link-checker" target="__blank"><img src="https://img.shields.io/npm/v/nuxt-link-checker?style=flat&colorA=002438&colorB=28CF8D" alt="NPM version"></a>
-<a href="https://www.npmjs.com/package/nuxt-link-checker" target="__blank"><img alt="NPM Downloads" src="https://img.shields.io/npm/dm/nuxt-link-checker?flat&colorA=002438&colorB=28CF8D"></a>
-<a href="https://github.com/harlan-zw/nuxt-link-checker" target="__blank"><img alt="GitHub stars" src="https://img.shields.io/github/stars/harlan-zw/nuxt-link-checker?flat&colorA=002438&colorB=28CF8D"></a>
-</p>
+[![npm version][npm-version-src]][npm-version-href]
+[![npm downloads][npm-downloads-src]][npm-downloads-href]
+[![License][license-src]][license-href]
+[![Nuxt][nuxt-src]][nuxt-href]
 
-<p align="center">
-Find and magically fix links that may be negatively effecting your Nuxt sites SEO.
-</p>
+Nuxt Link Checker is a collection of SEO focused link inspections for your Nuxt app.
+
+By keeping your links in check, you can ensure that your site is discoverable and accessible to [search engine crawlers](https://nuxtseo.com/learn/controlling-crawlers) and your users.
+
+New to SEO? Check out the [Controlling Web Crawlers](https://nuxtseo.com/learn/controlling-crawlers) guide to learn more about why you might
+need this module.
 
 <p align="center">
 <table>
 <tbody>
 <td align="center">
-<img width="800" height="0" /><br>
-<i>Status:</i> <a href="https://github.com/harlan-zw/nuxt-link-checker/releases/tag/v3.0.0">v3 Released</a> 🎉</b> <br>
-<sup> Please report any issues 🐛</sup><br>
 <sub>Made possible by my <a href="https://github.com/sponsors/harlan-zw">Sponsor Program 💖</a><br> Follow me <a href="https://twitter.com/harlan_zw">@harlan_zw</a> 🐦 • Join <a href="https://discord.gg/275MBUBvgP">Discord</a> for help</sub><br>
-<img width="800" height="0" />
 </td>
 </tbody>
 </table>
@@ -59,4 +55,17 @@ npx nuxi@latest module add link-checker
 
 ## License
 
-MIT License © 2023-PRESENT [Harlan Wilton](https://github.com/harlan-zw)
+Licensed under the [MIT license](https://github.com/harlan-zw/nuxt-link-checker/blob/main/LICENSE.md).
+
+<!-- Badges -->
+[npm-version-src]: https://img.shields.io/npm/v/nuxt-link-checker/latest.svg?style=flat&colorA=18181B&colorB=28CF8D
+[npm-version-href]: https://npmjs.com/package/nuxt-link-checker
+
+[npm-downloads-src]: https://img.shields.io/npm/dm/nuxt-link-checker.svg?style=flat&colorA=18181B&colorB=28CF8D
+[npm-downloads-href]: https://npmjs.com/package/nuxt-link-checker
+
+[license-src]: https://img.shields.io/github/license/harlan-zw/nuxt-link-checker.svg?style=flat&colorA=18181B&colorB=28CF8D
+[license-href]: https://github.com/harlan-zw/nuxt-link-checker/blob/main/LICENSE.md
+
+[nuxt-src]: https://img.shields.io/badge/Nuxt-18181B?logo=nuxt.js
+[nuxt-href]: https://nuxt.com
