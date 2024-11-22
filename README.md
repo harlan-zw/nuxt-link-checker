@@ -24,7 +24,7 @@ need this module.
 
 ## Features
 
-- ✅ 12 SEO focused link inspections (more coming soon)
+- ✅ 13 SEO focused link inspections
 - ✨ See live inspections right in your Nuxt App
 - 🧙 Magically fix them in Nuxt Dev Tools
 - 🚩 Generate reports on build (html, markdown)
