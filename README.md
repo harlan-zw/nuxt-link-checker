@@ -28,7 +28,7 @@ Find and magically fix links that may be negatively effecting your Nuxt sites SE
 
 ## Features
 
-- ✅ 8 SEO focused link inspections (more coming soon)
+- ✅ 12 SEO focused link inspections (more coming soon)
 - ✨ See live inspections right in your Nuxt App
 - 🧙 Magically fix them in Nuxt Dev Tools
 - 🚩 Generate reports on build (html, markdown)

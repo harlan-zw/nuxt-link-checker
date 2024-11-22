@@ -1,12 +1,7 @@
 import fs from 'node:fs/promises'
-import { createResolver } from '@nuxt/kit'
 import { describe, expect, it } from 'vitest'
 import { generateLinkSourcePreviews, generateLinkSources } from '../../src/runtime/shared/diff'
-
-const { resolve } = createResolver(import.meta.url)
-
-export const VueTemplateSingle = resolve('../fixtures/basic/components/VueTemplateSingle.vue')
-export const VueTemplateMulti = resolve('../fixtures/basic/components/VueTemplateMulti.vue')
+import { VueTemplateMulti, VueTemplateSingle } from '../const'
 
 describe('snippets', () => {
   it('sources single', async () => {

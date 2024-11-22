@@ -18,7 +18,7 @@ describe('rule missing-href', () => {
         "textContent": "Click me",
         "warning": [
           {
-            "message": "Anchor tags should have an href attribute.",
+            "message": "For accessibility and UX anchor tags require a href attribute.",
             "name": "no-missing-href",
             "scope": "warning",
             "tip": "Use a button element with type="button" instead if the link is not navigational.",

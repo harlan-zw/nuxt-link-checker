@@ -5,11 +5,11 @@ import { describe, expect, it } from 'vitest'
 const { resolve } = createResolver(import.meta.url)
 
 await setup({
-  rootDir: resolve('./fixtures/content'),
+  rootDir: resolve('../fixtures/content'),
   dev: true,
 })
 
-export const FooMarkdown = resolve('./fixtures/content/content/foo.md')
+export const FooMarkdown = resolve('../fixtures/content/content/foo.md')
 
 describe('nuxt/content documentDriven', () => {
   it('basic', async () => {

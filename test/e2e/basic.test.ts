@@ -1,16 +1,15 @@
 import { createResolver } from '@nuxt/kit'
 import { $fetch, setup } from '@nuxt/test-utils/e2e'
 import { describe, expect, it } from 'vitest'
-import { VueTemplateMulti, VueTemplateSingle } from './unit/snippets.test'
+import { VueTemplateMulti, VueTemplateSingle } from '../const'
 
 const { resolve } = createResolver(import.meta.url)
 
-await setup({
-  rootDir: resolve('./fixtures/basic'),
-  dev: true,
-})
-
-describe('basic', () => {
+describe('basic', async () => {
+  await setup({
+    rootDir: resolve('../fixtures/basic'),
+    dev: true,
+  })
   it('endpoint inspect single', async () => {
     const singleInspect = await $fetch('/__link-checker__/inspect', {
       method: 'POST',

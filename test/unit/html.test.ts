@@ -12,6 +12,7 @@ describe('html', () => {
         "links": [
           {
             "link": "/test",
+            "role": "",
             "textContent": "test",
           },
         ],
@@ -29,6 +30,7 @@ describe('html', () => {
         "links": [
           {
             "link": "/test",
+            "role": "",
             "textContent": "test",
           },
         ],
@@ -46,6 +48,7 @@ describe('html', () => {
         "links": [
           {
             "link": "/test",
+            "role": "",
             "textContent": "inner text",
           },
         ],
@@ -81,290 +84,362 @@ describe('html', () => {
         "links": [
           {
             "link": "/",
+            "role": "",
             "textContent": "Title",
           },
           {
             "link": "/releases",
+            "role": "",
             "textContent": "Releases",
           },
           {
             "link": "/pro",
+            "role": "",
             "textContent": "ProPresale",
           },
           {
             "link": "https://github.com/harlan-zw/nuxt-seo",
+            "role": "",
             "textContent": "Star1.1K",
           },
           {
             "link": "https://twitter.com/harlan_zw",
+            "role": "",
             "textContent": "Harlan's X",
           },
           {
             "link": "https://github.com/harlan-zw/nuxt-seo",
+            "role": "",
             "textContent": "Nuxt SEO on GitHub",
           },
           {
             "link": "https://discord.com/invite/275MBUBvgP",
+            "role": "",
             "textContent": "Harlan's Discord",
           },
           {
             "link": "/docs/og-image/getting-started/installation",
+            "role": "",
             "textContent": "OG Image Generate OG Images with Vue templates in Nuxt.407336K",
           },
           {
             "link": "https://github.com/nuxt-modules/og-image",
+            "role": "",
             "textContent": "GitHub",
           },
           {
             "link": "https://npmjs.com/package/nuxt-og-image",
+            "role": "",
             "textContent": "NPM",
           },
           {
             "link": "/docs/og-image/getting-started/introduction",
+            "role": "",
             "textContent": "Introduction",
           },
           {
             "link": "/docs/og-image/getting-started/installation",
+            "role": "",
             "textContent": "Installation",
           },
           {
             "link": "/docs/og-image/getting-started/troubleshooting",
+            "role": "",
             "textContent": "Troubleshooting",
           },
           {
             "link": "/docs/og-image/getting-started/getting-familar-with-nuxt-og-image",
+            "role": "",
             "textContent": "Tutorial: Your first OG Image",
           },
           {
             "link": "/docs/og-image/integrations/content",
+            "role": "",
             "textContent": "Nuxt Content",
           },
           {
             "link": "/docs/og-image/integrations/color-mode",
+            "role": "",
             "textContent": "Nuxt Color Mode",
           },
           {
             "link": "/docs/og-image/guides/satori",
+            "role": "",
             "textContent": "Satori Renderer",
           },
           {
             "link": "/docs/og-image/guides/chromium",
+            "role": "",
             "textContent": "Chromium Renderer",
           },
           {
             "link": "/docs/og-image/guides/zero-runtime",
+            "role": "",
             "textContent": "Zero Runtime",
           },
           {
             "link": "/docs/og-image/guides/compatibility",
+            "role": "",
             "textContent": "Compatibility",
           },
           {
             "link": "/docs/og-image/guides/route-rules",
+            "role": "",
             "textContent": "Route Rules",
           },
           {
             "link": "/docs/og-image/guides/cache",
+            "role": "",
             "textContent": "Caching Images",
           },
           {
             "link": "/docs/og-image/guides/jpegs",
+            "role": "",
             "textContent": "JPEGs",
           },
           {
             "link": "/docs/og-image/guides/custom-fonts",
+            "role": "",
             "textContent": "Fonts",
           },
           {
             "link": "/docs/og-image/guides/non-english-locales",
+            "role": "",
             "textContent": "Non-English Locales",
           },
           {
             "link": "/docs/og-image/guides/emojis",
+            "role": "",
             "textContent": "Emojis",
           },
           {
             "link": "/docs/og-image/guides/icons-and-images",
+            "role": "",
             "textContent": "Icons and Images",
           },
           {
             "link": "/docs/og-image/guides/styling",
+            "role": "",
             "textContent": "Styling",
           },
           {
             "link": "/docs/og-image/guides/community-templates",
+            "role": "",
             "textContent": "Community Templates",
           },
           {
             "link": "/docs/og-image/api/define-og-image",
+            "role": "",
             "textContent": "",
           },
           {
             "link": "/docs/og-image/api/define-og-image-component",
+            "role": "",
             "textContent": "",
           },
           {
             "link": "/docs/og-image/api/define-og-image-screenshot",
+            "role": "",
             "textContent": "",
           },
           {
             "link": "/docs/og-image/api/components",
+            "role": "",
             "textContent": "Components",
           },
           {
             "link": "/docs/og-image/api/config",
+            "role": "",
             "textContent": "nuxt.config.ts",
           },
           {
             "link": "/docs/og-image/api/nuxt-hooks",
+            "role": "",
             "textContent": "Nuxt Hooks",
           },
           {
             "link": "/docs/og-image/nitro-api/nitro-hooks",
+            "role": "",
             "textContent": "Nitro Hooks",
           },
           {
             "link": "/docs/og-image/migration-guide/v3",
+            "role": "",
             "textContent": "v2 to v3",
           },
           {
             "link": "/docs/og-image/releases/v3",
+            "role": "",
             "textContent": "v3.0.0",
           },
           {
             "link": "/docs/og-image/releases/v2",
+            "role": "",
             "textContent": "v2.0.0",
           },
           {
             "link": "#ogimage",
+            "role": "",
             "textContent": "# OgImage",
           },
           {
             "link": "#ogimagescreenshot",
+            "role": "",
             "textContent": "# OgImageScreenshot",
           },
           {
             "link": "#ogimage",
+            "role": "",
             "textContent": "OgImage",
           },
           {
             "link": "/og-image/api/define-og-image",
+            "role": "",
             "textContent": "defineOgImage",
           },
           {
             "link": "#ogimagescreenshot",
+            "role": "",
             "textContent": "OgImageScreenshot",
           },
           {
             "link": "/og-image/api/define-og-image-screenshot",
+            "role": "",
             "textContent": "defineOgImageScreenshot",
           },
           {
             "link": "https://github.com/nuxt-modules/og-image/edit/main/docs/content/4.api/3.components.md",
+            "role": "",
             "textContent": "Edit this page",
           },
           {
             "link": "/docs/og-image/api/define-og-image-screenshot",
+            "role": "",
             "textContent": "defineOgImageScreenshot()Define an OG Image that takes a screenshot of the page.",
           },
           {
             "link": "/docs/og-image/api/config",
+            "role": "",
             "textContent": "Nuxt ConfigThe Nuxt OG Image module configuration.",
           },
           {
             "link": "/pro",
+            "role": "",
             "textContent": "presale",
           },
           {
             "link": "/pro",
+            "role": "",
             "textContent": "presale",
           },
           {
             "link": "/docs/nuxt-seo/getting-started/installation",
+            "role": "",
             "textContent": "Nuxt SEO",
           },
           {
             "link": "/docs/robots/getting-started/installation",
+            "role": "",
             "textContent": "Robots",
           },
           {
             "link": "/docs/sitemap/getting-started/installation",
+            "role": "",
             "textContent": "Sitemap",
           },
           {
             "link": "/docs/og-image/getting-started/installation",
+            "role": "",
             "textContent": "OG Image",
           },
           {
             "link": "/docs/schema-org/getting-started/installation",
+            "role": "",
             "textContent": "Schema.org",
           },
           {
             "link": "/docs/link-checker/getting-started/installation",
+            "role": "",
             "textContent": "Link Checker",
           },
           {
             "link": "/docs/seo-utils/getting-started/installation",
+            "role": "",
             "textContent": "SEO Utils",
           },
           {
             "link": "/docs/site-config/getting-started/installation",
+            "role": "",
             "textContent": "Site Config",
           },
           {
             "link": "/learn/community-videos",
+            "role": "",
             "textContent": "Community Videos",
           },
           {
             "link": "/learn/mastering-titles-in-nuxt",
+            "role": "",
             "textContent": "Mastering Page Titles",
           },
           {
             "link": "/learn/trailing-slashes",
+            "role": "",
             "textContent": "Trailing Slashes in Nuxt",
           },
           {
             "link": "/learn/going-live",
+            "role": "",
             "textContent": "SEO Go-Live Checklist",
           },
           {
             "link": "https://unhead.unjs.io",
+            "role": "",
             "textContent": "Unhead",
           },
           {
             "link": "https://zhead.dev",
+            "role": "",
             "textContent": "Zhead",
           },
           {
             "link": "https://requestindexing.com",
+            "role": "",
             "textContent": "Request Indexing",
           },
           {
             "link": "https://unlighthouse.dev",
+            "role": "",
             "textContent": "Unlighthouse",
           },
           {
             "link": "/",
+            "role": "",
             "textContent": "Home",
           },
           {
             "link": "https://harlanzw.com",
+            "role": "",
             "textContent": "Harlan",
           },
           {
             "link": "https://github.com/sponsors/harlan-zw",
+            "role": "",
             "textContent": "support",
           },
           {
             "link": "https://twitter.com/harlan_zw",
+            "role": "",
             "textContent": "Twitter",
           },
           {
             "link": "https://github.com/harlan-zw/nuxt-seo",
+            "role": "",
             "textContent": "GitHub",
           },
           {
             "link": "https://github.com/harlan-zw/nuxt-seo/blob/main/LICENSE",
+            "role": "",
             "textContent": "MIT License",
           },
         ],
