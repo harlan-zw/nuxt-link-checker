@@ -10,6 +10,7 @@ import RuleNoErrorResponse from './inspections/no-error-response-status'
 import RuleNoJavascript from './inspections/no-javascript'
 import RuleNoMissingHref from './inspections/no-missing-href'
 import RuleNoNonAsciiChars from './inspections/no-non-ascii-chars'
+import RuleNoUppercaseChars from './inspections/no-uppercase-chars'
 import RuleNoWhitespace from './inspections/no-whitespace'
 import RuleTrailingSlash from './inspections/trailing-slash'
 import RuleRedirects from './redirects'
@@ -25,6 +26,7 @@ export const AllInspections = [
   RuleNoDocumentRelative(),
   RuleNoJavascript(),
   RuleTrailingSlash(),
+  RuleNoUppercaseChars(),
   RuleAbsoluteSiteUrls(),
   RuleRedirects(),
   RuleDescriptiveLinkText(),
