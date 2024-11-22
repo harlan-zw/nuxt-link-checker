@@ -101,6 +101,4 @@ describe('rule double-slash', () => {
       }
     `)
   })
-
-
 })
