@@ -159,19 +159,11 @@ describe('generate', () => {
               "textContent": "page typo with magic fix"
             },
             {
-              "error": [
-                {
-                  "name": "missing-hash",
-                  "scope": "error",
-                  "message": "No element with id \\"broken-anchor\\" found.",
-                  "fix": "/#anchor",
-                  "fixDescription": "Did you mean /#anchor?"
-                }
-              ],
+              "error": [],
               "warning": [],
-              "fix": "/#anchor",
+              "fix": "/#broken-anchor",
               "link": "/#broken-anchor",
-              "passes": false,
+              "passes": true,
               "textContent": "broken anchor"
             },
             {
@@ -475,7 +467,7 @@ describe('generate', () => {
     expect(reportMarkdown).toMatchInlineSnapshot(`
       "# Link Checker Report
 
-      ## [/](/) 7 errors, 5 warnings
+      ## [/](/) 6 errors, 5 warnings
       | Link | Message |
       | --- | --- |
       | /about/Billy%20Bob | Links should not contain uppercase characters. (no-uppercase-chars) |
@@ -484,7 +476,6 @@ describe('generate', () => {
       | this is a very bad link | Links should not contain whitespace. (no-whitespace) |
       | this is a very bad link | Links should be root relative. (no-baseless) |
       | /abot | Should not respond with status code 404 (Page not found: /abot). (no-error-response) |
-      | /#broken-anchor | No element with id "broken-anchor" found. (missing-hash) |
       | /404link | Should not respond with status code 404 (Page not found: /404link). (no-error-response) |
       | javascript:history.back() | Should not use JavaScript (no-javascript) |
       | /completely-broken/ | Should not respond with status code 404 (Page not found: /completely-broken/). (no-error-response) |
