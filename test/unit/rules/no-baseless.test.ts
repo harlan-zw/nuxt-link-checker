@@ -1,9 +1,9 @@
 import type { RuleTestContext } from '../../../src/runtime/types'
 import { describe, expect, it } from 'vitest'
-import RuleNoBaseLess from '../../../src/runtime/pure/inspections/no-baseless'
+import RuleNoDocumentRelative from '../../../src/runtime/shared/inspections/no-document-relative'
 import { runRule } from './util'
 
-describe('rule no-baseless', () => {
+describe('rule no-document-relative', () => {
   it('works', () => {
     const ctx = {
       link: 'my-post',
@@ -11,7 +11,7 @@ describe('rule no-baseless', () => {
       fromPath: '/my-blog',
     } as RuleTestContext
 
-    expect(runRule(ctx, RuleNoBaseLess())).toMatchInlineSnapshot(`
+    expect(runRule(ctx, RuleNoDocumentRelative())).toMatchInlineSnapshot(`
       {
         "error": [],
         "fix": "/my-blog/my-post",
@@ -22,7 +22,7 @@ describe('rule no-baseless', () => {
           {
             "fix": "/my-blog/my-post",
             "fixDescription": "Add base /my-blog.",
-            "message": "Should not have a base.",
+            "message": "Links should be root relative.",
             "name": "no-baseless",
             "scope": "warning",
           },
