@@ -4,6 +4,7 @@ import RuleAbsoluteSiteUrls from './inspections/absolute-site-urls'
 import RuleDescriptiveLinkText from './inspections/descriptive-link-text'
 import RuleMissingHash from './inspections/missing-hash'
 import RuleNoDocumentRelative from './inspections/no-document-relative'
+import RuleNoDoubleSlashes from './inspections/no-double-slashes'
 import RuleNoErrorResponse from './inspections/no-error-response-status'
 import RuleNoJavascript from './inspections/no-javascript'
 import RuleNoMissingHref from './inspections/no-missing-href'
@@ -13,6 +14,7 @@ import RuleRedirects from './redirects'
 export const AllInspections = [
   RuleNoMissingHref(),
   RuleMissingHash(),
+  RuleNoDoubleSlashes(),
   RuleNoErrorResponse(),
   RuleNoDocumentRelative(),
   RuleNoJavascript(),
