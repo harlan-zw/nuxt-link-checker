@@ -84,10 +84,18 @@ describe('generate', () => {
             },
             {
               "error": [],
-              "warning": [],
-              "fix": "/about/Billy%20Bob",
+              "warning": [
+                {
+                  "name": "no-uppercase-chars",
+                  "scope": "warning",
+                  "message": "Links should not contain uppercase characters.",
+                  "fix": "/about/billy%20bob",
+                  "fixDescription": "Convert to lowercase."
+                }
+              ],
+              "fix": "/about/billy%20bob",
               "link": "/about/Billy%20Bob",
-              "passes": true,
+              "passes": false,
               "textContent": "Dynamic Encoded Path"
             },
             {
@@ -116,9 +124,15 @@ describe('generate', () => {
               ],
               "warning": [
                 {
+                  "name": "no-whitespace",
+                  "scope": "warning",
+                  "message": "Links should not contain whitespace.",
+                  "tip": "Use hyphens to separate words instead of spaces."
+                },
+                {
                   "name": "no-baseless",
                   "scope": "warning",
-                  "message": "Should not have a base.",
+                  "message": "Links should be root relative.",
                   "fix": "/this is a very bad link",
                   "fixDescription": "Add base /."
                 }
@@ -461,12 +475,14 @@ describe('generate', () => {
     expect(reportMarkdown).toMatchInlineSnapshot(`
       "# Link Checker Report
 
-      ## [/](/) 7 errors, 4 warnings
+      ## [/](/) 7 errors, 5 warnings
       | Link | Message |
       | --- | --- |
+      | /about/Billy%20Bob | Links should not contain uppercase characters. (no-uppercase-chars) |
       | /about | Link text "here" should be more descriptive. (link-text) |
       | this is a very bad link | Should not respond with status code 404 (Not Found). (no-error-response) |
-      | this is a very bad link | Should not have a base. (no-baseless) |
+      | this is a very bad link | Links should not contain whitespace. (no-whitespace) |
+      | this is a very bad link | Links should be root relative. (no-baseless) |
       | /abot | Should not respond with status code 404 (Page not found: /abot). (no-error-response) |
       | /#broken-anchor | No element with id "broken-anchor" found. (missing-hash) |
       | /404link | Should not respond with status code 404 (Page not found: /404link). (no-error-response) |
