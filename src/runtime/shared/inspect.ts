@@ -3,7 +3,7 @@ import { parseURL } from 'ufo'
 import RuleAbsoluteSiteUrls from './inspections/absolute-site-urls'
 import RuleDescriptiveLinkText from './inspections/descriptive-link-text'
 import RuleMissingHash from './inspections/missing-hash'
-import RuleNoBaseLess from './inspections/no-baseless'
+import RuleNoDocumentRelative from './inspections/no-document-relative'
 import RuleNoErrorResponse from './inspections/no-error-response-status'
 import RuleNoJavascript from './inspections/no-javascript'
 import RuleTrailingSlash from './inspections/trailing-slash'
@@ -13,7 +13,7 @@ import RuleRedirects from './redirects'
 export const AllInspections = [
   RuleMissingHash(),
   RuleNoErrorResponse(),
-  RuleNoBaseLess(),
+  RuleNoDocumentRelative(),
   RuleNoJavascript(),
   RuleTrailingSlash(),
   RuleAbsoluteSiteUrls(),

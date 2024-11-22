@@ -14,7 +14,7 @@ import { installNuxtSiteConfig } from 'nuxt-site-config-kit'
 import { readPackageJSON } from 'pkg-types'
 import { setupDevToolsUI } from './devtools'
 import { isNuxtGenerate, prerender } from './prerender'
-import { crawlFetch } from './runtime/pure/crawl'
+import { crawlFetch } from './runtime/shared/crawl'
 import { convertNuxtPagesToPaths } from './util'
 
 export interface ModuleOptions {
@@ -141,20 +141,20 @@ export default defineNuxtModule<ModuleOptions>({
     const isDevToolsEnabled = typeof nuxt.options.devtools === 'boolean' ? nuxt.options.devtools : nuxt.options.devtools.enabled
     if (nuxt.options.dev && isDevToolsEnabled) {
       addPlugin({
-        src: resolve('./runtime/nuxt/plugin/ui.client'),
+        src: resolve('./runtime/app/plugin/ui.client'),
         mode: 'client',
       })
       addServerHandler({
         route: '/__link-checker__/inspect',
-        handler: resolve('./runtime/nitro/routes/__link-checker__/inspect'),
+        handler: resolve('./runtime/server/routes/__link-checker__/inspect'),
       })
       addServerHandler({
         route: '/__link-checker__/links',
-        handler: resolve('./runtime/nitro/routes/__link-checker__/links'),
+        handler: resolve('./runtime/server/routes/__link-checker__/links'),
       })
       addServerHandler({
         route: '/__link-checker__/debug.json',
-        handler: resolve('./runtime/nitro/routes/__link-checker__/debug'),
+        handler: resolve('./runtime/server/routes/__link-checker__/debug'),
       })
       const pagePromise = new Promise<NuxtPage[]>((_resolve) => {
         extendPages((pages) => {
@@ -174,9 +174,9 @@ export default defineNuxtModule<ModuleOptions>({
       nuxt.options.nitro.alias = nuxt.options.nitro.alias || {}
       if (!hasNuxtModule('@nuxt/content')) {
         // we need to add a nitro alias for #content/server to avoid errors
-        nuxt.options.nitro.alias['#content/server'] = resolve('./runtime/nitro/composables/content-mock')
+        nuxt.options.nitro.alias['#content/server'] = resolve('./runtime/server/composables/content-mock')
       }
-      nuxt.options.nitro.alias['#link-checker/pure'] = resolve('./runtime/pure')
+      nuxt.options.nitro.alias['#link-checker/shared'] = resolve('./runtime/shared')
       nuxt.options.runtimeConfig.public['nuxt-link-checker'] = {
         version,
         hasSitemapModule,

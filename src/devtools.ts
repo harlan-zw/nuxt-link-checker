@@ -9,7 +9,7 @@ import { extendServerRpc, onDevToolsInitialized } from '@nuxt/devtools-kit'
 import { extendPages, useNuxt } from '@nuxt/kit'
 import { diffArrays } from 'diff'
 import { resolve } from 'pathe'
-import { generateLinkDiff } from './runtime/pure/diff'
+import { generateLinkDiff } from './runtime/shared/diff'
 import { convertNuxtPagesToPaths, useViteWebSocket } from './util'
 
 const DEVTOOLS_UI_ROUTE = '/__nuxt-link-checker'

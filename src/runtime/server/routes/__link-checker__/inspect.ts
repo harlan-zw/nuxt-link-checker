@@ -5,7 +5,7 @@ import { resolve } from 'pathe'
 import { fixSlashes } from 'site-config-stack/urls'
 import { parseURL } from 'ufo'
 // @ts-expect-error untyped
-import { generateFileLinkDiff, generateFileLinkPreviews, getLinkResponse, inspect, isNonFetchableLink, lruFsCache } from '#link-checker/pure'
+import { generateFileLinkDiff, generateFileLinkPreviews, getLinkResponse, inspect, isNonFetchableLink, lruFsCache } from '#link-checker/shared'
 
 // this is stubbed with content-mock.ts
 // @ts-expect-error optional module

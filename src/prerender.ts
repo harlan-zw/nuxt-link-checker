@@ -10,9 +10,9 @@ import { relative, resolve } from 'pathe'
 import { withoutLeadingSlash } from 'ufo'
 import { createStorage } from 'unstorage'
 import fsDriver from 'unstorage/drivers/fs'
-import { getLinkResponse, setLinkResponse } from './runtime/pure/crawl'
-import { inspect } from './runtime/pure/inspect'
-import { createFilter } from './runtime/pure/sharedUtils'
+import { getLinkResponse, setLinkResponse } from './runtime/shared/crawl'
+import { inspect } from './runtime/shared/inspect'
+import { createFilter } from './runtime/shared/sharedUtils'
 
 const linkMap: Record<string, ExtractedPayload> = {}
 

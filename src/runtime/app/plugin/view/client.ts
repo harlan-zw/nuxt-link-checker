@@ -6,7 +6,7 @@ import type { LinkInspectionResult, NuxtLinkCheckerClient } from '../../../types
 import { useRuntimeConfig } from '#imports'
 import { useLocalStorage } from '@vueuse/core'
 import { computed, createApp, h, ref, shallowReactive, unref } from 'vue'
-import { createFilter } from '../../../pure/sharedUtils'
+import { createFilter } from '../../../shared/sharedUtils'
 import Main from './Main.vue'
 import { linkDb } from './state'
 

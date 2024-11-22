@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises'
 import { createResolver } from '@nuxt/kit'
 import { describe, expect, it } from 'vitest'
-import { generateLinkSourcePreviews, generateLinkSources } from '../../src/runtime/pure/diff'
+import { generateLinkSourcePreviews, generateLinkSources } from '../../src/runtime/shared/diff'
 
 const { resolve } = createResolver(import.meta.url)
 
