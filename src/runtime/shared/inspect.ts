@@ -39,9 +39,8 @@ export function inspect(ctx: Pick<Required<RuleTestContext>, 'link'> & Omit<Part
   const res: Partial<LinkInspectionResult> = { error: [], warning: [], fix: ctx.link, link: ctx.link }
   let link = ctx.link
   const url = parseURL(link)
-  const validInspections = Object.entries(rules)
-    .filter(([name]) => !ctx.skipInspections || !ctx.skipInspections.includes(name))
-    .map(([, rule]) => rule) as Rule[]
+  const validInspections = rules
+    .filter(({ id }) => !(ctx.skipInspections || []).includes(id))
   let processing = true
   for (const rule of validInspections) {
     rule.test({
