@@ -1,6 +1,6 @@
 import type { RuleTestContext } from '../../../src/runtime/types'
 import { describe, expect, it } from 'vitest'
-import RuleDescriptiveLinkText from '../../../src/runtime/shared/inspections/descriptive-link-text'
+import RuleDescriptiveLinkText from '../../../src/runtime/shared/inspections/link-text'
 import { runRule } from './util'
 
 describe('rule descriptive text', () => {

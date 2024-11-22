@@ -1,9 +1,9 @@
 import type { RuleTestContext } from '../../../src/runtime/types'
 import { describe, expect, it } from 'vitest'
-import RuleNoDocumentRelative from '../../../src/runtime/shared/inspections/no-document-relative'
+import RuleNoDocumentRelative from '../../../src/runtime/shared/inspections/no-baseless'
 import { runRule } from './util'
 
-describe('rule no-document-relative', () => {
+describe('rule no-baseless', () => {
   it('works', () => {
     const ctx = {
       link: 'my-post',

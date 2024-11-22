@@ -141,7 +141,7 @@ export default defineNuxtModule<ModuleOptions>({
     const isDevToolsEnabled = typeof nuxt.options.devtools === 'boolean' ? nuxt.options.devtools : nuxt.options.devtools.enabled
     if (nuxt.options.dev && isDevToolsEnabled) {
       addPlugin({
-        src: resolve('./runtime/app/plugin/ui.client'),
+        src: resolve('./runtime/app/plugins/ui.client'),
         mode: 'client',
       })
       addServerHandler({

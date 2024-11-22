@@ -10,6 +10,9 @@ export default function RuleNoNonAsciiChars() {
           name: 'no-non-ascii-chars',
           scope: 'warning',
           message: 'Links should not contain non-ascii characters.',
+          // fix is to uri encode the link
+          fix: encodeURI(link),
+          fixDescription: 'Encode non-ascii characters.',
         })
       }
     },
