@@ -5,6 +5,7 @@ import RuleDescriptiveLinkText from './inspections/descriptive-link-text'
 import RuleMissingHash from './inspections/missing-hash'
 import RuleNoDocumentRelative from './inspections/no-document-relative'
 import RuleNoDoubleSlashes from './inspections/no-double-slashes'
+import RuleNoDuplicateQueryParams from './inspections/no-duplicate-query-params'
 import RuleNoErrorResponse from './inspections/no-error-response-status'
 import RuleNoJavascript from './inspections/no-javascript'
 import RuleNoMissingHref from './inspections/no-missing-href'
@@ -14,6 +15,7 @@ import RuleRedirects from './redirects'
 
 export const AllInspections = [
   RuleNoMissingHref(),
+  RuleNoDuplicateQueryParams(),
   RuleNoNonAsciiChars(),
   RuleMissingHash(),
   RuleNoDoubleSlashes(),
