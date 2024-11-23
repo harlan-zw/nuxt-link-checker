@@ -37,11 +37,11 @@ Install `nuxt-link-checker` dependency to your project:
 npx nuxi@latest module add link-checker
 ```
 
-# Documentation
+## Documentation
 
 [📖 Read the full documentation](https://nuxtseo.com/link-checker/getting-started/installation) for more information.
 
-# Demos
+## Demos
 
 - [StackBlitz](https://stackblitz.com/edit/nuxt-starter-qtaq7x?file=pages%2Findex.vue)
 
