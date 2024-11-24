@@ -41,11 +41,23 @@
       <h2 class="text-lg font-bold mb-4">
         Errors
       </h2>
-      <LinkDebug to="/about">
-        here
-        <template #pre>
-          test before link
-        </template>
+      <LinkDebug to="">
+        missing href
+      </LinkDebug>
+      <LinkDebug to="//oops">
+        double slash
+      </LinkDebug>
+      <LinkDebug to="//oops">
+        double slash
+      </LinkDebug>
+      <LinkDebug to="/users/👨‍👩‍👦/photos/🌅-vacation">
+        non-ascii
+      </LinkDebug>
+      <LinkDebug to="/ oops">
+        whitespace
+      </LinkDebug>
+      <LinkDebug to="/oopsthisisamistake">
+        uppercase
       </LinkDebug>
       <LinkDebug to="this is a very bad link">
         very bad link
