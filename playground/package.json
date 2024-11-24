@@ -8,7 +8,7 @@
     "generate": "nuxi generate"
   },
   "dependencies": {
-    "@nuxt/ui": "^2.18.6",
+    "@nuxt/ui": "^2.19.2",
     "nuxt-link-checker": "workspace:*",
     "nuxt-link-checker-devtools": "workspace:*"
   }
