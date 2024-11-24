@@ -100,18 +100,118 @@ describe('generate', () => {
             },
             {
               "error": [],
-              "warning": [
+              "warning": [],
+              "link": ""
+            },
+            {
+              "error": [
                 {
-                  "name": "link-text",
-                  "scope": "warning",
-                  "message": "Link text \\"here\\" should be more descriptive.",
-                  "tip": "The here descriptive text does not provide any context to the link."
+                  "name": "no-error-response",
+                  "scope": "error",
+                  "message": "Should not respond with status code 404 (Not Found)."
                 }
               ],
-              "fix": "/about",
-              "link": "/about",
+              "warning": [
+                {
+                  "name": "no-double-slashes",
+                  "scope": "warning",
+                  "message": "Links should not contain double slashes.",
+                  "fix": "/oops",
+                  "fixDescription": "Remove double slashes."
+                }
+              ],
+              "fix": "/oops",
+              "link": "//oops",
               "passes": false,
-              "textContent": "here"
+              "textContent": "double slash"
+            },
+            {
+              "error": [
+                {
+                  "name": "no-error-response",
+                  "scope": "error",
+                  "message": "Should not respond with status code 404 (Not Found)."
+                }
+              ],
+              "warning": [
+                {
+                  "name": "no-double-slashes",
+                  "scope": "warning",
+                  "message": "Links should not contain double slashes.",
+                  "fix": "/oops",
+                  "fixDescription": "Remove double slashes."
+                }
+              ],
+              "fix": "/oops",
+              "link": "//oops",
+              "passes": false,
+              "textContent": "double slash"
+            },
+            {
+              "error": [
+                {
+                  "name": "no-error-response",
+                  "scope": "error",
+                  "message": "Should not respond with status code 404 (Page not found: /users/%F0%9F%91%A8%E2%80%8D%F0%9F%91%A9%E2%80%8D%F0%9F%91%A6/photos/%F0%9F%8C%85-vacation)."
+                }
+              ],
+              "warning": [
+                {
+                  "name": "no-non-ascii-chars",
+                  "scope": "warning",
+                  "message": "Links should not contain non-ascii characters.",
+                  "fix": "/users/%F0%9F%91%A8%E2%80%8D%F0%9F%91%A9%E2%80%8D%F0%9F%91%A6/photos/%F0%9F%8C%85-vacation",
+                  "fixDescription": "Encode non-ascii characters."
+                },
+                {
+                  "name": "no-uppercase-chars",
+                  "scope": "warning",
+                  "message": "Links should not contain uppercase characters.",
+                  "fix": "/users/%f0%9f%91%a8%e2%80%8d%f0%9f%91%a9%e2%80%8d%f0%9f%91%a6/photos/%f0%9f%8c%85-vacation",
+                  "fixDescription": "Convert to lowercase."
+                }
+              ],
+              "fix": "/users/%f0%9f%91%a8%e2%80%8d%f0%9f%91%a9%e2%80%8d%f0%9f%91%a6/photos/%f0%9f%8c%85-vacation",
+              "link": "/users/👨‍👩‍👦/photos/🌅-vacation",
+              "passes": false,
+              "textContent": "non-ascii"
+            },
+            {
+              "error": [
+                {
+                  "name": "no-error-response",
+                  "scope": "error",
+                  "message": "Should not respond with status code 404 (Page not found: /%20oops).",
+                  "fix": "/foo",
+                  "fixDescription": "Did you mean /foo?"
+                }
+              ],
+              "warning": [
+                {
+                  "name": "no-whitespace",
+                  "scope": "warning",
+                  "message": "Links should not contain whitespace.",
+                  "tip": "Use hyphens to separate words instead of spaces."
+                }
+              ],
+              "fix": "/foo",
+              "link": "/ oops",
+              "passes": false,
+              "textContent": "whitespace"
+            },
+            {
+              "error": [
+                {
+                  "name": "no-error-response",
+                  "scope": "error",
+                  "message": "Should not respond with status code 404 (Page not found: /oopsthisisamistake)."
+                }
+              ],
+              "warning": [],
+              "fix": "/oopsthisisamistake",
+              "link": "/oopsthisisamistake",
+              "passes": false,
+              "textContent": "uppercase"
             },
             {
               "error": [
@@ -467,11 +567,20 @@ describe('generate', () => {
     expect(reportMarkdown).toMatchInlineSnapshot(`
       "# Link Checker Report
 
-      ## [/](/) 6 errors, 5 warnings
+      ## [/](/) 11 errors, 8 warnings
       | Link | Message |
       | --- | --- |
       | /about/Billy%20Bob | Links should not contain uppercase characters. (no-uppercase-chars) |
-      | /about | Link text "here" should be more descriptive. (link-text) |
+      | //oops | Should not respond with status code 404 (Not Found). (no-error-response) |
+      | //oops | Links should not contain double slashes. (no-double-slashes) |
+      | //oops | Should not respond with status code 404 (Not Found). (no-error-response) |
+      | //oops | Links should not contain double slashes. (no-double-slashes) |
+      | /users/👨‍👩‍👦/photos/🌅-vacation | Should not respond with status code 404 (Page not found: /users/%F0%9F%91%A8%E2%80%8D%F0%9F%91%A9%E2%80%8D%F0%9F%91%A6/photos/%F0%9F%8C%85-vacation). (no-error-response) |
+      | /users/👨‍👩‍👦/photos/🌅-vacation | Links should not contain non-ascii characters. (no-non-ascii-chars) |
+      | /users/👨‍👩‍👦/photos/🌅-vacation | Links should not contain uppercase characters. (no-uppercase-chars) |
+      | / oops | Should not respond with status code 404 (Page not found: /%20oops). (no-error-response) |
+      | / oops | Links should not contain whitespace. (no-whitespace) |
+      | /oopsthisisamistake | Should not respond with status code 404 (Page not found: /oopsthisisamistake). (no-error-response) |
       | this is a very bad link | Should not respond with status code 404 (Not Found). (no-error-response) |
       | this is a very bad link | Links should not contain whitespace. (no-whitespace) |
       | this is a very bad link | Links should be root relative. (no-baseless) |
