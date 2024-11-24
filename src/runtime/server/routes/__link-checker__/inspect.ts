@@ -1,8 +1,8 @@
 import { useNitroOrigin, useRuntimeConfig, useSiteConfig } from '#imports'
 import Fuse from 'fuse.js'
 import { defineEventHandler, getHeader, readBody } from 'h3'
+import { fixSlashes } from 'nuxt-site-config/urls'
 import { resolve } from 'pathe'
-import { fixSlashes } from 'site-config-stack/urls'
 import { parseURL } from 'ufo'
 // @ts-expect-error untyped
 import { generateFileLinkDiff, generateFileLinkPreviews, getLinkResponse, inspect, isNonFetchableLink, lruFsCache } from '#link-checker/shared'

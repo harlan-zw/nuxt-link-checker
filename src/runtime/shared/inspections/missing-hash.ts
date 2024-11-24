@@ -1,6 +1,6 @@
 import type { RuleReport } from '../../types'
 import Fuse from 'fuse.js'
-import { fixSlashes } from 'site-config-stack/urls'
+import { fixSlashes } from 'nuxt-site-config/urls'
 import { defineRule } from './util'
 
 export default function RuleMissingHash() {

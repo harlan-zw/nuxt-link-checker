@@ -2,7 +2,7 @@
   "name": "nuxt-link-checker",
   "type": "module",
   "version": "3.2.0",
-  "packageManager": "pnpm@9.11.0",
+  "packageManager": "pnpm@9.14.2",
   "description": "Find and magically fix links that may be negatively effecting your Nuxt sites SEO.",
   "author": {
     "name": "Harlan Wilton",
@@ -62,13 +62,11 @@
     "diff": "^7.0.0",
     "fuse.js": "^7.0.0",
     "magic-string": "^0.30.13",
-    "nuxt-site-config": "2.2.21",
-    "nuxt-site-config-kit": "2.2.21",
+    "nuxt-site-config": "3.0.4",
     "pathe": "^1.1.2",
     "pkg-types": "^1.2.1",
     "radix3": "^1.1.2",
     "sirv": "^3.0.0",
-    "site-config-stack": "^2.2.21",
     "ufo": "^1.5.4"
   },
   "devDependencies": {
@@ -79,16 +77,18 @@
     "@nuxt/test-utils": "^3.14.4",
     "@nuxt/ui": "^2.19.2",
     "@nuxtjs/eslint-config-typescript": "^12.1.0",
-    "@nuxtjs/sitemap": "6.1.5",
+    "@nuxtjs/sitemap": "7.0.0",
     "@types/diff": "^6.0.0",
     "bumpp": "^9.8.1",
     "eslint": "9.15.0",
     "execa": "^9.5.1",
     "nuxt": "^3.14.1592",
+    "typescript": "5.6.3",
     "vitest": "^2.1.5"
   },
   "resolutions": {
     "nuxt-link-checker": "workspace:*",
+    "typescript": "5.6.3",
     "vue": "3.5.10"
   }
 }

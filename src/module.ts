@@ -10,7 +10,7 @@ import {
   hasNuxtModuleCompatibility,
   useLogger,
 } from '@nuxt/kit'
-import { installNuxtSiteConfig } from 'nuxt-site-config-kit'
+import { installNuxtSiteConfig } from 'nuxt-site-config/kit'
 import { readPackageJSON } from 'pkg-types'
 import { setupDevToolsUI } from './devtools'
 import { isNuxtGenerate, prerender } from './prerender'

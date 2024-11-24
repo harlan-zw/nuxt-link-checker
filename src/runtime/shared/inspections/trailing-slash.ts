@@ -1,4 +1,4 @@
-import { fixSlashes } from 'site-config-stack/urls'
+import { fixSlashes } from 'nuxt-site-config/urls'
 import { parseURL } from 'ufo'
 import { defineRule } from './util'
 
