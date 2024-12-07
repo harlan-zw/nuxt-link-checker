@@ -176,7 +176,7 @@ export default defineNuxtModule<ModuleOptions>({
         // we need to add a nitro alias for #content/server to avoid errors
         nuxt.options.nitro.alias['#content/server'] = resolve('./runtime/server/composables/content-mock')
       }
-      nuxt.options.nitro.alias['#link-checker/shared'] = resolve('./runtime/shared')
+      nuxt.options.alias['#link-checker'] = resolve('./runtime')
       nuxt.options.runtimeConfig.public['nuxt-link-checker'] = {
         version,
         hasSitemapModule,
