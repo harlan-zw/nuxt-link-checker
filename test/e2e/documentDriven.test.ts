@@ -86,8 +86,9 @@ describe('nuxt/content documentDriven', () => {
 
       - [About Us](/about-us)
       - [Foos](/foos)
-      - [Foos](/foo)",
-                  "columnNumber": 67,
+      - [Foos](/foo)
+      ",
+                  "columnNumber": 69,
                   "lineNumber": 3,
                 },
               ],

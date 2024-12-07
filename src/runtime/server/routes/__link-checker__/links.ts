@@ -1,10 +1,10 @@
+// @ts-expect-error untyped
+import { serverQueryContent } from '#content/server'
 import { defineCachedEventHandler, useRuntimeConfig } from '#imports'
-import { createDefu } from 'defu'
 
 // @ts-expect-error untyped
 import pagePaths from '#nuxt-link-checker-sitemap/pages.mjs'
-// @ts-expect-error untyped
-import { serverQueryContent } from '#content/server'
+import { createDefu } from 'defu'
 
 const merger = createDefu((obj, key, value) => {
   // merge arrays using a set

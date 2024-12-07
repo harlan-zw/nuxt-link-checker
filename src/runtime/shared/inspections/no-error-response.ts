@@ -4,6 +4,7 @@ import { defineRule, isNonFetchableLink } from './util'
 export default function RuleNoErrorResponse() {
   return defineRule({
     id: 'no-error-response',
+    externalLinks: true,
     test({ link, response, report, pageSearch }) {
       if (!response.status || response.status.toString().startsWith('2') || response.status.toString().startsWith('3') || isNonFetchableLink(link))
         return

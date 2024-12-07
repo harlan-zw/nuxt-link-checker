@@ -3,9 +3,9 @@ import { defineRule } from './util'
 export default function RuleAbsoluteSiteUrls() {
   return defineRule({
     id: 'absolute-site-urls',
-    test({ report, link, url, siteConfig }) {
-      if (!link.startsWith(siteConfig.url!))
-        return // ignore external links
+    test({ report, url, siteConfig }) {
+      if (!url.host)
+        return // ignore relative links
 
       report({
         name: 'absolute-site-urls',

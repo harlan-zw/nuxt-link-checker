@@ -6,16 +6,16 @@ import { runRule } from './util'
 
 describe('rule no-duplicate-query-params', () => {
   it('works', () => {
-    expect(runRule({ link: 'http://example.com/page?a=1&a=2&c=3&d=4', url: parseURL('http://example.com/page?a=1&a=2&c=3&d=4') } as RuleTestContext, RuleNoDuplicateQueryParams())).toMatchInlineSnapshot(`
+    expect(runRule({ link: '/page?a=1&a=2&c=3&d=4', url: parseURL('http://example.com/page?a=1&a=2&c=3&d=4') } as RuleTestContext, RuleNoDuplicateQueryParams())).toMatchInlineSnapshot(`
       {
         "error": [],
-        "fix": "http://example.com/page?a=2&c=3&d=4",
-        "link": "http://example.com/page?a=1&a=2&c=3&d=4",
+        "fix": "/page?a=2&c=3&d=4",
+        "link": "/page?a=1&a=2&c=3&d=4",
         "passes": false,
         "textContent": undefined,
         "warning": [
           {
-            "fix": "http://example.com/page?a=2&c=3&d=4",
+            "fix": "/page?a=2&c=3&d=4",
             "fixDescription": "Remove duplicate query parameter.",
             "message": "Links should not contain duplicated query parameters.",
             "name": "no-duplicate-query-params",

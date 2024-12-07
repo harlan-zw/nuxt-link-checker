@@ -38,11 +38,17 @@ export function inspect(ctx: Pick<Required<RuleTestContext>, 'link'> & Omit<Part
   rules = rules || AllInspections
   const res: Partial<LinkInspectionResult> = { error: [], warning: [], fix: ctx.link, link: ctx.link }
   let link = ctx.link
+  const siteConfigHost = ctx.siteConfig?.url && parseURL(ctx.siteConfig.url).host
   const url = parseURL(link)
   const validInspections = rules
     .filter(({ id }) => !(ctx.skipInspections || []).includes(id))
   let processing = true
   for (const rule of validInspections) {
+    const isFakeAbsolute = link.startsWith('//') && !link.includes('.')
+    const isExternalLink = url.host && url.host !== siteConfigHost && !isFakeAbsolute
+    if (!rule.externalLinks && isExternalLink) {
+      continue
+    }
     rule.test({
       ...(ctx as RuleTestContext),
       link,

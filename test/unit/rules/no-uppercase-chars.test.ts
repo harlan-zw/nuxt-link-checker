@@ -5,16 +5,16 @@ import { runRule } from './util'
 
 describe('rule no-uppercase-chars', () => {
   it('works', () => {
-    expect(runRule({ link: 'https://example.com/PAGE' } as RuleTestContext, RuleNoUppercaseChars())).toMatchInlineSnapshot(`
+    expect(runRule({ link: '/PAGE' } as RuleTestContext, RuleNoUppercaseChars())).toMatchInlineSnapshot(`
       {
         "error": [],
-        "fix": "https://example.com/page",
-        "link": "https://example.com/PAGE",
+        "fix": "/page",
+        "link": "/PAGE",
         "passes": false,
         "textContent": undefined,
         "warning": [
           {
-            "fix": "https://example.com/page",
+            "fix": "/page",
             "fixDescription": "Convert to lowercase.",
             "message": "Links should not contain uppercase characters.",
             "name": "no-uppercase-chars",
@@ -40,6 +40,19 @@ describe('rule no-uppercase-chars', () => {
             "scope": "warning",
           },
         ],
+      }
+    `)
+  })
+  it ('excludes external URLs', () => {
+    // wikipedia
+    expect(runRule({ link: 'https://en.wikipedia.org/wiki/URL' } as RuleTestContext, RuleNoUppercaseChars())).toMatchInlineSnapshot(`
+      {
+        "error": [],
+        "fix": "https://en.wikipedia.org/wiki/URL",
+        "link": "https://en.wikipedia.org/wiki/URL",
+        "passes": true,
+        "textContent": undefined,
+        "warning": [],
       }
     `)
   })

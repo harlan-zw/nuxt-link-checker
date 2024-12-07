@@ -5,6 +5,31 @@ import RuleNoDoubleSlashes from '../../../src/runtime/shared/inspections/no-doub
 import { runRule } from './util'
 
 describe('rule double-slash', () => {
+  it('protocol simple', () => {
+    const ctx = {
+      link: '//oops',
+      url: parseURL('//oops'),
+      textContent: 'Click me',
+    } as RuleTestContext
+    expect(runRule(ctx, RuleNoDoubleSlashes())).toMatchInlineSnapshot(`
+      {
+        "error": [],
+        "fix": "/oops",
+        "link": "//oops",
+        "passes": false,
+        "textContent": "Click me",
+        "warning": [
+          {
+            "fix": "/oops",
+            "fixDescription": "Remove double slashes.",
+            "message": "Links should not contain double slashes.",
+            "name": "no-double-slashes",
+            "scope": "warning",
+          },
+        ],
+      }
+    `)
+  })
   it('no double slashes', () => {
     const ctx = {
       link: '/this/is//a/test',

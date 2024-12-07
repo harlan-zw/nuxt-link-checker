@@ -1,15 +1,13 @@
+// this is stubbed with content-mock.ts
+// @ts-expect-error optional module
+import { serverQueryContent } from '#content/server'
 import { useNitroOrigin, useRuntimeConfig, useSiteConfig } from '#imports'
+import { generateFileLinkDiff, generateFileLinkPreviews, getLinkResponse, inspect, isNonFetchableLink, lruFsCache } from '#link-checker/shared'
 import Fuse from 'fuse.js'
 import { defineEventHandler, getHeader, readBody } from 'h3'
 import { fixSlashes } from 'nuxt-site-config/urls'
 import { resolve } from 'pathe'
 import { parseURL } from 'ufo'
-// @ts-expect-error untyped
-import { generateFileLinkDiff, generateFileLinkPreviews, getLinkResponse, inspect, isNonFetchableLink, lruFsCache } from '#link-checker/shared'
-
-// this is stubbed with content-mock.ts
-// @ts-expect-error optional module
-import { serverQueryContent } from '#content/server'
 
 function isInternalRoute(path: string) {
   const lastSegment = path.split('/').pop() || path

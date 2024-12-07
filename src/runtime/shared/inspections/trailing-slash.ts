@@ -6,9 +6,6 @@ export default function RuleTrailingSlash() {
   return defineRule({
     id: 'trailing-slash',
     test({ report, link, siteConfig }) {
-      if (!link.startsWith('/') && !link.startsWith(siteConfig.url!))
-        return // ignore external links
-
       const $url = parseURL(link)
       // its a file when the last segment has a dot in it
       const isFile = $url.pathname.split('/').pop()!.includes('.')

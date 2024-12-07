@@ -10,9 +10,9 @@ describe('snippets', () => {
       [
         {
           "columnNumber": 14,
-          "end": 31,
+          "end": 32,
           "lineNumber": 2,
-          "start": 27,
+          "start": 28,
         },
       ]
     `)
@@ -23,15 +23,15 @@ describe('snippets', () => {
       [
         {
           "columnNumber": 16,
-          "end": 67,
+          "end": 72,
           "lineNumber": 6,
-          "start": 63,
+          "start": 68,
         },
         {
           "columnNumber": 16,
-          "end": 373,
+          "end": 384,
           "lineNumber": 12,
-          "start": 369,
+          "start": 380,
         },
       ]
     `)
@@ -57,7 +57,8 @@ describe('snippets', () => {
         <div>
           <NuxtLink to="/foo" data-first>
             Foo
-          </NuxtLink>",
+          </NuxtLink>
+      ",
           "columnNumber": 16,
           "lineNumber": 6,
         },
@@ -66,7 +67,8 @@ describe('snippets', () => {
           </div>
           <NuxtLink to="/foo" data-second>
             Test
-          </NuxtLink>",
+          </NuxtLink>
+      ",
           "columnNumber": 16,
           "lineNumber": 12,
         },
