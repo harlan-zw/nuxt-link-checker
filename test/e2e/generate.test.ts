@@ -567,12 +567,14 @@ describe('generate', () => {
     expect(reportMarkdown).toMatchInlineSnapshot(`
       "# Link Checker Report
 
-      ## [/](/) 11 errors, 6 warnings
+      ## [/](/) 11 errors, 8 warnings
       | Link | Message |
       | --- | --- |
       | /about/Billy%20Bob | Links should not contain uppercase characters. (no-uppercase-chars) |
       | //oops | Should not respond with status code 404 (Not Found). (no-error-response) |
+      | //oops | Links should not contain double slashes. (no-double-slashes) |
       | //oops | Should not respond with status code 404 (Not Found). (no-error-response) |
+      | //oops | Links should not contain double slashes. (no-double-slashes) |
       | /users/👨‍👩‍👦/photos/🌅-vacation | Should not respond with status code 404 (Page not found: /users/%F0%9F%91%A8%E2%80%8D%F0%9F%91%A9%E2%80%8D%F0%9F%91%A6/photos/%F0%9F%8C%85-vacation). (no-error-response) |
       | /users/👨‍👩‍👦/photos/🌅-vacation | Links should not contain non-ascii characters. (no-non-ascii-chars) |
       | /users/👨‍👩‍👦/photos/🌅-vacation | Links should not contain uppercase characters. (no-uppercase-chars) |
