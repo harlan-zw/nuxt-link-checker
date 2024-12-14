@@ -9,10 +9,10 @@ export default function RuleTrailingSlash() {
       const $url = parseURL(link)
 
       // Ignore fragment-only links
-      if($url.pathname.startsWith('#')) {
+      if ($url.pathname === '' && $url.hash) {
         return
       }
-      
+
       // its a file when the last segment has a dot in it
       const isFile = $url.pathname.split('/').pop()!.includes('.')
       if ($url.pathname === '/' || isFile)
