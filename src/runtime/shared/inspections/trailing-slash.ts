@@ -7,6 +7,12 @@ export default function RuleTrailingSlash() {
     id: 'trailing-slash',
     test({ report, link, siteConfig }) {
       const $url = parseURL(link)
+
+      // Ignore fragment-only links
+      if($url.pathname.startsWith('#') {
+        return
+      }
+      
       // its a file when the last segment has a dot in it
       const isFile = $url.pathname.split('/').pop()!.includes('.')
       if ($url.pathname === '/' || isFile)
