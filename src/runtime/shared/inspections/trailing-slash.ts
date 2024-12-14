@@ -9,7 +9,7 @@ export default function RuleTrailingSlash() {
       const $url = parseURL(link)
 
       // Ignore fragment-only links
-      if($url.pathname.startsWith('#') {
+      if($url.pathname.startsWith('#')) {
         return
       }
       
