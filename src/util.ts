@@ -9,11 +9,11 @@ export function convertNuxtPagesToPaths(pages: NuxtPage[]) {
     .map((page) => {
       return page.children?.length
         ? page.children.map((child) => {
-          return {
-            path: joinURL(page.path, child.path),
-            page: child,
-          }
-        })
+            return {
+              path: joinURL(page.path, child.path),
+              page: child,
+            }
+          })
         : { page, path: page.path }
     })
     .flat()
