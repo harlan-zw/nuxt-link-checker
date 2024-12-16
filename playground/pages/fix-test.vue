@@ -34,7 +34,7 @@
         absolute 404 link
       </LinkDebug>
       <LinkDebug to="javascript:history.back()">
-        javacript link
+        javascript link
       </LinkDebug>
       <LinkDebug to="/error">
         to an error page

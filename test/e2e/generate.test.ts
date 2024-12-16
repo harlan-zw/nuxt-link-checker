@@ -301,7 +301,7 @@ describe('generate', () => {
               "fix": "javascript:history.back()",
               "link": "javascript:history.back()",
               "passes": false,
-              "textContent": "javacript link"
+              "textContent": "javascript link"
             },
             {
               "error": [],
@@ -493,7 +493,7 @@ describe('generate', () => {
               "fix": "javascript:history.back()",
               "link": "javascript:history.back()",
               "passes": false,
-              "textContent": "javacript link"
+              "textContent": "javascript link"
             },
             {
               "error": [],

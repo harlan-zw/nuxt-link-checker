@@ -1,5 +1,5 @@
 import type { LinkInspectionResult, Rule, RuleTestContext } from '../types'
-import { parseURL } from 'ufo'
+import { hasProtocol, parseURL } from 'ufo'
 import RuleAbsoluteSiteUrls from './inspections/absolute-site-urls'
 import RuleDescriptiveLinkText from './inspections/link-text'
 import RuleMissingHash from './inspections/missing-hash'
@@ -45,7 +45,8 @@ export function inspect(ctx: Pick<Required<RuleTestContext>, 'link'> & Omit<Part
   let processing = true
   for (const rule of validInspections) {
     const isFakeAbsolute = link.startsWith('//') && !link.includes('.')
-    const isExternalLink = url.host && url.host !== siteConfigHost && !isFakeAbsolute
+    const hasNonHttpProtocol = hasProtocol(link) && !link.startsWith('http')
+    const isExternalLink = hasNonHttpProtocol || (url.host && url.host !== siteConfigHost && !isFakeAbsolute)
     if (!rule.externalLinks && isExternalLink) {
       continue
     }
