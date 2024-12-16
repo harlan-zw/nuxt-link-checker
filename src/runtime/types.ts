@@ -6,7 +6,7 @@ import type { ComputedRef, Ref } from 'vue'
 export interface Rule {
   id: string
   test: (ctx: RuleTestContext) => void
-  externalLinks: boolean
+  externalLinks?: boolean
 }
 
 export interface RuleTestContext {
