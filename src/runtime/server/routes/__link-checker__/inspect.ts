@@ -1,12 +1,10 @@
 // this is stubbed with content-mock.ts
 // @ts-expect-error optional module
-import { serverQueryContent } from '#content/server'
 import { useNitroOrigin, useRuntimeConfig, useSiteConfig } from '#imports'
 import { generateFileLinkDiff, generateFileLinkPreviews, getLinkResponse, inspect, isNonFetchableLink, lruFsCache } from '#link-checker/shared'
 import Fuse from 'fuse.js'
 import { defineEventHandler, getHeader, readBody } from 'h3'
 import { fixSlashes } from 'nuxt-site-config/urls'
-import { resolve } from 'pathe'
 import { parseURL } from 'ufo'
 
 function isInternalRoute(path: string) {
@@ -24,12 +22,12 @@ export default defineEventHandler(async (e) => {
     siteConfig: useSiteConfig(e),
   } as const
   const extraPaths: string[] = []
-  if (serverQueryContent) {
-    // let's fetch from the content document
-    const contentDocument = await serverQueryContent(e, partialCtx.fromPath).findOne()
-    if (contentDocument)
-      extraPaths.push(resolve(runtimeConfig.rootDir, 'content', contentDocument._file))
-  }
+  // if (serverQueryContent) {
+  //   // let's fetch from the content document
+  //   const contentDocument = await serverQueryContent(e, partialCtx.fromPath).findOne()
+  //   if (contentDocument)
+  //     extraPaths.push(resolve(runtimeConfig.rootDir, 'content', contentDocument._file))
+  // }
   // allow editing files to trigger a cache clear
   lruFsCache.clear()
   const links = await $fetch('/__link-checker__/links')
@@ -60,7 +58,7 @@ export default defineEventHandler(async (e) => {
         skipInspections: runtimeConfig.skipInspections,
       })
       const filePaths = [
-        ...extraPaths,
+        /// ...links.map paths
         ...paths.map((p) => {
           const [filepath] = p.split(':')
           return filepath

@@ -5,11 +5,11 @@ import { describe, expect, it } from 'vitest'
 const { resolve } = createResolver(import.meta.url)
 
 await setup({
-  rootDir: resolve('../fixtures/content'),
+  rootDir: resolve('../../fixtures/content-v3'),
   dev: true,
 })
 
-export const FooMarkdown = resolve('../fixtures/content/content/foo.md')
+export const FooMarkdown = resolve('../../fixtures/content/content/foo.md')
 
 describe('nuxt/content documentDriven', () => {
   it('basic', async () => {
@@ -26,6 +26,18 @@ describe('nuxt/content documentDriven', () => {
         ids: [],
       },
     })
+    expect(singleInspect).toMatchInlineSnapshot(`
+      [
+        {
+          "error": [],
+          "fix": "/about-us",
+          "link": "/about-us",
+          "passes": true,
+          "textContent": "About Us",
+          "warning": [],
+        },
+      ]
+    `)
     const res = singleInspect.map((r) => {
       return {
         ...r,

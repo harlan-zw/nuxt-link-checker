@@ -1,6 +1,6 @@
-// @ts-expect-error untyped
-import { serverQueryContent } from '#content/server'
 import { defineCachedEventHandler, useRuntimeConfig } from '#imports'
+// @ts-expect-error untyped
+import contentLinkProvider from '#link-checker/content-provider'
 
 // @ts-expect-error untyped
 import pagePaths from '#nuxt-link-checker-sitemap/pages.mjs'
@@ -36,15 +36,9 @@ export default defineCachedEventHandler(async (e) => {
     const entries = sitemapDebug.globalSources.map(source => source.urls).flat()
     linkDb.push(...entries.map(s => ({ path: s.loc, title: '' })))
   }
-  if (serverQueryContent) {
-    // let's fetch from the content document
-    const contentDocuments = await serverQueryContent(e).find()
-    if (contentDocuments) {
-      linkDb.push(...contentDocuments.map((doc: any) => ({
-        path: doc._path,
-        title: doc.title,
-      })))
-    }
+  if (contentLinkProvider) {
+    const links = await contentLinkProvider(e)
+    linkDb.push(...links)
   }
 
   return mergeOnKey(linkDb, 'link')

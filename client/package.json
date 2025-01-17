@@ -2,13 +2,13 @@
   "name": "nuxt-link-checker-devtools",
   "private": true,
   "devDependencies": {
-    "@iconify-json/carbon": "^1.2.4",
-    "@nuxt/devtools-kit": "^1.6.4",
+    "@iconify-json/carbon": "^1.2.5",
+    "@nuxt/devtools-kit": "^1.7.0",
     "@nuxt/devtools-ui-kit": "latest",
-    "@nuxt/kit": "^3.14.1592",
+    "@nuxt/kit": "^3.15.2",
     "floating-vue": "5.2.2",
     "nuxt": "latest",
-    "shiki": "^1.24.2",
+    "shiki": "^1.27.2",
     "vue": "3.5.10",
     "vue-router": "latest"
   }
