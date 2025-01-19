@@ -186,7 +186,7 @@ export default defineNuxtModule<ModuleOptions>({
         }
       }
       else {
-        nuxt.options.nitro.alias['#link-checker/content-provider'] = resolve('./runtime/server/providers/content-mock')
+        nuxt.options.nitro.alias['#link-checker/content-provider'] = resolve('./runtime/server/providers/noop')
       }
       nuxt.options.alias['#link-checker'] = resolve('./runtime')
       nuxt.options.runtimeConfig.public['nuxt-link-checker'] = {
