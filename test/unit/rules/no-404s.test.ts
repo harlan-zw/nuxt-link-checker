@@ -9,8 +9,8 @@ describe('rule no-404s', () => {
     const ctx = {
       link: '/abot',
       response: { status: 404 },
-      pageSearch: new Fuse([{ path: '/about', title: 'About' }], {
-        keys: ['path', 'title'],
+      pageSearch: new Fuse([{ link: '/about', title: 'About' }], {
+        keys: ['link', 'title'],
         threshold: 0.5,
       }),
     } as any as RuleTestContext
