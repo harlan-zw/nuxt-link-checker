@@ -1,11 +1,28 @@
-// this is stubbed with content-mock.ts
-// @ts-expect-error optional module
 import { useNitroOrigin, useRuntimeConfig, useSiteConfig } from '#imports'
-import { generateFileLinkDiff, generateFileLinkPreviews, getLinkResponse, inspect, isNonFetchableLink, lruFsCache } from '#link-checker/shared'
+import { createDefu } from 'defu'
 import Fuse from 'fuse.js'
-import { defineEventHandler, getHeader, readBody } from 'h3'
+import { defineEventHandler, readBody } from 'h3'
 import { fixSlashes } from 'nuxt-site-config/urls'
-import { parseURL } from 'ufo'
+import { resolve } from 'pathe'
+import { generateFileLinkDiff, generateFileLinkPreviews, getLinkResponse, inspect, isNonFetchableLink, lruFsCache } from '../../../shared'
+
+const merger = createDefu((obj, key, value) => {
+  // merge arrays using a set
+  if (Array.isArray(obj[key]) && Array.isArray(value))
+    // @ts-expect-error untyped
+    obj[key] = Array.from(new Set([...obj[key], ...value]))
+  return obj[key]
+})
+
+function mergeOnKey<T, K extends keyof T>(arr: T[], key: K) {
+  const res: Record<string, T> = {}
+  arr.forEach((item) => {
+    const k = item[key] as string
+    // @ts-expect-error untyped
+    res[k] = merger(item, res[k] || {})
+  })
+  return Object.values(res)
+}
 
 function isInternalRoute(path: string) {
   const lastSegment = path.split('/').pop() || path
@@ -14,23 +31,20 @@ function isInternalRoute(path: string) {
 
 // verify a link
 export default defineEventHandler(async (e) => {
-  const { tasks, ids } = await readBody<{ tasks: { link: string, textContent: string, paths: string[] }[], ids: string[] }>(e)
+  const { tasks, ids, path } = await readBody<{ path: string, tasks: { link: string, textContent: string, paths: string[] }[], ids: string[] }>(e)
   const runtimeConfig = useRuntimeConfig().public['nuxt-link-checker'] || {} as any
   const partialCtx = {
     ids,
-    fromPath: fixSlashes(false, parseURL(getHeader(e, 'referer') || '/').pathname),
+    fromPath: fixSlashes(false, path),
     siteConfig: useSiteConfig(e),
   } as const
-  const extraPaths: string[] = []
-  // if (serverQueryContent) {
-  //   // let's fetch from the content document
-  //   const contentDocument = await serverQueryContent(e, partialCtx.fromPath).findOne()
-  //   if (contentDocument)
-  //     extraPaths.push(resolve(runtimeConfig.rootDir, 'content', contentDocument._file))
-  // }
   // allow editing files to trigger a cache clear
   lruFsCache.clear()
   const links = await $fetch('/__link-checker__/links')
+  const pageSearch = new Fuse<{ link: string, title: string }>(mergeOnKey(links, 'link'), {
+    keys: ['link', 'title'],
+    threshold: 0.5,
+  })
   return Promise.all(
     tasks.map(async ({ link, paths, textContent }) => {
       // do a quick check for links that are always safe
@@ -50,20 +64,17 @@ export default defineEventHandler(async (e) => {
         ...partialCtx,
         link,
         textContent,
-        pageSearch: new Fuse(links, {
-          keys: ['path', 'title'],
-          threshold: 0.5,
-        }),
+        pageSearch,
         response,
         skipInspections: runtimeConfig.skipInspections,
       })
       const filePaths = [
-        /// ...links.map paths
+        resolve(runtimeConfig.rootDir, links.find(l => l.file && l.link === path)?.file),
         ...paths.map((p) => {
           const [filepath] = p.split(':')
           return filepath
         }),
-      ]
+      ].filter(Boolean)
       if (!result.passes) {
         result.sources = (await Promise.all(filePaths.map(async filepath => await generateFileLinkPreviews(filepath, link))))
           .filter(s => s.previews.length)

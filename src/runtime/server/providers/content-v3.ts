@@ -15,10 +15,16 @@ export default async (e: H3Event) => {
   // now we need to handle multiple queries here, we want to run the requests in parallel
   const contentList = []
   for (const collection of collections) {
-    contentList.push(queryCollectionWithEvent(e, collection).select('id', 'path').where('path', 'IS NOT NULL').all())
+    contentList.push(queryCollectionWithEvent(e, collection).select('id', 'path', 'title').where('path', 'IS NOT NULL').all())
   }
   // we need to wait for all the queries to finish
   const results = await Promise.all(contentList)
   // we need to flatten the results
-  return results.flat()
+  return results.flat().map((d) => {
+    return {
+      link: d.path,
+      title: d.title,
+      file: d.id,
+    }
+  })
 }
