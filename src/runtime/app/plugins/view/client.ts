@@ -112,6 +112,7 @@ export async function setupLinkCheckerClient({ nuxt, route }: { nuxt: NuxtApp, r
           body: {
             tasks,
             ids: lastIds,
+            path: route.path,
           },
         })
         payloads.forEach((payload: LinkInspectionResult) => {

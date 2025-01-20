@@ -8,9 +8,11 @@ import {
   extendPages,
   hasNuxtModule,
   hasNuxtModuleCompatibility,
+  resolveModule,
   useLogger,
 } from '@nuxt/kit'
 import { installNuxtSiteConfig } from 'nuxt-site-config/kit'
+import { dirname } from 'pathe'
 import { readPackageJSON } from 'pkg-types'
 import { setupDevToolsUI } from './devtools'
 import { isNuxtGenerate, prerender } from './prerender'
@@ -172,17 +174,25 @@ export default defineNuxtModule<ModuleOptions>({
         //  @ts-expect-error runtime
         && nuxt.options.sitemap?.enabled !== false
       nuxt.options.nitro.alias = nuxt.options.nitro.alias || {}
-      if (!hasNuxtModule('@nuxt/content')) {
-        // we need to add a nitro alias for #content/server to avoid errors
-        nuxt.options.nitro.alias['#content/server'] = resolve('./runtime/server/composables/content-mock')
+      const usingNuxtContent = hasNuxtModule('@nuxt/content')
+      const isNuxtContentV3 = usingNuxtContent && await hasNuxtModuleCompatibility('@nuxt/content', '^3')
+      if (usingNuxtContent) {
+        if (isNuxtContentV3) {
+          nuxt.options.nitro.alias['#link-checker/content-provider'] = resolve('./runtime/server/providers/content-v3')
+          nuxt.options.alias['#sitemap/content-v3-nitro-path'] = resolve(dirname(resolveModule('@nuxt/content')), 'runtime/nitro')
+        }
+        else {
+          nuxt.options.nitro.alias['#link-checker/content-provider'] = resolve('./runtime/server/providers/content-v2')
+        }
+      }
+      else {
+        nuxt.options.nitro.alias['#link-checker/content-provider'] = resolve('./runtime/server/providers/noop')
       }
       nuxt.options.alias['#link-checker'] = resolve('./runtime')
       nuxt.options.runtimeConfig.public['nuxt-link-checker'] = {
         version,
         hasSitemapModule,
         rootDir: nuxt.options.rootDir,
-        // @ts-expect-error untyped
-        isNuxtContentDocumentDriven: config.strictNuxtContentPaths || (hasNuxtModule('@nuxt/content') && nuxt.options.content?.documentDriven),
         excludeLinks: config.excludeLinks,
         skipInspections: config.skipInspections,
         fetchTimeout: config.fetchTimeout,
