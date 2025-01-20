@@ -28,6 +28,10 @@ describe('basic', async () => {
       for (const source of inspect.sources) {
         source.filepath = source.filepath.replace(resolve('../fixtures/basic'), '')
       }
+      // for diff
+      for (const diff of inspect.diff) {
+        diff.filepath = diff.filepath.replace(resolve('../fixtures/basic'), '')
+      }
     }
     expect(singleInspect).toMatchInlineSnapshot(`
       [
@@ -49,7 +53,7 @@ describe('basic', async () => {
         </NuxtLink>
       </template>",
               },
-              "filepath": "/home/harlan/packages/nuxt-link-checker/test/fixtures/basic/components/VueTemplateSingle.vue",
+              "filepath": "/components/VueTemplateSingle.vue",
             },
           ],
           "error": [

@@ -17,5 +17,5 @@ export default defineNuxtConfig({
     baseURL: '/__nuxt-link-checker',
   },
 
-  compatibilityDate: '2025-01-17',
+  compatibilityDate: '2025-01-20',
 })
