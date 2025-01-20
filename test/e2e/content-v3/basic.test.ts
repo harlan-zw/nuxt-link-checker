@@ -5,13 +5,13 @@ import { describe, expect, it } from 'vitest'
 const { resolve } = createResolver(import.meta.url)
 
 await setup({
-  rootDir: resolve('../fixtures/content'),
+  rootDir: resolve('../../fixtures/content-v3'),
   dev: true,
 })
 
-export const FooMarkdown = resolve('../fixtures/content/content/foo.md')
+export const FooMarkdown = resolve('../../fixtures/content-v3/content/foo.md')
 
-describe('nuxt/content documentDriven', () => {
+describe('nuxt/content v3', () => {
   it('basic', async () => {
     const singleInspect = await $fetch<{ diff: [], sources: [] }[]>('/__link-checker__/inspect', {
       method: 'POST',
@@ -26,6 +26,26 @@ describe('nuxt/content documentDriven', () => {
         ids: [],
       },
     })
+    expect(singleInspect).toMatchInlineSnapshot(`
+      [
+        {
+          "diff": [],
+          "error": [
+            {
+              "message": "Should not respond with status code 404 (Not Found).",
+              "name": "no-error-response",
+              "scope": "error",
+            },
+          ],
+          "fix": "/about-us",
+          "link": "/about-us",
+          "passes": false,
+          "sources": [],
+          "textContent": "About Us",
+          "warning": [],
+        },
+      ]
+    `)
     const res = singleInspect.map((r) => {
       return {
         ...r,
@@ -46,26 +66,7 @@ describe('nuxt/content documentDriven', () => {
     expect(res).toMatchInlineSnapshot(`
       [
         {
-          "diff": [
-            {
-              "code": "This is a link to an about page that does not exist:
-
-      - [About Us](/about-us)
-      - [Foos](/foos)
-      - [Foos](/foo)
-      ",
-              "diff": {
-                "added": [],
-                "removed": [],
-                "result": "This is a link to an about page that does not exist:
-
-      - [About Us](/about-us)
-      - [Foos](/foos)
-      - [Foos](/foo)",
-              },
-              "filepath": "index.md",
-            },
-          ],
+          "diff": [],
           "error": [
             {
               "message": "Should not respond with status code 404 (Not Found).",
@@ -76,23 +77,7 @@ describe('nuxt/content documentDriven', () => {
           "fix": "/about-us",
           "link": "/about-us",
           "passes": false,
-          "sources": [
-            {
-              "filepath": "index.md",
-              "lang": "md",
-              "previews": [
-                {
-                  "code": "This is a link to an about page that does not exist:
-
-      - [About Us](/about-us)
-      - [Foos](/foos)
-      - [Foos](/foo)",
-                  "columnNumber": 67,
-                  "lineNumber": 3,
-                },
-              ],
-            },
-          ],
+          "sources": [],
           "textContent": "About Us",
           "warning": [],
         },

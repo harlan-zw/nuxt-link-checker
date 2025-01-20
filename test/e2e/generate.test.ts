@@ -152,7 +152,7 @@ describe('generate', () => {
                 {
                   "name": "no-error-response",
                   "scope": "error",
-                  "message": "Should not respond with status code 404 (Page not found: /users/%F0%9F%91%A8%E2%80%8D%F0%9F%91%A9%E2%80%8D%F0%9F%91%A6/photos/%F0%9F%8C%85-vacation)."
+                  "message": "Should not respond with status code 404 (Page not found)."
                 }
               ],
               "warning": [
@@ -181,7 +181,7 @@ describe('generate', () => {
                 {
                   "name": "no-error-response",
                   "scope": "error",
-                  "message": "Should not respond with status code 404 (Page not found: /%20oops).",
+                  "message": "Should not respond with status code 404 (Page not found).",
                   "fix": "/foo",
                   "fixDescription": "Did you mean /foo?"
                 }
@@ -204,7 +204,7 @@ describe('generate', () => {
                 {
                   "name": "no-error-response",
                   "scope": "error",
-                  "message": "Should not respond with status code 404 (Page not found: /oopsthisisamistake)."
+                  "message": "Should not respond with status code 404 (Page not found)."
                 }
               ],
               "warning": [],
@@ -247,7 +247,7 @@ describe('generate', () => {
                 {
                   "name": "no-error-response",
                   "scope": "error",
-                  "message": "Should not respond with status code 404 (Page not found: /abot).",
+                  "message": "Should not respond with status code 404 (Page not found).",
                   "fix": "/about",
                   "fixDescription": "Did you mean /about?"
                 }
@@ -271,7 +271,7 @@ describe('generate', () => {
                 {
                   "name": "no-error-response",
                   "scope": "error",
-                  "message": "Should not respond with status code 404 (Page not found: /404link)."
+                  "message": "Should not respond with status code 404 (Page not found)."
                 }
               ],
               "warning": [],
@@ -316,7 +316,7 @@ describe('generate', () => {
                 {
                   "name": "no-error-response",
                   "scope": "error",
-                  "message": "Should not respond with status code 404 (Page not found: /completely-broken/)."
+                  "message": "Should not respond with status code 404 (Page not found)."
                 }
               ],
               "warning": [
@@ -339,7 +339,7 @@ describe('generate', () => {
                 {
                   "name": "no-error-response",
                   "scope": "error",
-                  "message": "Should not respond with status code 404 (Page not found: /abt).",
+                  "message": "Should not respond with status code 404 (Page not found).",
                   "fix": "/about",
                   "fixDescription": "Did you mean /about?"
                 }
@@ -430,7 +430,7 @@ describe('generate', () => {
                 {
                   "name": "no-error-response",
                   "scope": "error",
-                  "message": "Should not respond with status code 404 (Page not found: /abt).",
+                  "message": "Should not respond with status code 404 (Page not found).",
                   "fix": "/about",
                   "fixDescription": "Did you mean /about?"
                 }
@@ -454,7 +454,7 @@ describe('generate', () => {
                 {
                   "name": "no-error-response",
                   "scope": "error",
-                  "message": "Should not respond with status code 404 (Page not found: /404link/)."
+                  "message": "Should not respond with status code 404 (Page not found)."
                 }
               ],
               "warning": [
@@ -508,7 +508,7 @@ describe('generate', () => {
                 {
                   "name": "no-error-response",
                   "scope": "error",
-                  "message": "Should not respond with status code 404 (Page not found: /completely-broken/)."
+                  "message": "Should not respond with status code 404 (Page not found)."
                 }
               ],
               "warning": [
@@ -575,31 +575,31 @@ describe('generate', () => {
       | //oops | Links should not contain double slashes. (no-double-slashes) |
       | //oops | Should not respond with status code 404 (Not Found). (no-error-response) |
       | //oops | Links should not contain double slashes. (no-double-slashes) |
-      | /users/👨‍👩‍👦/photos/🌅-vacation | Should not respond with status code 404 (Page not found: /users/%F0%9F%91%A8%E2%80%8D%F0%9F%91%A9%E2%80%8D%F0%9F%91%A6/photos/%F0%9F%8C%85-vacation). (no-error-response) |
+      | /users/👨‍👩‍👦/photos/🌅-vacation | Should not respond with status code 404 (Page not found). (no-error-response) |
       | /users/👨‍👩‍👦/photos/🌅-vacation | Links should not contain non-ascii characters. (no-non-ascii-chars) |
       | /users/👨‍👩‍👦/photos/🌅-vacation | Links should not contain uppercase characters. (no-uppercase-chars) |
-      | / oops | Should not respond with status code 404 (Page not found: /%20oops). (no-error-response) |
+      | / oops | Should not respond with status code 404 (Page not found). (no-error-response) |
       | / oops | Links should not contain whitespace. (no-whitespace) |
-      | /oopsthisisamistake | Should not respond with status code 404 (Page not found: /oopsthisisamistake). (no-error-response) |
+      | /oopsthisisamistake | Should not respond with status code 404 (Page not found). (no-error-response) |
       | this is a very bad link | Should not respond with status code 404 (Not Found). (no-error-response) |
       | this is a very bad link | Links should not contain whitespace. (no-whitespace) |
       | this is a very bad link | Links should be root relative. (no-baseless) |
-      | /abot | Should not respond with status code 404 (Page not found: /abot). (no-error-response) |
-      | /404link | Should not respond with status code 404 (Page not found: /404link). (no-error-response) |
+      | /abot | Should not respond with status code 404 (Page not found). (no-error-response) |
+      | /404link | Should not respond with status code 404 (Page not found). (no-error-response) |
       | javascript:history.back() | Should not use JavaScript (no-javascript) |
-      | /completely-broken/ | Should not respond with status code 404 (Page not found: /completely-broken/). (no-error-response) |
+      | /completely-broken/ | Should not respond with status code 404 (Page not found). (no-error-response) |
       | /completely-broken/ | Should not have a trailing slash. (trailing-slash) |
-      | /abt | Should not respond with status code 404 (Page not found: /abt). (no-error-response) |
+      | /abt | Should not respond with status code 404 (Page not found). (no-error-response) |
       | /trailingslash/ | Should not have a trailing slash. (trailing-slash) |
 
       ## [/fix-test](/fix-test) 4 errors, 2 warnings
       | Link | Message |
       | --- | --- |
-      | /abt | Should not respond with status code 404 (Page not found: /abt). (no-error-response) |
-      | /404link/ | Should not respond with status code 404 (Page not found: /404link/). (no-error-response) |
+      | /abt | Should not respond with status code 404 (Page not found). (no-error-response) |
+      | /404link/ | Should not respond with status code 404 (Page not found). (no-error-response) |
       | /404link/ | Should not have a trailing slash. (trailing-slash) |
       | javascript:history.back() | Should not use JavaScript (no-javascript) |
-      | /completely-broken/ | Should not respond with status code 404 (Page not found: /completely-broken/). (no-error-response) |
+      | /completely-broken/ | Should not respond with status code 404 (Page not found). (no-error-response) |
       | /completely-broken/ | Should not have a trailing slash. (trailing-slash) |
       "
     `)

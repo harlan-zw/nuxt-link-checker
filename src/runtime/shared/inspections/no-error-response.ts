@@ -16,9 +16,9 @@ export default function RuleNoErrorResponse() {
       // only for relative links
       if (link.startsWith('/') && pageSearch) {
         const related = pageSearch.search(link)?.[0]?.item
-        if (related?.path && related.path !== link) {
-          payload.fix = related.path
-          payload.fixDescription = `Did you mean ${related.path}?`
+        if (related?.link && related.link !== link) {
+          payload.fix = related.link
+          payload.fixDescription = `Did you mean ${related.link}?`
         }
       }
       else {

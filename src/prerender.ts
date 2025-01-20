@@ -71,12 +71,12 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
 
       const links = payloads.map(([route, payload]) => {
         return {
-          path: route,
+          link: route,
           title: payload.title,
         }
       }).flat()
-      const pageSearcher = new Fuse(links, {
-        keys: ['path', 'title'],
+      const pageSearcher = new Fuse<{ link: string, title: string }>(links, {
+        keys: ['link', 'title'],
         threshold: 0.5,
       })
       nitro.logger.info('Running link inspections...')

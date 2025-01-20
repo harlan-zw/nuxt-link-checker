@@ -51,8 +51,8 @@ const LINE_PREVIEW_OFFSET = 2
 
 export async function generateFileLinkPreviews(filepath: string, link: string) {
   // use lruFsCache
-  const contents = lruFsCache.has(filepath) ? lruFsCache.get(filepath)! : await readFile(filepath, 'utf8')
-  const previews = generateLinkSourcePreviews(contents, link)
+  const contents = lruFsCache.has(filepath) ? lruFsCache.get(filepath)! : await readFile(filepath, 'utf8').catch(() => '')
+  const previews = contents ? generateLinkSourcePreviews(contents, link) : []
   let lang = filepath.split('.').pop()
   if (!lang)
     lang = 'vue'
