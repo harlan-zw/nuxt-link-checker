@@ -27,6 +27,7 @@ function resolvePathsForEl(el: Element): string[] {
     parent = parent.parentElement
   }
   return [
+    el.getAttribute('data-v-inspector')?.split(':')?.[0] || false,
     ...new Set(parents.map(p => p.getAttribute('data-v-inspector')?.split(':')?.[0] || false)),
   ].filter(Boolean) as string[]
 }
