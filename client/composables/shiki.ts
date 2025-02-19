@@ -1,38 +1,34 @@
 import type { MaybeRef } from '@vueuse/core'
-import type { BundledLanguage, Highlighter } from 'shiki'
-import { getHighlighter } from 'shiki'
+import type { HighlighterCore } from 'shiki'
+import { createHighlighterCore } from 'shiki/core'
+import { createJavaScriptRegexEngine } from 'shiki/engine/javascript'
 import { computed, ref, toValue } from 'vue'
 import { devtools } from './rpc'
 
-export const shiki = ref<Highlighter>()
+export const shiki = ref<HighlighterCore>()
 
-export function loadShiki() {
-  // Only loading when needed
-  return getHighlighter({
+export async function loadShiki() {
+  shiki.value = await createHighlighterCore({
     themes: [
-      'vitesse-dark',
-      'vitesse-light',
+      import('@shikijs/themes/vitesse-light'),
+      import('@shikijs/themes/vitesse-dark'),
     ],
     langs: [
-      'css',
-      'javascript',
-      'typescript',
-      'html',
-      'vue',
-      'vue-html',
-      'bash',
-      'diff',
+      import('@shikijs/langs/vue-html'),
+      import('@shikijs/langs/javascript'),
+      import('@shikijs/langs/json'),
     ],
-  }).then((i) => {
-    shiki.value = i
+    engine: createJavaScriptRegexEngine(),
   })
+
+  return shiki.value
 }
 
-export function renderCodeHighlight(code: MaybeRef<string>, lang?: BundledLanguage) {
+export function renderCodeHighlight(code: MaybeRef<string>, lang: 'javascript') {
   return computed(() => {
     const colorMode = devtools.value?.colorMode || 'light'
-    return shiki.value!.codeToHtml(toValue(code), {
-      lang: lang || 'text',
+    return shiki.value!.codeToHtml(toValue(code) || '', {
+      lang,
       theme: colorMode === 'dark' ? 'vitesse-dark' : 'vitesse-light',
     }) || ''
   })

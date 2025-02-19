@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import type { Ref } from 'vue'
 import type { NuxtLinkCheckerClient } from '../../../types'
-import { computed, type Ref, ref } from 'vue'
+import { computed, ref } from 'vue'
 import Squiggle from './Squiggle.vue'
 import { useEventListener } from './utils'
 
