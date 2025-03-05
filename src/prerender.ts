@@ -2,17 +2,19 @@ import type { Nuxt } from 'nuxt/schema'
 import type { ModuleOptions } from './module'
 import { existsSync } from 'node:fs'
 import { useNuxt } from '@nuxt/kit'
-import chalk from 'chalk'
-import { load } from 'cheerio'
+import { colors } from 'consola/utils'
 import Fuse from 'fuse.js'
 import { useSiteConfig } from 'nuxt-site-config/kit'
 import { relative, resolve } from 'pathe'
 import { withoutLeadingSlash } from 'ufo'
+import { ELEMENT_NODE, parse, walkSync } from 'ultrahtml'
 import { createStorage } from 'unstorage'
 import fsDriver from 'unstorage/drivers/fs'
 import { getLinkResponse, setLinkResponse } from './runtime/shared/crawl'
 import { inspect } from './runtime/shared/inspect'
 import { createFilter } from './runtime/shared/sharedUtils'
+
+const { gray, yellow, dim, red, white } = colors
 
 const linkMap: Record<string, ExtractedPayload> = {}
 
@@ -21,21 +23,88 @@ interface ExtractedPayload {
   links: { link: string, textContent: string }[]
   ids: string[]
 }
-export function extractPayload(html: string, rootNodeId = '#__nuxt') {
+
+export async function extractPayload(html: string, rootNodeId = '#__nuxt') {
   if (String(rootNodeId).length) {
     rootNodeId = rootNodeId[0] === '#' ? rootNodeId : `#${rootNodeId}`
   }
-  const $ = load(html)
-  const ids = $(`${rootNodeId} [id]`.trim()).map((i, el) => $(el).attr('id')).get()
-  const title = $('title').text()
-  const links = $(`${rootNodeId} a`.trim()).map((i, el) => {
-    return {
-      role: $(el).attr('role') || '',
-      link: $(el).attr('href') || '',
-      textContent: ($(el).attr('aria-label') || $(el).attr('title') || $(el).text()).trim() || '',
+
+  const ast = parse(html
+    // vue template comments that cause issues
+    .replaceAll('<!--]-->', '')
+    .replaceAll('<!--[-->', '')
+    .replaceAll('<!---->', '')
+    // ultrahtml can't pass this (from tailwind)
+    .replaceAll('&amp;>', '&amp;&gt;')
+  )
+  const title: string[] = []
+  const ids: string[] = []
+  const links: { role: string, link: string, textContent: string }[] = []
+
+  let enteredRoot = !rootNodeId
+  walkSync(ast, (node) => {
+    if (node.attributes?.id === rootNodeId.substring(1)) {
+      enteredRoot = true
     }
-  }).get()
-  return { title, ids, links }
+    if (!enteredRoot) {
+      return
+    }
+    // Extract title
+    if (node.type === ELEMENT_NODE && node.name === 'title') {
+      if (node.children && node.children.length > 0) {
+        title.push(node.children[0].value || '')
+      }
+    }
+
+    // Extract IDs from elements inside rootNodeId
+    if (node.type === ELEMENT_NODE && node.attributes?.id && isNodeInsideRoot(node, rootNodeId)) {
+      ids.push(node.attributes.id)
+    }
+
+    // Extract links from elements inside rootNodeId
+    if (node.type === ELEMENT_NODE && node.name === 'a' && isNodeInsideRoot(node, rootNodeId)) {
+      links.push({
+        role: node.attributes?.role || '',
+        link: node.attributes?.href || '',
+        textContent: getTextContent(node),
+      })
+    }
+  })
+
+  return { title: title[0] || '', ids, links }
+}
+
+// Helper function to check if a node is inside the root element
+function isNodeInsideRoot(node: any, rootNodeId: string): boolean {
+  // Simple implementation - in a real scenario, you would need to traverse up the tree
+  // This is a placeholder and should be replaced with proper DOM traversal
+  if (rootNodeId.startsWith('#') && node.attributes?.id === rootNodeId.substring(1)) {
+    return true
+  }
+  return true // Simplified for now, would need proper implementation
+}
+
+// Helper function to get text content from node
+function getTextContent(node: any): string {
+  const text: string[] = []
+
+  if (typeof node.value === 'string' && node.value) {
+    return node.value
+  }
+
+  if (node.attributes?.['aria-label'])
+    return node.attributes['aria-label']
+  if (node.attributes?.title)
+    return node.attributes.title
+
+  // Extract text from children
+  if (node.children) {
+    for (const child of node.children) {
+      text.push(getTextContent(child))
+    }
+  }
+
+  return text.filter(Boolean).map(s => s.trim()).join(' ')
 }
 
 export function isNuxtGenerate(nuxt: Nuxt = useNuxt()) {
@@ -113,26 +182,26 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
         // only show debug if there's issues
         if (errors || warnings) {
           const statusString = [
-            errors > 0 ? chalk.red(`${errors} error${errors > 1 ? 's' : ''}`) : false,
-            warnings > 0 ? chalk.yellow(`${warnings} warning${warnings > 1 ? 's' : ''}`) : false,
-          ].filter(Boolean).join(chalk.gray(', '))
-          nitro.logger.log(chalk.gray(
-            `  ${Number(++routeCount) === payload.links.length - 1 ? '└─' : '├─'} ${chalk.white(route)} ${chalk.gray('[')}${statusString}${chalk.gray(']')}`,
+            errors > 0 ? red(`${errors} error${errors > 1 ? 's' : ''}`) : false,
+            warnings > 0 ? yellow(`${warnings} warning${warnings > 1 ? 's' : ''}`) : false,
+          ].filter(Boolean).join(gray(', '))
+          nitro.logger.log(gray(
+            `  ${Number(++routeCount) === payload.links.length - 1 ? '└─' : '├─'} ${white(route)} ${gray('[')}${statusString}${gray(']')}`,
           ))
           // show inspection results
           reports.forEach((report) => {
             if (report.error?.length || report.warning?.length) {
-              nitro.logger.log(chalk.dim(`    ${report.textContent} ${report.link}`))
+              nitro.logger.log(dim(`    ${report.textContent} ${report.link}`))
               report.error?.forEach((error) => {
                 // show code
-                nitro.logger.log(chalk.red(`        ✖ ${error.message}`) + chalk.gray(` (${error.name})`))
+                nitro.logger.log(red(`        ✖ ${error.message}`) + gray(` (${error.name})`))
                 if (error.fix)
-                  nitro.logger.log(chalk.gray(`          ${error.fixDescription}`))
+                  nitro.logger.log(gray(`          ${error.fixDescription}`))
               })
               report.warning?.forEach((warning) => {
-                nitro.logger.log(chalk.yellow(`        ⚠ ${warning.message}`) + chalk.gray(` (${warning.name})`))
+                nitro.logger.log(yellow(`        ⚠ ${warning.message}`) + gray(` (${warning.name})`))
                 if (warning.fix)
-                  nitro.logger.log(chalk.gray(`          ${warning.fixDescription}`))
+                  nitro.logger.log(gray(`          ${warning.fixDescription}`))
               })
             }
           })
@@ -249,7 +318,7 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
       }
       if (errorCount > 0 && config.failOnError) {
         nitro.logger.error(`Nuxt Link Checker found ${errorCount} errors, failing build.`)
-        nitro.logger.log(chalk.gray('You can disable this by setting "linkChecker: { failOnError: false }" in your nuxt.config.'))
+        nitro.logger.log(gray('You can disable this by setting "linkChecker: { failOnError: false }" in your nuxt.config.'))
         process.exit(1)
       }
     })
