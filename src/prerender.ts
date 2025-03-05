@@ -35,7 +35,7 @@ export async function extractPayload(html: string, rootNodeId = '#__nuxt') {
     .replaceAll('<!--[-->', '')
     .replaceAll('<!---->', '')
     // ultrahtml can't pass this (from tailwind)
-    .replaceAll('&amp;>', '&amp;&gt;')
+    .replaceAll('&amp;>', '&amp;&gt;'),
   )
   const title: string[] = []
   const ids: string[] = []
@@ -57,12 +57,12 @@ export async function extractPayload(html: string, rootNodeId = '#__nuxt') {
     }
 
     // Extract IDs from elements inside rootNodeId
-    if (node.type === ELEMENT_NODE && node.attributes?.id && isNodeInsideRoot(node, rootNodeId)) {
+    if (node.type === ELEMENT_NODE && node.attributes?.id) {
       ids.push(node.attributes.id)
     }
 
     // Extract links from elements inside rootNodeId
-    if (node.type === ELEMENT_NODE && node.name === 'a' && isNodeInsideRoot(node, rootNodeId)) {
+    if (node.type === ELEMENT_NODE && node.name === 'a') {
       links.push({
         role: node.attributes?.role || '',
         link: node.attributes?.href || '',
@@ -72,16 +72,6 @@ export async function extractPayload(html: string, rootNodeId = '#__nuxt') {
   })
 
   return { title: title[0] || '', ids, links }
-}
-
-// Helper function to check if a node is inside the root element
-function isNodeInsideRoot(node: any, rootNodeId: string): boolean {
-  // Simple implementation - in a real scenario, you would need to traverse up the tree
-  // This is a placeholder and should be replaced with proper DOM traversal
-  if (rootNodeId.startsWith('#') && node.attributes?.id === rootNodeId.substring(1)) {
-    return true
-  }
-  return true // Simplified for now, would need proper implementation
 }
 
 // Helper function to get text content from node
@@ -126,7 +116,7 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
     })
     nitro.hooks.hook('prerender:done', async () => {
       const payloads = Object.entries(linkMap)
-      if (!payloads.length)
+      if (!payloads?.length)
         return
 
       const storageFilepath = typeof config.report?.storage === 'string' ? resolve(nuxt.options.rootDir, config.report?.storage) : nitro.options.output.dir
@@ -138,7 +128,7 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
             }),
           })
 
-      const links = payloads.map(([route, payload]) => {
+      const links = payloads?.map(([route, payload]) => {
         return {
           link: route,
           title: payload.title,
@@ -152,7 +142,7 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
       let routeCount = 0
       let errorCount = 0
       const allReports = (await Promise.all(payloads.map(async ([route, payload]) => {
-        const reports = await Promise.all(payload.links.map(async ({ link, textContent }) => {
+        const reports = await Promise.all(payload.links?.map(async ({ link, textContent }) => {
           if (!urlFilter(link) || !link)
             return { error: [], warning: [], link }
 
