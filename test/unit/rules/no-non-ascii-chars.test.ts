@@ -10,5 +10,9 @@ describe('rule no-non-ascii-chars', () => {
     expect(runRule({ link: '/사용자/관리자-2023/문서.pdf' } as RuleTestContext, RuleNoNonAsciiChars()).passes).toBe(false)
     expect(runRule({ link: '/users/👨‍👩‍👦/photos/🌅-vacation' } as RuleTestContext, RuleNoNonAsciiChars()).passes).toBe(false)
     expect(runRule({ link: '/москва/كتاب/δοκιμή/יִשְׂרָאֵל' } as RuleTestContext, RuleNoNonAsciiChars()).passes).toBe(false)
+    expect(runRule({ link: '/docs/path?👩‍👦=🌅' } as RuleTestContext, RuleNoNonAsciiChars()).passes).toBe(false)
+
+    // valid links
+    expect(runRule({ link: '/docs/path#_some-id-link' } as RuleTestContext, RuleNoNonAsciiChars()).passes).toBe(true)
   })
 })
