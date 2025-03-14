@@ -564,10 +564,10 @@ describe('generate', () => {
     `)
 
     const reportMarkdown = (await readFile(resolve(rootDir, '.output/link-checker-report.md'), 'utf-8'))
-    expect(reportMarkdown).toMatchInlineSnapshot(`
+    // need to remove Generated line to avoid snapshot failure
+    expect(reportMarkdown.split('\n').filter(s => !s.includes('Generated')).join('\n')).toMatchInlineSnapshot(`
       "# Nuxt Link Checker Report
 
-      **Generated:** 15/03/2025, 2:39:42 am
 
       ## Summary
 
