@@ -7,7 +7,7 @@ const siteConfig = useSiteConfig()
 <template>
   <div class="flex flex-col min-h-screen">
     <header class="sticky top-0 z-50 w-full backdrop-blur flex-none border-b border-gray-900/10 dark:border-gray-50/[0.06] bg-white/75 dark:bg-gray-900/75">
-      <UContainer class="py-3">
+      <div class="py-3">
         <NuxtLink to="/" class="flex items-end gap-1.5 font-bold text-xl text-gray-900 dark:text-white">
           <Icon name="logos:nuxt-icon" class="w-8 h-8" />
           Nuxt
@@ -15,15 +15,12 @@ const siteConfig = useSiteConfig()
             {{ siteConfig.name }}
           </div>
         </NuxtLink>
-      </UContainer>
+      </div>
     </header>
     <main class="min-h-full h-full flex-grow">
-      <UContainer class="mt-4">
+      <div class="mt-4">
         <NuxtPage />
-      </UContainer>
+      </div>
     </main>
-    <footer class="text-sm text-gray-700 flex justify-center items-center py-5">
-      Made by Harlan Wilton
-    </footer>
   </div>
 </template>

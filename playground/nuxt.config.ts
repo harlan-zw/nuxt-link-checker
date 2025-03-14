@@ -7,7 +7,6 @@ export default defineNuxtConfig({
   modules: [
     'nuxt-link-checker',
     '@nuxtjs/sitemap',
-    '@nuxt/ui',
     '@nuxt/content',
 
     /**
