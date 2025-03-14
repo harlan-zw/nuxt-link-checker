@@ -565,42 +565,134 @@ describe('generate', () => {
 
     const reportMarkdown = (await readFile(resolve(rootDir, '.output/link-checker-report.md'), 'utf-8'))
     expect(reportMarkdown).toMatchInlineSnapshot(`
-      "# Link Checker Report
+      "# Nuxt Link Checker Report
 
-      ## [/](/) 11 errors, 8 warnings
-      | Link | Message |
-      | --- | --- |
-      | /about/Billy%20Bob | Links should not contain uppercase characters. (no-uppercase-chars) |
-      | //oops | Should not respond with status code 404 (Not Found). (no-error-response) |
-      | //oops | Links should not contain double slashes. (no-double-slashes) |
-      | //oops | Should not respond with status code 404 (Not Found). (no-error-response) |
-      | //oops | Links should not contain double slashes. (no-double-slashes) |
-      | /users/👨‍👩‍👦/photos/🌅-vacation | Should not respond with status code 404 (Page not found). (no-error-response) |
-      | /users/👨‍👩‍👦/photos/🌅-vacation | Links should not contain non-ascii characters. (no-non-ascii-chars) |
-      | /users/👨‍👩‍👦/photos/🌅-vacation | Links should not contain uppercase characters. (no-uppercase-chars) |
-      | / oops | Should not respond with status code 404 (Page not found). (no-error-response) |
-      | / oops | Links should not contain whitespace. (no-whitespace) |
-      | /oopsthisisamistake | Should not respond with status code 404 (Page not found). (no-error-response) |
-      | this is a very bad link | Should not respond with status code 404 (Not Found). (no-error-response) |
-      | this is a very bad link | Links should not contain whitespace. (no-whitespace) |
-      | this is a very bad link | Links should be root relative. (no-baseless) |
-      | /abot | Should not respond with status code 404 (Page not found). (no-error-response) |
-      | /404link | Should not respond with status code 404 (Page not found). (no-error-response) |
-      | javascript:history.back() | Should not use JavaScript (no-javascript) |
-      | /completely-broken/ | Should not respond with status code 404 (Page not found). (no-error-response) |
-      | /completely-broken/ | Should not have a trailing slash. (trailing-slash) |
-      | /abt | Should not respond with status code 404 (Page not found). (no-error-response) |
-      | /trailingslash/ | Should not have a trailing slash. (trailing-slash) |
+      **Generated:** 15/03/2025, 2:39:42 am
 
-      ## [/fix-test](/fix-test) 4 errors, 2 warnings
-      | Link | Message |
-      | --- | --- |
-      | /abt | Should not respond with status code 404 (Page not found). (no-error-response) |
-      | /404link/ | Should not respond with status code 404 (Page not found). (no-error-response) |
-      | /404link/ | Should not have a trailing slash. (trailing-slash) |
-      | javascript:history.back() | Should not use JavaScript (no-javascript) |
-      | /completely-broken/ | Should not respond with status code 404 (Page not found). (no-error-response) |
-      | /completely-broken/ | Should not have a trailing slash. (trailing-slash) |
+      ## Summary
+
+      - **Pages checked:** 2
+      - **Total errors:** 15
+      - **Total warnings:** 10
+
+      ---
+
+      ## Table of Contents
+
+      - [/](#)
+      - [/fix-test](#fix-test)
+
+      ---
+
+      ## ❌ [/](/) (11 errors, 8 warnings)
+
+      ### Link: [/about/Billy%20Bob](/about/Billy%20Bob)
+      > Link text: "Dynamic Encoded Path"
+      #### Warnings
+      - **no-uppercase-chars:** Links should not contain uppercase characters.
+        - *Suggestion:* Convert to lowercase.
+      ### Link: [//oops](//oops)
+      > Link text: "double slash"
+      #### Errors
+      - **no-error-response:** Should not respond with status code 404 (Not Found).
+      - **no-error-response:** Should not respond with status code 404 (Not Found).
+      #### Warnings
+      - **no-double-slashes:** Links should not contain double slashes.
+        - *Suggestion:* Remove double slashes.
+      - **no-double-slashes:** Links should not contain double slashes.
+        - *Suggestion:* Remove double slashes.
+      ### Link: [/users/👨‍👩‍👦/photos/🌅-vacation](/users/👨‍👩‍👦/photos/🌅-vacation)
+      > Link text: "non-ascii"
+      #### Errors
+      - **no-error-response:** Should not respond with status code 404 (Page not found).
+      #### Warnings
+      - **no-non-ascii-chars:** Links should not contain non-ascii characters.
+        - *Suggestion:* Encode non-ascii characters.
+      - **no-uppercase-chars:** Links should not contain uppercase characters.
+        - *Suggestion:* Convert to lowercase.
+      ### Link: [/ oops](/ oops)
+      > Link text: "whitespace"
+      #### Errors
+      - **no-error-response:** Should not respond with status code 404 (Page not found).
+        - *Suggestion:* Did you mean /foo?
+      #### Warnings
+      - **no-whitespace:** Links should not contain whitespace.
+      ### Link: [/oopsthisisamistake](/oopsthisisamistake)
+      > Link text: "uppercase"
+      #### Errors
+      - **no-error-response:** Should not respond with status code 404 (Page not found).
+      ### Link: [this is a very bad link](this is a very bad link)
+      > Link text: "very bad link"
+      #### Errors
+      - **no-error-response:** Should not respond with status code 404 (Not Found).
+      #### Warnings
+      - **no-whitespace:** Links should not contain whitespace.
+      - **no-baseless:** Links should be root relative.
+        - *Suggestion:* Add base /.
+      ### Link: [/abot](/abot)
+      > Link text: "page typo with magic fix"
+      #### Errors
+      - **no-error-response:** Should not respond with status code 404 (Page not found).
+        - *Suggestion:* Did you mean /about?
+      ### Link: [/404link](/404link)
+      > Link text: "404 links"
+      #### Errors
+      - **no-error-response:** Should not respond with status code 404 (Page not found).
+      ### Link: [javascript:history.back()](javascript:history.back())
+      > Link text: "javascript link"
+      #### Errors
+      - **no-javascript:** Should not use JavaScript
+      ### Link: [/completely-broken/](/completely-broken/)
+      > Link text: "error and warning"
+      #### Errors
+      - **no-error-response:** Should not respond with status code 404 (Page not found).
+      #### Warnings
+      - **trailing-slash:** Should not have a trailing slash.
+        - *Suggestion:* Removing trailing slash.
+      ### Link: [/abt](/abt)
+      > Link text: "page typo with magic fix - AGAIN 123"
+      #### Errors
+      - **no-error-response:** Should not respond with status code 404 (Page not found).
+        - *Suggestion:* Did you mean /about?
+      ### Link: [/trailingslash/](/trailingslash/)
+      > Link text: "trailing slash"
+      #### Warnings
+      - **trailing-slash:** Should not have a trailing slash.
+        - *Suggestion:* Removing trailing slash.
+
+      <div align="right"><a href="#nuxt-link-checker-report">↑ Back to top</a></div>
+
+      ---
+
+      ## ❌ [/fix-test](/fix-test) (4 errors, 2 warnings)
+
+      ### Link: [/abt](/abt)
+      > Link text: "page typo with magic fix"
+      #### Errors
+      - **no-error-response:** Should not respond with status code 404 (Page not found).
+        - *Suggestion:* Did you mean /about?
+      ### Link: [/404link/](/404link/)
+      > Link text: "404 links"
+      #### Errors
+      - **no-error-response:** Should not respond with status code 404 (Page not found).
+      #### Warnings
+      - **trailing-slash:** Should not have a trailing slash.
+        - *Suggestion:* Removing trailing slash.
+      ### Link: [javascript:history.back()](javascript:history.back())
+      > Link text: "javascript link"
+      #### Errors
+      - **no-javascript:** Should not use JavaScript
+      ### Link: [/completely-broken/](/completely-broken/)
+      > Link text: "error and warning"
+      #### Errors
+      - **no-error-response:** Should not respond with status code 404 (Page not found).
+      #### Warnings
+      - **trailing-slash:** Should not have a trailing slash.
+        - *Suggestion:* Removing trailing slash.
+
+      <div align="right"><a href="#nuxt-link-checker-report">↑ Back to top</a></div>
+
+      ---
       "
     `)
   })
