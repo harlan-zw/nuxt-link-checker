@@ -7,6 +7,7 @@ import type { ModuleOptions } from '../module'
 import type { LinkInspectionResult } from '../runtime/types'
 import { relative, resolve } from 'pathe'
 import { htmlTemplate } from './template'
+import { useSiteConfig } from 'nuxt-site-config-kit'
 
 export interface PathReport {
   route: string
@@ -46,6 +47,44 @@ export async function generateReports(reports: PathReport[], ctx: InspectionCont
 }
 
 async function generateHtmlReport(reports: PathReport[], { storage, storageFilepath, nuxt, nitro }: InspectionContext) {
+  const timestamp = new Date().toLocaleString()
+  const totalErrors = reports.reduce((sum, { reports }) =>
+    sum + reports.filter(r => r.error?.length).length, 0)
+  const totalWarnings = reports.reduce((sum, { reports }) =>
+    sum + reports.filter(r => r.warning?.length).length, 0)
+
+  // Get package version - you can add this to your module context
+  const version = process.env.npm_package_version || '1.0.0'
+  const reportMeta = `
+    <div class="report-meta">
+      <div class="version">Nuxt Link Checker v${version}</div>
+      <div class="timestamp">Generated: ${timestamp}</div>
+    </div>
+  `
+
+  // Create summary section
+  const summary = `
+   <div class="summary">
+      <h2>Summary</h2>
+      <ul class="summary-stats">
+        <li>
+          <span class="stat-icon">📄</span>
+          <span class="stat-label">Pages checked</span>
+          <span class="stat-value">${reports.length}</span>
+        </li>
+        <li>
+          <span class="stat-icon">❌</span>
+          <span class="stat-label">Total errors</span>
+          <span class="stat-value error-count">${totalErrors}</span>
+        </li>
+        <li>
+          <span class="stat-icon">⚠️</span>
+          <span class="stat-label">Total warnings</span>
+          <span class="stat-value warning-count">${totalWarnings}</span>
+        </li>
+      </ul>
+    </div>
+  `
   // Create a table of contents
   const tocHtml = reports
     .map(({ route, reports }) => {
@@ -138,8 +177,9 @@ async function generateHtmlReport(reports: PathReport[], { storage, storageFilep
     </div>
     `
 
-  const html = htmlTemplate.replace('<!-- REPORT -->', reportHtml || '<div>No issues found</div>')
-    .replace('<!-- REPORT -->', `${tableOfContents}\n${reportHtml || '<div>No issues found</div>'}`)
+  const html = htmlTemplate
+    .replace('<!-- REPORT -->', `${reportMeta}\n${summary}\n${tableOfContents}\n${reportHtml || '<div class="no-issues">All links are valid! 🎉</div>'}`)
+    .replaceAll('<!-- SiteName -->', `Link Report - ${useSiteConfig()?.name || ''}`)
 
   await storage.setItem('link-checker-report.html', html)
   if (storageFilepath) {
