@@ -5,9 +5,10 @@ import type { SiteConfigResolved } from 'site-config-stack'
 import type { Storage } from 'unstorage'
 import type { ModuleOptions } from '../module'
 import type { LinkInspectionResult } from '../runtime/types'
+import { colors } from 'consola/utils'
+import { useSiteConfig } from 'nuxt-site-config/kit'
 import { relative, resolve } from 'pathe'
 import { htmlTemplate } from './template'
-import { useSiteConfig } from 'nuxt-site-config-kit'
 
 export interface PathReport {
   route: string
@@ -29,6 +30,7 @@ export interface InspectionContext {
   nitro: Nitro
   storage: Storage
   storageFilepath: string
+  totalRoutes: number
 }
 
 export async function generateReports(reports: PathReport[], ctx: InspectionContext) {
@@ -46,13 +48,17 @@ export async function generateReports(reports: PathReport[], ctx: InspectionCont
     reportPaths.push(await generateJsonReport(reports, ctx))
   }
   if (reportPaths.length) {
+    const nitro = ctx.nitro
     ctx.nitro.logger.info(
-      `[Nuxt Link Checker] Reports written to: ${reportPaths.map(r => `\`${relative(process.cwd(), r)}\``).join(', ')}`,
+      `${colors.dim('Nuxt Link Checker')} Reports written to:`,
     )
+    reportPaths.forEach((path) => {
+      nitro.logger.log(`  • \`${relative(process.cwd(), path)}\``)
+    })
   }
 }
 
-async function generateHtmlReport(reports: PathReport[], { storage, storageFilepath }: InspectionContext) {
+async function generateHtmlReport(reports: PathReport[], { storage, storageFilepath, totalRoutes }: InspectionContext) {
   const timestamp = new Date().toLocaleString()
   const totalErrors = reports.reduce((sum, { reports }) =>
     sum + reports.filter(r => r.error?.length).length, 0)
@@ -75,8 +81,8 @@ async function generateHtmlReport(reports: PathReport[], { storage, storageFilep
       <ul class="summary-stats">
         <li>
           <span class="stat-icon">📄</span>
-          <span class="stat-label">Pages checked</span>
-          <span class="stat-value">${reports.length}</span>
+          <span class="stat-label">Failing Pages</span>
+          <span class="stat-value">${reports.length} / ${totalRoutes}</span>
         </li>
         <li>
           <span class="stat-icon">❌</span>

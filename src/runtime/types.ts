@@ -18,7 +18,7 @@ export interface RuleTestContext {
   fromPath: string
   response: any
   siteConfig: SiteConfigResolved
-  pageSearch?: Fuse<{ link: string, title: string }>
+  pageSearch?: Fuse<{ link: string, title?: string }>
   report: (report: RuleReport, stop?: boolean) => void
   skipInspections?: string[]
 }

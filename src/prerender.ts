@@ -129,6 +129,7 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
         nitro,
         storage,
         storageFilepath,
+        totalRoutes: payloads.length,
       } satisfies InspectionContext
       const { allReports, errorCount } = await runInspections(payloads, inspectionCtx)
 
@@ -177,13 +178,86 @@ function createPageSearcher(payloads: [route: string, payload: ExtractedPayload]
   })
 }
 
-async function runInspections(payloads: [route: string, payload: ExtractedPayload][], opts: any) {
-  const { urlFilter, config, nuxt, pageSearcher, siteConfig, nitro } = opts
-  let routeCount = 0
+/**
+ * Run link inspections on all pages and generate reports
+ * @param payloads Array of route and payload pairs from prerendering
+ * @param context Inspection context containing all needed dependencies
+ * @returns Object with all reports and error count
+ */
+async function runInspections(
+  payloads: [route: string, payload: ExtractedPayload][],
+  context: InspectionContext,
+): Promise<{ allReports: PathReport[], errorCount: number }> {
+  const { config, nitro } = context
   let errorCount = 0
+  let warningCount = 0
+  let routeWithIssuesCount = 0
+  const totalRoutes = payloads.length
+  const batchSize = 10 // Process in batches of 10 routes
+  const allReports: PathReport[] = []
 
-  const allReports = (await Promise.all(payloads.map(async ([route, payload]) => {
-    const reports = await Promise.all(payload.links?.map(async ({ link, textContent }) => {
+  // Process in smaller batches to avoid memory pressure
+  for (let i = 0; i < payloads.length; i += batchSize) {
+    const batch = payloads.slice(i, i + batchSize)
+
+    const batchReports = await Promise.all(batch.map(async ([route, payload]) => {
+      const reports = await processRouteLinks(route, payload, context)
+
+      // Update counts
+      const routeErrors = reports.filter(r => r.error?.length).length
+      const routeWarnings = reports.filter(r => r.warning?.length).length
+
+      if (routeErrors || routeWarnings) {
+        errorCount += routeErrors
+        warningCount += routeWarnings
+        routeWithIssuesCount++
+
+        // Only log detailed results if reports are not enabled
+        if (!hasReportsEnabled(config)) {
+          logRouteIssues(route, reports, routeErrors, routeWarnings, nitro)
+        }
+      }
+
+      return { route, reports } satisfies PathReport
+    }))
+
+    allReports.push(...batchReports)
+
+    // Force garbage collection opportunity between batches
+    await new Promise(resolve => setTimeout(resolve, 0))
+  }
+
+  // Show summary at the end
+  logSummary(
+    totalRoutes,
+    routeWithIssuesCount,
+    errorCount,
+    warningCount,
+    nitro,
+  )
+
+  return { allReports, errorCount }
+}
+
+/**
+ * Process all links for a single route
+ */
+async function processRouteLinks(
+  route: string,
+  payload: ExtractedPayload,
+  context: InspectionContext,
+) {
+  const { urlFilter, config, nuxt, siteConfig, pageSearcher } = context
+
+  // Process links in smaller batches if there are many
+  const links = payload.links || []
+  const linkBatchSize = 20
+  const allReports = []
+
+  for (let i = 0; i < links.length; i += linkBatchSize) {
+    const linkBatch = links.slice(i, i + linkBatchSize)
+
+    const batchReports = await Promise.all(linkBatch.map(async ({ link, textContent }) => {
       if (!urlFilter(link) || !link)
         return { error: [], warning: [], link }
 
@@ -208,42 +282,147 @@ async function runInspections(payloads: [route: string, payload: ExtractedPayloa
       })
     }))
 
-    const errors = reports.filter(r => r.error?.length).length
-    errorCount += errors
-    const warnings = reports.filter(r => r.warning?.length).length
+    allReports.push(...batchReports)
 
-    if (errors || warnings) {
-      const statusString = [
-        errors > 0 ? red(`${errors} error${errors > 1 ? 's' : ''}`) : false,
-        warnings > 0 ? yellow(`${warnings} warning${warnings > 1 ? 's' : ''}`) : false,
-      ].filter(Boolean).join(gray(', '))
+    if (links.length > linkBatchSize) {
+      await new Promise(resolve => setTimeout(resolve, 0))
+    }
+  }
 
-      nitro.logger.log(gray(
-        `  ${Number(routeCount + 1) === payload.links.length - 1 ? '└─' : '├─'} ${white(route)} ${gray('[')}${statusString}${gray(']')}`,
-      ))
+  return allReports
+}
 
-      reports.forEach((report) => {
-        if (report.error?.length || report.warning?.length) {
-          nitro.logger.log(dim(`    ${report.textContent} ${report.link}`))
+/**
+ * Log summary of inspection results
+ */
+function logSummary(
+  totalRoutes: number,
+  routesWithIssues: number,
+  errorCount: number,
+  warningCount: number,
+  nitro: Nitro,
+) {
+  // Always show the summary header with check mark or x
+  nitro.logger.info(`Nuxt Link Checker Summary`)
 
-          report.error?.forEach((error) => {
-            nitro.logger.log(red(`        ✖ ${error.message}`) + gray(` (${error.name})`))
-            if (error.fix)
-              nitro.logger.log(gray(`          ${error.fixDescription}`))
-          })
+  // Main stats
+  nitro.logger.log(`  ${white('Failing Pages:')} ${routesWithIssues} of ${totalRoutes}`)
 
-          report.warning?.forEach((warning) => {
-            nitro.logger.log(yellow(`        ⚠ ${warning.message}`) + gray(` (${warning.name})`))
-            if (warning.fix)
-              nitro.logger.log(gray(`          ${warning.fixDescription}`))
-          })
-        }
-      })
-      routeCount++
+  if (errorCount > 0) {
+    nitro.logger.log(`  ${red('❌ Total errors:')} ${errorCount}`)
+  }
+  else {
+    nitro.logger.log(`  ${white('Total errors:')} 0`)
+  }
+
+  if (warningCount > 0) {
+    nitro.logger.log(`  ${yellow('⚠️ Total warnings:')} ${warningCount}`)
+  }
+  else {
+    nitro.logger.log(`  ${white('Total warnings:')} 0`)
+  }
+}
+
+/**
+ * Check if any reports are enabled in configuration
+ */
+function hasReportsEnabled(config: ModuleOptions): boolean {
+  return Boolean(
+    config.report?.html
+    || config.report?.markdown
+    || config.report?.json,
+  )
+}
+
+/**
+ * Log issues for a single route (used when no reports are enabled)
+ */
+function logRouteIssues(
+  route: string,
+  reports: any[],
+  errors: number,
+  warnings: number,
+  nitro: Nitro,
+): void {
+  const statusString = [
+    errors > 0 ? red(`${errors} error${errors > 1 ? 's' : ''}`) : false,
+    warnings > 0 ? yellow(`${warnings} warning${warnings > 1 ? 's' : ''}`) : false,
+  ].filter(Boolean).join(gray(', '))
+
+  nitro.logger.log(gray(''))
+  nitro.logger.log(`${white(route)} ${gray('[')}${statusString}${gray(']')}`)
+
+  const reportsByLink = groupReportsByLink(reports)
+
+  Object.entries(reportsByLink).forEach(([link, issues], index, array) => {
+    const isLast = index === array.length - 1
+    const prefix = isLast ? '└─' : '├─'
+
+    nitro.logger.log(gray(`  ${prefix} ${white(truncateString(link, 60))}`))
+
+    if (issues.textContent) {
+      nitro.logger.log(gray(`  ${isLast ? '   ' : '│  '} "${issues.textContent}"`))
     }
 
-    return { route, reports } satisfies PathReport
-  }))).flat()
+    // Log errors
+    issues.errors.forEach((error, idx, arr) => {
+      const errorPrefix = idx === arr.length - 1 && issues.warnings.length === 0 ? '└─' : '├─'
+      nitro.logger.log(`  ${isLast ? '   ' : '│  '} ${errorPrefix} ${red(error.message)} ${dim(`(${error.name})`)}`)
 
-  return { allReports, errorCount }
+      if (error.fix) {
+        nitro.logger.log(gray(`  ${isLast ? '   ' : '│  '} ${idx === arr.length - 1 && issues.warnings.length === 0 ? '   ' : '│  '} Fix: ${error.fixDescription}`))
+      }
+    })
+
+    // Log warnings
+    issues.warnings.forEach((warning, idx, arr) => {
+      const warnPrefix = idx === arr.length - 1 ? '└─' : '├─'
+      nitro.logger.log(`  ${isLast ? '   ' : '│  '} ${warnPrefix} ${yellow(warning.message)} ${dim(`(${warning.name})`)}`)
+
+      if (warning.fix) {
+        nitro.logger.log(gray(`  ${isLast ? '   ' : '│  '} ${idx === arr.length - 1 ? '   ' : '│  '} Fix: ${warning.fixDescription}`))
+      }
+    })
+  })
+}
+
+/**
+ * Group reports by link for cleaner logging
+ */
+function groupReportsByLink(reports: any[]): Record<string, { textContent: string, errors: any[], warnings: any[] }> {
+  const result: Record<string, { textContent: string, errors: any[], warnings: any[] }> = {}
+
+  reports.forEach((report) => {
+    if ((report.error?.length || 0) + (report.warning?.length || 0) === 0) {
+      return
+    }
+
+    if (!result[report.link]) {
+      result[report.link] = {
+        textContent: report.textContent || '',
+        errors: [],
+        warnings: [],
+      }
+    }
+
+    if (report.error?.length) {
+      result[report.link].errors.push(...report.error)
+    }
+
+    if (report.warning?.length) {
+      result[report.link].warnings.push(...report.warning)
+    }
+  })
+
+  return result
+}
+
+/**
+ * Helper function to truncate long strings
+ */
+function truncateString(str: string, maxLength: number): string {
+  if (str.length <= maxLength) {
+    return str
+  }
+  return `${str.substring(0, maxLength - 3)}...`
 }
