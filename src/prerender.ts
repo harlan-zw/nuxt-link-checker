@@ -98,7 +98,24 @@ export function isNuxtGenerate(nuxt: Nuxt = useNuxt()) {
   return nuxt.options._generate || nuxt.options.nitro.static || nuxt.options.nitro.preset === 'static'
 }
 
-export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
+export function prerender(config: ModuleOptions, version?: string, nuxt = useNuxt()) {
+  if (config.report?.publish) {
+    // make paths non indexable using X-Robots-Tag
+    nuxt.options.nitro.routeRules = nuxt.options.nitro.routeRules || {}
+    nuxt.options.nitro.routeRules['/__link-checker__/*'] = {
+      headers: {
+        'X-Robots-Tag': 'noindex',
+      },
+    }
+    // Nuxt Robots integration
+    // @ts-expect-error untyped
+    nuxt.hooks.hook('robots:config', (config) => {
+      const catchAll = config.groups?.find(g => g.userAgent?.includes('*'))
+      if (catchAll) {
+        catchAll.disallow.push('/__link-checker__')
+      }
+    })
+  }
   const urlFilter = createFilter({
     exclude: config.excludeLinks,
   })
@@ -127,6 +144,7 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
         pageSearcher,
         siteConfig,
         nitro,
+        version,
         storage,
         storageFilepath,
         totalRoutes: payloads.length,
@@ -151,7 +169,7 @@ export function prerender(config: ModuleOptions, nuxt = useNuxt()) {
 function createReportStorage(config: ModuleOptions, nuxt: Nuxt, nitro: Nitro) {
   const storageFilepath = typeof config.report?.storage === 'string'
     ? resolve(nuxt.options.rootDir, config.report?.storage)
-    : nitro.options.output.dir
+    : (config.report?.publish ? `${nitro.options.output.publicDir}/__link-checker__/` : nitro.options.output.dir)
 
   const storage = createStorage(
     config.report?.storage && typeof config.report.storage !== 'string'

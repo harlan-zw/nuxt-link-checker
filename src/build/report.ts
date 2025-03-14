@@ -31,6 +31,7 @@ export interface InspectionContext {
   storage: Storage
   storageFilepath: string
   totalRoutes: number
+  version?: string
 }
 
 export async function generateReports(reports: PathReport[], ctx: InspectionContext) {
@@ -58,7 +59,7 @@ export async function generateReports(reports: PathReport[], ctx: InspectionCont
   }
 }
 
-async function generateHtmlReport(reports: PathReport[], { storage, storageFilepath, totalRoutes }: InspectionContext) {
+async function generateHtmlReport(reports: PathReport[], { storage, storageFilepath, totalRoutes, version }: InspectionContext) {
   const timestamp = new Date().toLocaleString()
   const totalErrors = reports.reduce((sum, { reports }) =>
     sum + reports.filter(r => r.error?.length).length, 0)
@@ -66,7 +67,6 @@ async function generateHtmlReport(reports: PathReport[], { storage, storageFilep
     sum + reports.filter(r => r.warning?.length).length, 0)
 
   // Get package version - you can add this to your module context
-  const version = process.env.npm_package_version || '1.0.0'
   const reportMeta = `
     <div class="report-meta">
       <div class="version">Nuxt Link Checker v${version}</div>
