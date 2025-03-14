@@ -251,13 +251,14 @@ async function processRouteLinks(
 
   // Process links in smaller batches if there are many
   const links = payload.links || []
-  const linkBatchSize = 20
+  const linkBatchSize = 10
   const allReports = []
 
   for (let i = 0; i < links.length; i += linkBatchSize) {
+    // Only slice what we need for this batch to avoid keeping references to the entire array
     const linkBatch = links.slice(i, i + linkBatchSize)
 
-    const batchReports = await Promise.all(linkBatch.map(async ({ link, textContent }) => {
+    let batchReports = await Promise.all(linkBatch.map(async ({ link, textContent }) => {
       if (!urlFilter(link) || !link)
         return { error: [], warning: [], link }
 
@@ -282,10 +283,15 @@ async function processRouteLinks(
       })
     }))
 
+    // Add results to allReports
     allReports.push(...batchReports)
 
+    // Clear the reference to the batch results
+    batchReports = null
+
+    // For large link arrays, force a small pause between batches to allow garbage collection
     if (links.length > linkBatchSize) {
-      await new Promise(resolve => setTimeout(resolve, 0))
+      await new Promise(resolve => setTimeout(resolve, 10)) // Slightly longer timeout (10ms)
     }
   }
 
