@@ -72,6 +72,7 @@ export default defineNuxtConfig({
       html: true,
       markdown: true,
       json: true,
+      publish: true,
     },
   },
 
