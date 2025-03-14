@@ -62,6 +62,12 @@ export interface ModuleOptions {
      * By default, they'll be in your .output directory.
      */
     storage?: string | CreateStorageOptions
+    /**
+     * Whether to publish the reports with the build.
+     *
+     * By default, will output files at `.output/public/__link-checker__/link-checker-report.<format>`.
+     */
+    publish?: boolean
   }
   /**
    * Whether to show live inspections in your Nuxt app.
@@ -208,7 +214,7 @@ export default defineNuxtModule<ModuleOptions>({
         // disable no-error-response
         config.skipInspections.push('no-error-response')
       }
-      prerender(config)
+      prerender(config, version)
     }
   },
 })
