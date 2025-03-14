@@ -33,20 +33,26 @@ export interface InspectionContext {
 
 export async function generateReports(reports: PathReport[], ctx: InspectionContext) {
   const report = ctx.config.report || {}
+  const reportPaths: string[] = []
   if (report.html) {
-    await generateHtmlReport(reports, ctx)
+    reportPaths.push(await generateHtmlReport(reports, ctx))
   }
 
   if (report.markdown) {
-    await generateMarkdownReport(reports, ctx)
+    reportPaths.push(await generateMarkdownReport(reports, ctx))
   }
 
   if (report.json) {
-    await generateJsonReport(reports, ctx)
+    reportPaths.push(await generateJsonReport(reports, ctx))
+  }
+  if (reportPaths.length) {
+    ctx.nitro.logger.info(
+      `[Nuxt Link Checker] Reports written to: ${reportPaths.map(r => `\`${relative(process.cwd(), r)}\``).join(', ')}`,
+    )
   }
 }
 
-async function generateHtmlReport(reports: PathReport[], { storage, storageFilepath, nuxt, nitro }: InspectionContext) {
+async function generateHtmlReport(reports: PathReport[], { storage, storageFilepath }: InspectionContext) {
   const timestamp = new Date().toLocaleString()
   const totalErrors = reports.reduce((sum, { reports }) =>
     sum + reports.filter(r => r.error?.length).length, 0)
@@ -104,7 +110,6 @@ async function generateHtmlReport(reports: PathReport[], { storage, storageFilep
       </li>`
     })
     .join('')
-
   const reportHtml = reports
     .map(({ route, reports }) => {
       const errors = reports.filter(r => r.error?.length).length
@@ -182,14 +187,10 @@ async function generateHtmlReport(reports: PathReport[], { storage, storageFilep
     .replaceAll('<!-- SiteName -->', `Link Report - ${useSiteConfig()?.name || ''}`)
 
   await storage.setItem('link-checker-report.html', html)
-  if (storageFilepath) {
-    nitro.logger.info(
-      `Nuxt Link Checker HTML report written to ./${relative(nuxt.options.rootDir, resolve(storageFilepath, 'link-checker-report.html'))}`,
-    )
-  }
+  return resolve(storageFilepath, 'link-checker-report.html')
 }
 
-async function generateMarkdownReport(reports: PathReport[], { storage, storageFilepath, nuxt, nitro }: InspectionContext) {
+async function generateMarkdownReport(reports: PathReport[], { storage, storageFilepath }: InspectionContext) {
   // Create document header with timestamp and summary
   const timestamp = new Date().toLocaleString()
   const totalErrors = reports.reduce((sum, { reports }) =>
@@ -214,7 +215,6 @@ async function generateMarkdownReport(reports: PathReport[], { storage, storageF
 
   // Table of contents for quick navigation
   const toc = reports.map(({ route }) => `- [${route}](#${createAnchor(route)})`).join('\n')
-
   const reportMarkdown = reports
     .map(({ route, reports }) => {
       const errors = reports.filter(r => r.error?.length).length
@@ -307,11 +307,7 @@ async function generateMarkdownReport(reports: PathReport[], { storage, storageF
   ].join('\n')
 
   await storage.setItem('link-checker-report.md', markdown)
-  if (storageFilepath) {
-    nitro.logger.info(
-      `Nuxt Link Checker Markdown report written to ./${relative(nuxt.options.rootDir, resolve(storageFilepath, 'link-checker-report.md'))}`,
-    )
-  }
+  return resolve(storageFilepath, 'link-checker-report.md')
 }
 
 // Helper function to create GitHub-compatible anchor links
@@ -330,13 +326,8 @@ function truncateString(str: string, maxLength: number): string {
   return `${str.substring(0, maxLength - 3)}...`
 }
 
-async function generateJsonReport(reports: PathReport[], { storage, storageFilepath, nuxt, nitro }: InspectionContext) {
+async function generateJsonReport(reports: PathReport[], { storage, storageFilepath }: InspectionContext) {
   const json = JSON.stringify(reports, null, 2)
   await storage.setItem('link-checker-report.json', json)
-
-  if (storageFilepath) {
-    nitro.logger.info(
-      `Nuxt Link Checker JSON report written to ./${relative(nuxt.options.rootDir, resolve(storageFilepath, 'link-checker-report.json'))}`,
-    )
-  }
+  return resolve(storageFilepath, 'link-checker-report.json')
 }
