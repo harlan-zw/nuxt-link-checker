@@ -23,7 +23,7 @@ describe('generate', () => {
 
     await new Promise(resolve => setTimeout(resolve, 1000))
 
-    const reportJson = (await readFile(resolve(rootDir, '.output/link-checker-report.json'), 'utf-8'))
+    const reportJson = (await readFile(resolve(rootDir, '.output/public/__link-checker__/link-checker-report.json'), 'utf-8'))
     expect(reportJson).toMatchInlineSnapshot(`
       "[
         {
@@ -563,7 +563,7 @@ describe('generate', () => {
       ]"
     `)
 
-    const reportMarkdown = (await readFile(resolve(rootDir, '.output/link-checker-report.md'), 'utf-8'))
+    const reportMarkdown = (await readFile(resolve(rootDir, '.output/public/__link-checker__/link-checker-report.md'), 'utf-8'))
     // need to remove Generated line to avoid snapshot failure
     expect(reportMarkdown.split('\n').filter(s => !s.includes('Generated')).join('\n')).toMatchInlineSnapshot(`
       "# Nuxt Link Checker Report
