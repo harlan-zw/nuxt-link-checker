@@ -6,7 +6,7 @@ export default function RuleNoErrorResponse() {
     id: 'no-error-response',
     externalLinks: true,
     test({ link, response, report, pageSearch }) {
-      if (!response.status || response.status.toString().startsWith('2') || response.status.toString().startsWith('3') || isNonFetchableLink(link))
+      if (!response?.status || response.status.toString().startsWith('2') || response.status.toString().startsWith('3') || isNonFetchableLink(link))
         return
       const payload: RuleReport = {
         name: 'no-error-response',

@@ -14,8 +14,9 @@ import {
 import { installNuxtSiteConfig } from 'nuxt-site-config/kit'
 import { dirname } from 'pathe'
 import { readPackageJSON } from 'pkg-types'
+import { provider } from 'std-env'
 import { setupDevToolsUI } from './devtools'
-import { isNuxtGenerate, prerender } from './prerender'
+import { prerender } from './prerender'
 import { crawlFetch } from './runtime/shared/crawl'
 import { convertNuxtPagesToPaths } from './util'
 
@@ -116,17 +117,19 @@ export default defineNuxtModule<ModuleOptions>({
     },
     configKey: 'linkChecker',
   },
-  defaults: {
-    strictNuxtContentPaths: false,
-    fetchRemoteUrls: false, // provider !== 'stackblitz',
-    runOnBuild: true,
-    debug: false,
-    showLiveInspections: false,
-    enabled: true,
-    fetchTimeout: 10000,
-    failOnError: false,
-    excludeLinks: [],
-    skipInspections: [],
+  defaults(nuxt) {
+    return {
+      strictNuxtContentPaths: false,
+      fetchRemoteUrls: nuxt.options._build && provider !== 'stackblitz',
+      runOnBuild: true,
+      debug: false,
+      showLiveInspections: false,
+      enabled: true,
+      fetchTimeout: 10000,
+      failOnError: false,
+      excludeLinks: [],
+      skipInspections: [],
+    }
   },
   async setup(config, nuxt) {
     const { resolve } = createResolver(import.meta.url)
@@ -141,7 +144,8 @@ export default defineNuxtModule<ModuleOptions>({
     await installNuxtSiteConfig()
 
     if (config.fetchRemoteUrls) {
-      config.fetchRemoteUrls = (await crawlFetch('https://google.com')).status === 200
+      const { status } = (await crawlFetch('https://nuxtseo.com/robots.txt').catch(() => ({ status: 404 })))
+      config.fetchRemoteUrls = status < 400
       if (!config.fetchRemoteUrls)
         logger.warn('Remote URL fetching is disabled because you appear to be offline.')
     }
@@ -209,11 +213,6 @@ export default defineNuxtModule<ModuleOptions>({
     }
 
     if (config.runOnBuild) {
-      const isRenderingAllRoutes = isNuxtGenerate(nuxt) && !nuxt.options.nitro.prerender?.crawlLinks
-      if (!nuxt.options._prepare && !nuxt.options.dev && nuxt.options.build && !isRenderingAllRoutes) {
-        // disable no-error-response
-        config.skipInspections.push('no-error-response')
-      }
       prerender(config, version)
     }
   },

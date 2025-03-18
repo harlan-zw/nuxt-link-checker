@@ -2,6 +2,7 @@ import type { Nitro } from 'nitropack'
 import type { Nuxt } from 'nuxt/schema'
 import type { ExtractedPayload, InspectionContext, PathReport } from './build/report'
 import type { ModuleOptions } from './module'
+import type { LinkInspectionResult } from './runtime/types'
 import { existsSync } from 'node:fs'
 import { useNuxt } from '@nuxt/kit'
 import { colors } from 'consola/utils'
@@ -13,7 +14,8 @@ import { ELEMENT_NODE, parse, walkSync } from 'ultrahtml'
 import { createStorage } from 'unstorage'
 import fsDriver from 'unstorage/drivers/fs'
 import { generateReports } from './build/report'
-import { getLinkResponse, setLinkResponse } from './runtime/shared/crawl'
+import { runParallel } from './build/util'
+import { getLinkResponse, getResolvedLinkResponses, setLinkResponse } from './runtime/shared/crawl'
 import { inspect } from './runtime/shared/inspect'
 import { createFilter } from './runtime/shared/sharedUtils'
 
@@ -110,6 +112,7 @@ export function prerender(config: ModuleOptions, version?: string, nuxt = useNux
     // Nuxt Robots integration
     // @ts-expect-error untyped
     nuxt.hooks.hook('robots:config', (config) => {
+      // @ts-expect-error untyped
       const catchAll = config.groups?.find(g => g.userAgent?.includes('*'))
       if (catchAll) {
         catchAll.disallow.push('/__link-checker__')
@@ -126,7 +129,13 @@ export function prerender(config: ModuleOptions, version?: string, nuxt = useNux
       if (ctx.contents && !ctx.error && ctx.fileName?.endsWith('.html') && !route.endsWith('.html') && urlFilter(route))
         linkMap[route] = await extractPayload(ctx.contents, nuxt.options.app.rootAttrs?.id || '')
 
-      setLinkResponse(route, Promise.resolve({ status: Number(ctx.error?.statusCode) || 200, statusText: ctx.error?.statusMessage || '', headers: {} }))
+      setLinkResponse(route, Promise.resolve({
+        status: Number(ctx.error?.statusCode) || 200,
+        statusText: ctx.error?.statusMessage || '',
+        headers: {
+          'Content-Type': ctx.contentType,
+        },
+      }))
     })
     nitro.hooks.hook('prerender:done', async () => {
       const payloads = Object.entries(linkMap)
@@ -147,6 +156,7 @@ export function prerender(config: ModuleOptions, version?: string, nuxt = useNux
         version,
         storage,
         storageFilepath,
+        isPrerenderingAllRoutes: isNuxtGenerate(nuxt) || Boolean(nuxt.options.nitro.prerender?.crawlLinks),
         totalRoutes: payloads.length,
       } satisfies InspectionContext
       const { allReports, errorCount } = await runInspections(payloads, inspectionCtx)
@@ -156,6 +166,11 @@ export function prerender(config: ModuleOptions, version?: string, nuxt = useNux
       )
 
       await generateReports(reportsWithContent as PathReport[], inspectionCtx)
+
+      if (config.debug) {
+        // write the link responses
+        await storage.setItem('debug-link-responses.json', JSON.stringify(await getResolvedLinkResponses()))
+      }
 
       if (errorCount > 0 && config.failOnError) {
         nitro.logger.error(`Nuxt Link Checker found ${errorCount} errors, failing build.`)
@@ -211,14 +226,15 @@ async function runInspections(
   let warningCount = 0
   let routeWithIssuesCount = 0
   const totalRoutes = payloads.length
-  const batchSize = 10 // Process in batches of 10 routes
   const allReports: PathReport[] = []
 
-  // Process in smaller batches to avoid memory pressure
-  for (let i = 0; i < payloads.length; i += batchSize) {
-    const batch = payloads.slice(i, i + batchSize)
+  // Create a set of inputs for parallel processing
+  const inputs = new Set<[route: string, payload: ExtractedPayload]>(payloads)
 
-    const batchReports = await Promise.all(batch.map(async ([route, payload]) => {
+  // Process routes in parallel
+  await runParallel<[route: string, payload: ExtractedPayload]>(
+    inputs,
+    async ([route, payload]) => {
       const reports = await processRouteLinks(route, payload, context)
 
       // Update counts
@@ -226,6 +242,7 @@ async function runInspections(
       const routeWarnings = reports.filter(r => r.warning?.length).length
 
       if (routeErrors || routeWarnings) {
+        // Use atomic updates to avoid race conditions
         errorCount += routeErrors
         warningCount += routeWarnings
         routeWithIssuesCount++
@@ -236,14 +253,11 @@ async function runInspections(
         }
       }
 
-      return { route, reports } satisfies PathReport
-    }))
-
-    allReports.push(...batchReports)
-
-    // Force garbage collection opportunity between batches
-    await new Promise(resolve => setTimeout(resolve, 0))
-  }
+      // Add to reports collection
+      allReports.push({ route, reports } satisfies PathReport)
+    },
+    { concurrency: 5, interval: 10 }, // Process 5 routes in parallel with small delay between starts
+  )
 
   // Show summary at the end
   logSummary(
@@ -267,18 +281,20 @@ async function processRouteLinks(
 ) {
   const { urlFilter, config, nuxt, siteConfig, pageSearcher } = context
 
-  // Process links in smaller batches if there are many
+  // Process links in parallel but with controlled concurrency
   const links = payload.links || []
-  const linkBatchSize = 10
-  const allReports = []
+  const allReports: Partial<LinkInspectionResult>[] = []
 
-  for (let i = 0; i < links.length; i += linkBatchSize) {
-    // Only slice what we need for this batch to avoid keeping references to the entire array
-    const linkBatch = links.slice(i, i + linkBatchSize)
+  // Create a set of inputs for parallel processing
+  const inputs = new Set<ExtractedPayload['links'][number]>(links)
 
-    let batchReports = await Promise.all(linkBatch.map(async ({ link, textContent }) => {
-      if (!urlFilter(link) || !link)
-        return { error: [], warning: [], link }
+  await runParallel<ExtractedPayload['links'][number]>(
+    inputs,
+    async ({ link, textContent }) => {
+      if (!urlFilter(link) || !link) {
+        allReports.push({ error: [], warning: [], link })
+        return
+      }
 
       const response = await getLinkResponse({
         link,
@@ -289,7 +305,7 @@ async function processRouteLinks(
         },
       })
 
-      return inspect({
+      const report = inspect({
         ids: linkMap[route].ids,
         fromPath: route,
         pageSearch: pageSearcher,
@@ -299,19 +315,12 @@ async function processRouteLinks(
         response,
         skipInspections: config.skipInspections,
       })
-    }))
 
-    // Add results to allReports
-    allReports.push(...batchReports)
-
-    // Clear the reference to the batch results
-    batchReports = null
-
-    // For large link arrays, force a small pause between batches to allow garbage collection
-    if (links.length > linkBatchSize) {
-      await new Promise(resolve => setTimeout(resolve, 10)) // Slightly longer timeout (10ms)
-    }
-  }
+      // Add to report collection
+      allReports.push(report)
+    },
+    { concurrency: 5, interval: 5 }, // Process 5 links in parallel with small delay
+  )
 
   return allReports
 }

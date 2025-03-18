@@ -5,7 +5,7 @@ export default function RuleRedirects() {
   return defineRule({
     id: 'redirects',
     test({ report, response }) {
-      if (response.status !== 301 && response.status !== 302)
+      if (response?.status !== 301 && response?.status !== 302)
         return
 
       const payload: RuleReport = {
