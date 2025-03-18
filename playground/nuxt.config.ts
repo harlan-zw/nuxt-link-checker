@@ -55,6 +55,7 @@ export default defineNuxtConfig({
       routes: [
         '/',
       ],
+      crawlLinks: true,
       failOnError: false,
     },
   },
@@ -68,6 +69,7 @@ export default defineNuxtConfig({
   linkChecker: {
     excludeLinks: ['/ignored'],
     skipInspections: ['missing-hash'],
+    debug: true,
     report: {
       html: true,
       markdown: true,

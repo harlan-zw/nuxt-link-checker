@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 createError({
-  statusCode: 404,
-  statusMessage: 'Page not found',
+  statusCode: 500,
+  statusMessage: '500 eror page',
   fatal: true,
 })
 </script>
