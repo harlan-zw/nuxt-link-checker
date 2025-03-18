@@ -482,6 +482,53 @@ export const htmlTemplate = html`<!DOCTYPE html>
       grid-template-columns: 1fr;
     }
   }
+  .issues-summary {
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--box-shadow);
+    background-color: var(--color-bg-secondary);
+  }
+
+  .common-issues-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .common-issue {
+    display: flex;
+    align-items: flex-start;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .common-issue:last-child {
+    border-bottom: none;
+  }
+
+  .common-issue.error {
+    color: var(--color-error);
+  }
+
+  .common-issue.warning {
+    color: var(--color-warning);
+  }
+
+  .issue-count {
+    font-weight: bold;
+    margin-right: 0.75rem;
+    min-width: 2em;
+    text-align: right;
+  }
+
+  .error-icon, .warning-icon {
+    margin-right: 0.5rem;
+  }
+
+  .issue-text {
+    flex: 1;
+  }
   </style>
 </head>
 <body>

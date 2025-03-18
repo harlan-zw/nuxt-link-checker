@@ -32,6 +32,7 @@ export interface InspectionContext {
   storageFilepath: string
   totalRoutes: number
   version?: string
+  isPrerenderingAllRoutes: boolean
 }
 
 export async function generateReports(reports: PathReport[], ctx: InspectionContext) {
@@ -59,12 +60,67 @@ export async function generateReports(reports: PathReport[], ctx: InspectionCont
   }
 }
 
-async function generateHtmlReport(reports: PathReport[], { storage, storageFilepath, totalRoutes, version }: InspectionContext) {
+async function generateHtmlReport(reports: PathReport[], {
+  storage,
+  storageFilepath,
+  totalRoutes,
+  version,
+}: InspectionContext) {
   const timestamp = new Date().toLocaleString()
   const totalErrors = reports.reduce((sum, { reports }) =>
     sum + reports.filter(r => r.error?.length).length, 0)
   const totalWarnings = reports.reduce((sum, { reports }) =>
     sum + reports.filter(r => r.warning?.length).length, 0)
+
+  // Collect issue frequencies
+  const issueFrequency: Record<string, { count: number, type: 'error' | 'warning' }> = {}
+
+  reports.forEach(({ reports: routeReports }) => {
+    routeReports.forEach((report) => {
+      // Process errors
+      report.error?.forEach((err) => {
+        const key = `${err.name}: ${err.message}`
+        if (!issueFrequency[key]) {
+          issueFrequency[key] = { count: 0, type: 'error' }
+        }
+        issueFrequency[key].count++
+      })
+
+      // Process warnings
+      report.warning?.forEach((warning) => {
+        const key = `${warning.name}: ${warning.message}`
+        if (!issueFrequency[key]) {
+          issueFrequency[key] = { count: 0, type: 'warning' }
+        }
+        issueFrequency[key].count++
+      })
+    })
+  })
+
+  const issuesList = Object.entries(issueFrequency)
+    .sort((a, b) => b[1].count - a[1].count)
+    .map(([issue, { count, type }]) => {
+      const iconClass = type === 'error' ? 'error-icon' : 'warning-icon'
+      const icon = type === 'error' ? '✖' : '⚠'
+      return `
+      <li class="common-issue ${type}">
+        <span class="${iconClass}" aria-hidden="true">${icon}</span>
+        <span class="issue-count">${count}</span>
+        <span class="issue-text">${issue}</span>
+      </li>
+    `
+    })
+    .join('')
+
+  const issueSummary = issuesList
+    ? `
+  <div class="issues-summary">
+    <ul class="common-issues-list">
+      ${issuesList}
+    </ul>
+  </div>
+`
+    : ''
 
   // Get package version - you can add this to your module context
   const reportMeta = `
@@ -111,11 +167,13 @@ async function generateHtmlReport(reports: PathReport[], { storage, storageFilep
       ].filter(Boolean).join(', ')
 
       return `<li class="${statusClass}">
-        <a href="#route-${createAnchor(route)}">${statusEmoji} ${route}</a>
+        <a style="display: block;" href="#route-${createAnchor(route)}">${statusEmoji} ${route}
         ${statusString ? `<span class="toc-status">(${statusString})</span>` : ''}
+        </a>
       </li>`
     })
     .join('')
+
   const reportHtml = reports
     .map(({ route, reports }) => {
       const errors = reports.filter(r => r.error?.length).length
@@ -180,8 +238,8 @@ async function generateHtmlReport(reports: PathReport[], { storage, storageFilep
     .join('')
   // Add table of contents and styles for it
   const tableOfContents = `
-    <div id="toc" class="table-of-contents">
       <h2>Table of Contents</h2>
+    <div id="toc" class="table-of-contents">
       <ul class="toc-list">
         ${tocHtml || '<li>No issues found</li>'}
       </ul>
@@ -189,7 +247,7 @@ async function generateHtmlReport(reports: PathReport[], { storage, storageFilep
     `
 
   const html = htmlTemplate
-    .replace('<!-- REPORT -->', `${reportMeta}\n${summary}\n${tableOfContents}\n${reportHtml || '<div class="no-issues">All links are valid! 🎉</div>'}`)
+    .replace('<!-- REPORT -->', `${reportMeta}\n${summary}\n${issueSummary}\n${tableOfContents}\n${reportHtml || '<div class="no-issues">All links are valid! 🎉</div>'}`)
     .replaceAll('<!-- SiteName -->', `Link Report - ${useSiteConfig()?.name || ''}`)
 
   await storage.setItem('link-checker-report.html', html)
