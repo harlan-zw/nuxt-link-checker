@@ -55,7 +55,7 @@
   },
   "dependencies": {
     "@nuxt/devtools-kit": "^2.3.0",
-    "@nuxt/kit": "^3.16.0",
+    "@nuxt/kit": "^3.16.2",
     "@vueuse/core": "^13.0.0",
     "consola": "^3.4.2",
     "diff": "^7.0.0",
@@ -81,7 +81,7 @@
     "bumpp": "^10.1.0",
     "eslint": "^9.22.0",
     "execa": "^9.5.2",
-    "nuxt": "^3.16.0",
+    "nuxt": "^3.16.2",
     "typescript": "5.8.2",
     "vitest": "^3.0.9"
   },
