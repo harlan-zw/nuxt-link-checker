@@ -2,7 +2,7 @@
   "name": "nuxt-link-checker",
   "type": "module",
   "version": "4.3.0",
-  "packageManager": "pnpm@10.6.4",
+  "packageManager": "pnpm@10.7.1",
   "description": "Find and magically fix links that may be negatively effecting your Nuxt sites SEO.",
   "author": {
     "name": "Harlan Wilton",
@@ -54,36 +54,36 @@
     "test:watch": "vitest watch"
   },
   "dependencies": {
-    "@nuxt/devtools-kit": "^2.3.0",
+    "@nuxt/devtools-kit": "^2.3.2",
     "@nuxt/kit": "^3.16.0",
     "@vueuse/core": "^13.0.0",
     "consola": "^3.4.2",
     "diff": "^7.0.0",
     "fuse.js": "^7.1.0",
     "magic-string": "^0.30.17",
-    "nuxt-site-config": "^3.1.6",
+    "nuxt-site-config": "^3.1.9",
     "pathe": "^2.0.3",
     "pkg-types": "^2.1.0",
     "radix3": "^1.1.2",
     "sirv": "^3.0.1",
     "ufo": "^1.5.4",
-    "ultrahtml": "^1.5.3"
+    "ultrahtml": "^1.6.0"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^4.10.1",
-    "@nuxt/content": "3.3.0",
-    "@nuxt/devtools": "^2.3.0",
+    "@antfu/eslint-config": "^4.11.0",
+    "@nuxt/content": "3.4.0",
+    "@nuxt/devtools": "^2.3.2",
     "@nuxt/module-builder": "^0.8.4",
     "@nuxt/test-utils": "^3.17.2",
     "@nuxtjs/eslint-config-typescript": "^12.1.0",
-    "@nuxtjs/sitemap": "^7.2.9",
-    "@types/diff": "^7.0.1",
+    "@nuxtjs/sitemap": "^7.2.10",
+    "@types/diff": "^7.0.2",
     "bumpp": "^10.1.0",
-    "eslint": "^9.22.0",
+    "eslint": "^9.24.0",
     "execa": "^9.5.2",
     "nuxt": "^3.16.0",
-    "typescript": "5.8.2",
-    "vitest": "^3.0.9"
+    "typescript": "5.8.3",
+    "vitest": "^3.1.1"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
@@ -95,6 +95,6 @@
   },
   "resolutions": {
     "nuxt-link-checker": "workspace:*",
-    "typescript": "5.6.3"
+    "typescript": "5.8.3"
   }
 }
