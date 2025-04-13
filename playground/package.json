@@ -8,7 +8,9 @@
     "generate": "nuxi generate"
   },
   "dependencies": {
+    "eslint-plugin-vuejs-accessibility": "^2.4.1",
     "nuxt-link-checker": "workspace:*",
-    "nuxt-link-checker-devtools": "workspace:*"
+    "nuxt-link-checker-devtools": "workspace:*",
+    "unplugin-vue-router": "^0.12.0"
   }
 }

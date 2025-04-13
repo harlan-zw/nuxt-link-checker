@@ -1,53 +1,15 @@
 {
-  "name": "nuxt-link-checker",
   "type": "module",
   "version": "4.3.0",
-  "packageManager": "pnpm@10.7.1",
-  "description": "Find and magically fix links that may be negatively effecting your Nuxt sites SEO.",
-  "author": {
-    "name": "Harlan Wilton",
-    "email": "harlan@harlanzw.com",
-    "url": "https://harlanzw.com/"
-  },
+  "private": true,
+  "packageManager": "pnpm@10.8.0+sha512.0e82714d1b5b43c74610193cb20734897c1d00de89d0e18420aebc5977fa13d780a9cb05734624e81ebd81cc876cd464794850641c48b9544326b5622ca29971",
   "license": "MIT",
-  "funding": "https://github.com/sponsors/harlan-zw",
-  "homepage": "https://github.com/harlan-zw/nuxt-link-checker#readme",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/harlan-zw/nuxt-link-checker.git"
-  },
-  "bugs": {
-    "url": "https://github.com/harlan-zw/nuxt-link-checker/issues"
-  },
-  "exports": {
-    ".": {
-      "types": "./dist/types.d.mts",
-      "import": "./dist/module.mjs"
-    }
-  },
-  "build": {
-    "externals": [
-      "unstorage/drivers/fs"
-    ]
-  },
-  "main": "./dist/module.mjs",
-  "types": "./dist/types.d.mts",
-  "typesVersions": {
-    "*": {
-      ".": [
-        "./dist/types.d.mts"
-      ]
-    }
-  },
-  "files": [
-    "dist"
-  ],
   "scripts": {
-    "build": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build && npm run client:build",
+    "build": "pnpm -r --filter 'packages/**' run build && npm run client:build",
+    "dev:prepare": "pnpm -r --filter 'packages/**' run dev:prepare && nuxi prepare client && nuxi prepare playground",
     "client:build": "nuxi generate client",
     "client:dev": "nuxi dev client --port 3030",
     "dev": "npm run play:dev",
-    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare client && nuxi prepare playground",
     "play:dev": "nuxi dev playground",
     "play:prod": "npm run build && nuxi dev playground",
     "release": "pnpm build && bumpp && pnpm -r publish",
@@ -55,25 +17,6 @@
     "test": "vitest run",
     "test:types": "npx nuxi typecheck",
     "test:watch": "vitest watch"
-  },
-  "dependencies": {
-    "@nuxt/devtools-kit": "^2.3.2",
-    "@nuxt/kit": "^3.16.2",
-    "@vueuse/core": "^13.0.0",
-    "consola": "^3.4.2",
-    "diff": "^7.0.0",
-    "fuse.js": "^7.1.0",
-    "magic-string": "^0.30.17",
-    "nuxt-site-config": "^3.1.9",
-    "ofetch": "^1.4.1",
-    "pathe": "^2.0.3",
-    "pkg-types": "^2.1.0",
-    "radix3": "^1.1.2",
-    "sirv": "^3.0.1",
-    "std-env": "^3.9.0",
-    "ufo": "^1.5.4",
-    "ultrahtml": "^1.6.0",
-    "unstorage": "^1.15.0"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^4.11.0",
@@ -98,8 +41,5 @@
       "esbuild",
       "vue-demi"
     ]
-  },
-  "resolutions": {
-    "nuxt-link-checker": "workspace:*"
   }
 }

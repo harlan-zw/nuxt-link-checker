@@ -1,0 +1,93 @@
+<!doctype hmtl>
+<html>
+<head>
+  <META CHARSET=UTF-8>
+  <!-- Missing title tag -->
+  <style>
+  body { color: red
+  </style>
+<body>
+<h1>Broken HTML Example
+
+  <!-- Missing alt attribute -->
+  <img src="missing.jpg">
+
+  <a href="/">here</a>
+
+  <!-- broke nlinks -->
+  <a href="http://example.com">Broken link</a>
+  <a href="/  /" target="_blank">Another broken link</a>
+  <a href="/TEST" target="_blank">Another broken link</a>
+  <a>woo</a>
+
+  <!-- Unclosed tags -->
+  <div>
+    <p>This paragraph is not closed
+    <p>This is another unclosed paragraph with <strong>unclosed strong element
+
+      <!-- Mismatched tags -->
+      <section>
+        <article>Mismatched tags
+      </section></div>
+
+  <!-- Deprecated elements -->
+  <center>Centered text</center>
+  <font color="blue">Colored text</font>
+
+  <!-- Duplicate IDs -->
+  <div id="duplicate">First element</div>
+  <span id="duplicate">Second element</span>
+
+  <!-- Missing required attributes -->
+  <input type="text">
+  <select>
+    <option selected>No value attribute</option>
+  </select>
+
+  <!-- Invalid attributes -->
+  <div class=invalid"quote">Invalid quotes</div>
+
+  <!-- Incorrectly nested tables -->
+  <table>
+    <tr>
+      <td>Cell 1
+      <td>Cell 2
+  </table>
+  </tr>
+
+  <script>
+  // Unclosed script block
+  var x = {
+    "key": "value"
+  }
+  </script>
+
+  // Missing closing brace and semicolon
+  function badFunction() {
+  document.getElementById("duplicate").innerHTML = "Changed text"
+  </script>
+
+  <!-- Empty href -->
+  <a href="">Empty link</a>
+
+  <!-- Non-lowercase attributes -->
+  <div ID="wrongCase" STYLE="color:blue;">Uppercase attributes</div>
+
+  <!-- Malformed HTML entities -->
+  <p>Broken entity: &invalid; and incomplete entity: &amp</p>
+
+  <!-- No lang attribute on html -->
+
+  <!-- Invalid nesting of inline/block elements -->
+  <span><div>Block inside inline</div></span>
+
+  <!-- Missing closing html and body tags -->
+</html>
+<!-- Missing doctype -->
+
+<!-- Incorrect boolean attributes -->
+<button disabled="disabled">Extra verbose</button>
+
+<!-- Non-unique ID again -->
+<footer id="duplicate">Third element with same ID</footer>
+

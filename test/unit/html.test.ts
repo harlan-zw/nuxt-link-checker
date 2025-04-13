@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { extractPayload } from '../../src/prerender'
+import { extractPayload } from '../../packages/module/src/prerender'
 
 describe('html', () => {
   it('detects aria-label', async () => {

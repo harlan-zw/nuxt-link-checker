@@ -8,6 +8,8 @@ export default defineNuxtConfig({
     'nuxt-link-checker',
     '@nuxtjs/sitemap',
     '@nuxt/content',
+    '@nuxt/eslint',
+    '@nuxt/ui',
 
     /**
      * Start a sub Nuxt Server for developing the client
@@ -44,11 +46,12 @@ export default defineNuxtConfig({
     }),
   ],
 
-  // @ts-expect-error untyped
   site: {
     url: 'https://nuxt-link-checker.com',
     // trailingSlash: true,
   },
+
+  css: ['~/assets/css/main.css'],
 
   nitro: {
     prerender: {
@@ -83,4 +86,11 @@ export default defineNuxtConfig({
   },
 
   compatibilityDate: '2024-07-16',
+
+  future: {
+    compatibilityVersion: 4,
+  },
+  experimental: {
+    typedPages: true,
+  },
 })
