@@ -1,6 +1,8 @@
 <script setup lang="ts">
-useHead({
+useSeoMeta({
   title: 'foo',
+  description: 'foo description',
+  ogImage: '/broken.png',
 })
 </script>
 

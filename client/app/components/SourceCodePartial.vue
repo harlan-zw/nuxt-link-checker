@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import type {ESLint, LintMessage} from 'eslint'
-import { ref } from 'vue'
+import type { ESLint } from 'eslint'
 
 const props = defineProps<{
   source: string
@@ -30,9 +29,9 @@ const html = lines.slice(startLine, endLine + 1).map((line, i, arr) => {
 </script>
 
 <template>
-<!--  <div v-if="loading">-->
-<!--    <UProgress />-->
-<!--  </div>-->
+  <!--  <div v-if="loading"> -->
+  <!--    <UProgress /> -->
+  <!--  </div> -->
   <OCodeBlock v-if="html" :code="html" lang="html" />
-  <!--  <MDCRenderer v-else v-bind="ast" />-->
+  <!--  <MDCRenderer v-else v-bind="ast" /> -->
 </template>

@@ -1,34 +1,30 @@
 import type { BirpcReturn } from 'birpc'
-import type { $Fetch } from 'ofetch'
-import type { ClientFunctions, ServerFunctions } from '../../../packages/module/src/rpc-types'
+import type { ExtractedPayload } from 'nuxt-link-checker/src/build/report'
+import type { ClientFunctions, ServerFunctions } from 'nuxt-link-checker/src/devtools/types'
 
-// export const appFetch = ref<$Fetch>()
-//
-// export const devtools = ref<NuxtDevtoolsClient>()
-// export const linkCheckerRpc = ref<BirpcReturn<ServerFunctions>>()
-// export const devtoolsRpc = ref<NuxtDevtoolsClient['rpc']>()
-//
-// export const res = ref()
-
-export interface ConnectedCtx {
-  $fetch: $Fetch
-  scans: Ref<any[]>
-  rpc: BirpcReturn<ServerFunctions, ClientFunctions>
+export interface PathResult {
+  path: string
+  payload: ExtractedPayload
+  lintResult: {
+    messages: any[]
+  }
+  error?: {
+    message: string
+    code: string
+  }
 }
 
-export function onRpcConnected(fn: (ctx: ConnectedCtx) => void | Promise<void>) {
-  console.log('RPC hook')
+function onRpcConnected(fn: (ctx: BirpcReturn<ServerFunctions, ClientFunctions>) => void | Promise<void>) {
   const nuxtApp = useNuxtApp()
   if (nuxtApp._rpcContext) {
     return fn(nuxtApp._rpcContext)
   }
-  nuxtApp.hooks.hookOnce('nuxt-analyze:connected', ctx => fn(ctx))
+  nuxtApp.hooks.hookOnce('nuxt-analyze:connected', (ctx) => {
+    fn(ctx)
+  })
 }
 
-export async function useRpcConnection() {
-  return new Promise<ConnectedCtx>((resolve) => {
-    onRpcConnected((ctx) => {
-      resolve(ctx)
-    })
-  })
+export function useRpcConnection(): BirpcReturn<ServerFunctions, ClientFunctions> {
+  const nuxtApp = useNuxtApp()
+  return nuxtApp._rpcContext
 }

@@ -1,20 +1,66 @@
-# Nuxt Link Checker ESLint Rules
+# Nuxt Analyze ESLint Plugin
 
-This directory contains ESLint rules that implement the same checks as the Nuxt Link Checker runtime rules.
+This ESLint plugin provides rules for analyzing HTML and Vue files for SEO, accessibility, and best practices.
+
+## Configurations
+
+### Nuxt Configuration (Default)
+
+For Nuxt projects with Vue components and HTML files:
+
+```javascript
+// eslint.config.js
+import nuxtAnalyze from 'nuxt-analyze-eslint-plugin'
+
+export default [
+  ...nuxtAnalyze({
+    // Options
+    trailingSlash: false,
+    pages: [], // Nuxt pages for router validation
+    linkComponents: ['a', 'NuxtLink', 'RouterLink', 'ULink']
+  })
+]
+```
+
+### HTML-Only Configuration
+
+For static HTML projects without Vue/Nuxt:
+
+```javascript
+// eslint.config.js
+import { htmlAnalyze } from 'nuxt-analyze-eslint-plugin'
+
+export default [
+  ...htmlAnalyze({
+    // Options
+    trailingSlash: false,
+    linkComponents: ['a'] // Only standard HTML anchor tags
+  })
+]
+```
 
 ## Available Rules
 
-### `link-descriptive-text`
+### Meta Rules
+- `nuxt-analyze/meta/missing-title` - Ensures pages have title tags
+- `nuxt-analyze/meta/missing-description` - Ensures pages have meta descriptions
+- `nuxt-analyze/meta/duplicate-title` - Prevents duplicate title tags
+- `nuxt-analyze/meta/duplicate-description` - Prevents duplicate meta descriptions
 
-This rule ensures that link text is descriptive for better SEO and accessibility. It mimics the functionality of the `link-text.ts` rule from the Nuxt Link Checker.
+### Linking Rules
+- `nuxt-analyze/linking/require-descriptive-text` - Ensures links have descriptive text
+- `nuxt-analyze/linking/no-whitespace` - Prevents whitespace in URLs
+- `nuxt-analyze/linking/ascii-only` - Ensures URLs contain only ASCII characters
+- `nuxt-analyze/linking/only-lowercase` - Enforces lowercase URLs
+- `nuxt-analyze/linking/no-double-slashes` - Prevents double slashes in URLs
+- `nuxt-analyze/linking/no-underscores` - Prevents underscores in URLs
+- `nuxt-analyze/linking/require-href` - Ensures links have href attributes
+- `nuxt-analyze/linking/trailing-slash` - Enforces trailing slash consistency
+- `nuxt-analyze/linking/valid-router-path` - Validates router paths (Nuxt/Vue only)
 
-#### Rule Details
+## Rule Examples
 
-This rule checks:
-- That links have text content, a title attribute, or an aria-label
-- That the text content is descriptive (not generic phrases like "click here" or "learn more")
-
-#### Examples
+### `linking/require-descriptive-text`
 
 ```html
 <!-- Bad: Non-descriptive link text -->
@@ -25,26 +71,10 @@ This rule checks:
 <a href="/docs">View documentation</a>
 <NuxtLink to="/docs">API Documentation</NuxtLink>
 
-<!-- Also acceptable: Using title or aria-label when no text content -->
-<a href="/docs" title="API Documentation"><img src="docs-icon.png" alt="Documentation icon"></a>
-<NuxtLink to="/docs" aria-label="View documentation"><Icon name="docs" /></NuxtLink>
-```
-
-## Usage in ESLint Config
-
-```javascript
-// eslint.config.js
-import antfu from '@antfu/eslint-config'
-import nuxtLinkCheckerPlugin from './src/nuxt-analyze/eslint-rules/index.js'
-
-export default antfu({
-  rules: {
-    'nuxt-link-checker/link-descriptive-text': 'warn'
-  },
-  plugins: {
-    'nuxt-link-checker': nuxtLinkCheckerPlugin
-  }
-})
+<!-- Also acceptable: Using title or aria-label -->
+<a href="/docs" title="API Documentation">
+  <img src="docs-icon.png" alt="Documentation icon">
+</a>
 ```
 
 ## Benefits

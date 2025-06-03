@@ -1,27 +1,36 @@
 <script lang="ts" setup>
-// import { object, number , enum } from 'valibot'
-import { useRpcConnection } from '~/composables/rpc'
+import type { TableColumn } from '@nuxt/ui'
+import { useAuditStore } from '~/composables/state'
 
-const scans = ref()
-const ctx = useRpcConnection()
+const UBadge = resolveComponent('UBadge')
+const NuxtLink = resolveComponent('NuxtLink')
 
+const store = useAuditStore()
+
+const scans = computed(() => {
+  return store.value || []
+})
 onMounted(async () => {
-  scans.value = (await ctx).scans.value
+  if (!scans.value.length) {
+    navigateTo('/create')
+  }
   console.log('scans.value', scans.value)
 })
 
-const rowSelection = ref<Record<string, boolean>>({})
-
-function onSelect(row: TableRow<Payment>, e?: Event) {
-  /* If you decide to also select the column you can do this  */
-  row.toggleSelected(!row.getIsSelected())
-
-  // let's go to the page
-  navigateTo('/scan/1')
-  console.log(e)
+interface ScanResult {
+  createdAt: string
+  status: string
+  queue: {
+    size: number
+  }
+  completed: {
+    size: number
+  }
 }
 
-// const links = ref([])
+const rowSelection = ref<ScanResult>({})
+
+// const links = ref([])`
 
 // onRpcConnected(async (ctx) => {
 //   // const scans = await linkCheckerRpc.value!.getScans()
@@ -37,77 +46,61 @@ function onSelect(row: TableRow<Payment>, e?: Event) {
 
 // type Schema = v.InferOutput<typeof schema>
 
-const state = reactive({
-  urlDiscovery: 'Sitemap',
-  limitPages: 100,
-})
-
-async function newCrawl() {
-  scans.value = await (await ctx).rpc.newScan(state)
-  console.log('New scan started', scans.value)
-  // await linkCheckerRpc.value!.newScan()
-  // await linkCheckerRpc.value!.work()
-}
-
-const columns = [
+const columns: TableColumn<ScanResult>[] = [
+  {
+    accessorKey: 'name',
+    header: 'Name',
+    cell: (ctx) => {
+      return h(NuxtLink, { class: 'text-blue-400 font-semibold', to: `/audits/${ctx.row.original.id}` }, ctx.getValue())
+    },
+  },
   {
     accessorKey: 'createdAt',
     header: 'Created At',
   },
   {
-    accessorKey: 'status',
+    accessorKey: 'currentTaskStatus',
     header: 'Status',
-  },
-  {
-    accessorKey: 'results',
-    header: 'Total URLs crawled',
-  },
-  {
-    accessorKey: 'queue',
-    header: 'URL Queue',
+    cell: ({ row }) => {
+      const color = {
+        pending: 'neutral' as const,
+        pending: 'neutral' as const,
+        running: 'warning' as const,
+        done: 'success' as const,
+        error: 'error' as const,
+      }[row.getValue('currentTaskStatus') as string]
+
+      return h(UBadge, { class: 'capitalize', variant: 'subtle', color }, () =>
+        row.getValue('currentTaskStatus'))
+    },
   },
   {
     header: 'Actions',
   },
 ]
 const scanTable = computed(() => {
-
-  return scans.value?.scans.map((scan) => {
-    return {
-      createdAt: new Date(scan.createdAt).toLocaleString(),
-      status: scan.queue.length > 0 ? 'In Progress' : 'Completed',
-      queue: scan.queue.length,
-      results: scan.results.length,
-    }
-  })
+  return scans.value
+    .toSorted((a, b) => {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    })
+    .map((scan) => {
+      return {
+        ...scan,
+        createdAt: new Date(scan.createdAt).toLocaleString(),
+      }
+    })
 })
 </script>
 
 <template>
   <UCard class="w-full max-w-2xl mx-auto">
-    <div v-if="!scans?.scans?.length">
-      <UForm :state="state" class="space-y-4" @submit="newCrawl">
-        <UFormField label="URL Discovery" name="urlDiscovery">
-          <USelectMenu v-model="state.urlDiscovery" :options="['Sitemap', 'Google Search Console', 'Crawl']" />
-        </UFormField>
-        <UFormField label="Limit Pages" name="limitPages">
-          <UInputNumber v-model="state.limitPages" />
-        </UFormField>
-        <p class="mb-3 text-sm">
-          Nuxt Audit will scan all of your pages using your sitemap.xml. It will statically analyze the HTML for issues.
-        </p>
-        <UButton type="submit">
-          Start New Crawl
-        </UButton>
-      </UForm>
-    </div>
-    <div v-else>
-    <UTable
-      v-model:row-selection="rowSelection"
-      :data="scanTable"
-      :columns="columns"
-      @select="onSelect"
-    />
+    <div>
+      <UTable
+        v-model:row-selection="rowSelection"
+        :data="scanTable"
+        :columns="columns"
+        @select="onSelect"
+      />
     </div>
   </UCard>
 </template>

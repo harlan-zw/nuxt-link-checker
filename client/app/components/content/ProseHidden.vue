@@ -1,3 +1,3 @@
 <template>
-<div><!--- empty --></div>
+  <div><!--- empty --></div>
 </template>

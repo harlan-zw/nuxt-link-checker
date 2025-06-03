@@ -1,20 +1,32 @@
-// import type { LinkInspectionResult } from '../../src/runtime/types'
-// import { useStorage } from '@vueuse/core'
-// import { ref } from 'vue'
-// import { appFetch } from './rpc'
-//
-// export const linkDb = ref<LinkInspectionResult[]>([])
-// export const showLiveInspections = useStorage<boolean>('nuxt-link-checker:show-live-inspections', true)
-// export const visibleLinks = ref<string[]>([])
-// export const queueLength = ref(0)
-//
-// export const linkFilter = ref<string | false>('')
-//
-// export const data = ref<{
-//   runtimeConfig: any
-// } | null>(null)
-//
-// export async function refreshSources() {
-//   if (appFetch.value)
-//     data.value = await appFetch.value('/__link-checker__/debug.json')
-// }
+import type { AsyncDataOptions } from '#app'
+import type { Audit } from 'nuxt-link-checker/src/types'
+import type { Ref } from 'vue'
+import { useRpcConnection } from '~/composables/rpc'
+
+// copied from nuxt devtools
+export function useAsyncState<T>(key: string, fn: () => Promise<T>, options?: AsyncDataOptions<T>) {
+  const nuxt = useNuxtApp()
+
+  const unique = nuxt.payload.unique = nuxt.payload.unique || {} as any
+  if (!unique[key])
+    unique[key] = useAsyncData(key, fn, options)
+
+  return unique[key].data as Ref<T | null>
+}
+
+export function useAuditStore() {
+  const rpc = useRpcConnection()
+  return useAsyncState('queryAllAudits', () => {
+    return rpc.queryAllAudits()
+  })
+}
+
+export function useActiveAudit(): ComputedRef<Audit | null> {
+  const data = useAuditStore()
+  const route = useRoute()
+  return computed(() => {
+    return data.value?.find((scan) => {
+      return scan.id === Number(route.params.auditId)
+    }) || null
+  })
+}

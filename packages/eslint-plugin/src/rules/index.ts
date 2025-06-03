@@ -1,23 +1,31 @@
-import { rule as asciiOnly } from './link-ascii-only'
-import { rule as descriptiveLinkText } from './link-descriptive-text'
-import { rule as headTitle } from './head-title'
-import { rule as lowercase } from './link-lowercase'
-import { rule as noDoubleSlashes } from './link-no-double-slashes'
-import { rule as noUnderscores } from './link-no-underscores'
-import { rule as noWhitespace } from './link-no-whitespace'
-import { rule as requiresHref } from './link-requires-href'
-import { rule as trailingSlash } from './link-trailing-slash'
-import { rule as validRouterPath } from './link-valid-router-path'
+import { rule as asciiOnly } from './linking/ascii-only'
+import { rule as noDoubleSlashes } from './linking/no-double-slashes'
+import { rule as noUnderscores } from './linking/no-underscores'
+import { rule as noWhitespace } from './linking/no-whitespace'
+import { rule as lowercase } from './linking/only-lowercase'
+import { rule as descriptiveLinkText } from './linking/require-descriptive-text'
+import { rule as requiresHref } from './linking/require-href'
+import { rule as trailingSlash } from './linking/trailing-slash'
+import { rule as validRouterPath } from './linking/valid-router-path'
+import { rule as duplicateDescription } from './meta/duplicate-description'
+import { rule as duplicateTitle } from './meta/duplicate-title'
+import { rule as missingDescription } from './meta/missing-description'
+import { rule as missingTitle } from './meta/missing-title'
 
 export default {
-  'head-title': headTitle,
-  'link-descriptive-text': descriptiveLinkText,
-  'link-no-whitespace': noWhitespace,
-  'link-ascii-only': asciiOnly,
-  'link-lowercase': lowercase,
-  'link-no-double-slashes': noDoubleSlashes,
-  'link-no-underscores': noUnderscores,
-  'link-requires-href': requiresHref,
-  'link-trailing-slash': trailingSlash,
-  'link-valid-router-path': validRouterPath,
+  // meta
+  'meta/missing-title': missingTitle,
+  'meta/missing-description': missingDescription,
+  'meta/duplicate-title': duplicateTitle,
+  'meta/duplicate-description': duplicateDescription,
+  // linking
+  'linking/require-descriptive-text': descriptiveLinkText,
+  'linking/no-whitespace': noWhitespace,
+  'linking/ascii-only': asciiOnly,
+  'linking/only-lowercase': lowercase,
+  'linking/no-double-slashes': noDoubleSlashes,
+  'linking/no-underscores': noUnderscores,
+  'linking/require-href': requiresHref,
+  'linking/trailing-slash': trailingSlash,
+  'linking/valid-router-path': validRouterPath,
 }

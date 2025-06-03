@@ -1,17 +1,29 @@
 import type { Rule } from 'eslint'
+import type Fuse from 'fuse.js'
+import type { RawInput, SerializableHead } from 'unhead/types'
 import type { AST } from 'vue-eslint-parser'
-import { ESLintUtils } from '@typescript-eslint/utils'
+import type { RouteRecordNormalized, RouterMatcher } from 'vue-router'
 
 export function createRule<
   TMessageIds extends string,
   TOptions extends readonly unknown[],
 >(
-  rule: Readonly<ESLintUtils.RuleWithMetaAndName<TOptions, TMessageIds>>,
+  rule: Readonly<Rule.RuleModule>,
 ) {
-  const _createRule = ESLintUtils.RuleCreator(
-    name => `https://nuxtseo.com/analyze/rules/${name}`,
-  )
-  return _createRule(rule) as unknown as Rule.RuleModule
+  // const _createRule = ESLintUtils.RuleCreator(
+  //   name => `https://nuxtseo.com/analyze/rules/${name}`,
+  // )
+  return rule as unknown as Rule.RuleModule
+}
+
+export function useNuxtOptions(context: Rule.RuleContext) {
+  return context.settings as {
+    pageSearch: Fuse<RouteRecordNormalized>
+    routerMatcher: RouterMatcher
+    vueLinkComponents: Record<string, string[]>
+    titles: Record<string, number>
+    descriptions: Record<string, number>
+  }
 }
 
 interface VueTemplateListener extends Rule.NodeListener {
@@ -34,13 +46,60 @@ export function extractChildrenStringLiterals(
 ): string[] {
   if (node.type === 'VElement') {
     return String(node.children
-      .filter((child) => child.type === 'VText')
-      .map((child) => child.value.trim()).join(' ')).trim()
+      .filter(child => child.type === 'VText')
+      .map(child => child.value.trim()).join(' ')).trim()
   }
-  return String(node.children?.filter((child => child.type === 'Text')).map((child) => child.value.trim()).join(' ')).trim()
+  return String(node.children?.filter(child => child.type === 'Text').map(child => child.value.trim()).join(' ')).trim()
 }
 
-export function useAnchorLinks(context: Rule.RuleContext, processor: (link: { href?: string, textContent?: string } & Record<string, string>, node: any) => void, opts: { tags: string[] }) {
+export function processHtmlHead(context: Rule.RuleContext, processor: ({
+  meta?: (ctx: RawInput<'meta'>, node: any) => void
+  title?: (ctx: string, node: any) => void
+  link?: (ctx: RawInput<'link'>, node: any) => void
+  all?: (ctx: SerializableHead) => void
+})) {
+  if (isVueParser(context)) {
+    return {}
+  }
+  // html parser
+  const input: SerializableHead = {}
+  return {
+    Tag(node) {
+      const normalizedAttrs = node.attributes.reduce((acc, attr) => {
+        if (attr.key) {
+          acc[attr.key.value] = attr.value?.value
+        }
+        acc[`${attr.key.value}Node`] = attr.value
+        return acc
+      }, {})
+      normalizedAttrs.textContent = extractChildrenStringLiterals(node)
+      if (node.name === 'meta' && processor.meta) {
+        input.meta = input.meta || []
+        input.meta.push(normalizedAttrs)
+        processor.meta?.(normalizedAttrs, node)
+        return
+      }
+      if (node.name === 'title') {
+        input.title = normalizedAttrs.textContent
+        processor.title?.(normalizedAttrs.textContent, node)
+        return
+      }
+      if (node.name === 'link') {
+        input.link = input.link || []
+        input.link.push(normalizedAttrs)
+        processor.link?.(normalizedAttrs, node)
+      }
+    },
+    'Program:exit': function () {
+      if (processor.all) {
+        processor.all(input)
+      }
+    },
+  }
+}
+
+export function useAnchorLinks(context: Rule.RuleContext, processor: (link: { href?: string, textContent?: string } & Record<string, string>, node: any) => void) {
+  const { vueLinkComponents } = useNuxtOptions(context)
   if (!isVueParser(context)) {
     return {
       Tag(node) {
@@ -61,12 +120,13 @@ export function useAnchorLinks(context: Rule.RuleContext, processor: (link: { hr
     }
   }
 
+  const componentNames = Object.keys(vueLinkComponents).map(name => name.toLowerCase())
   const parserServices = getParserServices(context)
   const templateBody = parserServices.defineTemplateBodyVisitor
   return templateBody({
     VElement(node) {
       const elementName = node.name.toLowerCase()
-      if (!opts.tags.includes(elementName)) {
+      if (!componentNames.includes(elementName)) {
         return
       }
 

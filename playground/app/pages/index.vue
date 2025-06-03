@@ -1,4 +1,8 @@
 <script setup lang="ts">
+useSeoMeta({
+  title: 'Hello World',
+  description: 'This is a test page for Nuxt Link Checker',
+})
 </script>
 
 <template>
@@ -104,6 +108,10 @@
         Absolute internal link
       </LinkDebug>
     </div>
+    <NuxtLink to="/image">
+      image
+    </NuxtLink>
+    <img src="https://nuxt.com/images/nuxt-logo2.svg" alt="Nuxt Logo" class="w-32 h-32 mx-auto mt-10">
     <div id="anchor" />
   </div>
 </template>

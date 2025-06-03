@@ -2,7 +2,7 @@
   "type": "module",
   "version": "4.3.0",
   "private": true,
-  "packageManager": "pnpm@10.8.0+sha512.0e82714d1b5b43c74610193cb20734897c1d00de89d0e18420aebc5977fa13d780a9cb05734624e81ebd81cc876cd464794850641c48b9544326b5622ca29971",
+  "packageManager": "pnpm@10.11.1",
   "license": "MIT",
   "scripts": {
     "build": "pnpm -r --filter 'packages/**' run build && npm run client:build",
@@ -19,26 +19,30 @@
     "test:watch": "vitest watch"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^4.11.0",
-    "@nuxt/content": "3.4.0",
-    "@nuxt/devtools": "^2.3.2",
-    "@nuxt/module-builder": "^1.0.0",
-    "@nuxt/test-utils": "^3.17.2",
+    "@antfu/eslint-config": "^4.13.2",
+    "@nuxt/content": "^3.5.1",
+    "@nuxt/devtools": "^2.4.1",
+    "@nuxt/module-builder": "^1.0.1",
+    "@nuxt/test-utils": "^3.19.1",
     "@nuxtjs/eslint-config-typescript": "^12.1.0",
-    "@nuxtjs/sitemap": "^7.2.10",
-    "@types/diff": "^7.0.2",
-    "bumpp": "^10.1.0",
-    "eslint": "^9.24.0",
-    "execa": "^9.5.2",
-    "nuxt": "^3.16.2",
-    "typescript": "5.8.3",
-    "vitest": "^3.1.1"
+    "@nuxtjs/sitemap": "^7.3.1",
+    "@types/cheerio": "^1.0.0",
+    "bumpp": "^10.1.1",
+    "cheerio": "^1.0.0",
+    "eslint": "^9.28.0",
+    "execa": "^9.6.0",
+    "happy-dom": "^17.6.1",
+    "nuxt": "^3.17.4",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.0"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
       "@parcel/watcher",
+      "@tailwindcss/oxide",
       "better-sqlite3",
       "esbuild",
+      "unrs-resolver",
       "vue-demi"
     ]
   }

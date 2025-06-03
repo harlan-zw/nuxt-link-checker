@@ -6,9 +6,7 @@ import type { Storage } from 'unstorage'
 import type { ModuleOptions } from '../module'
 import type { LinkInspectionResult } from '../runtime/types'
 import { colors } from 'consola/utils'
-import { useSiteConfig } from 'nuxt-site-config/kit'
 import { relative, resolve } from 'pathe'
-import { htmlTemplate } from './template'
 
 export interface PathReport {
   route: string
@@ -17,8 +15,12 @@ export interface PathReport {
 
 export interface ExtractedPayload {
   title?: string
+  description?: string
+  ogImage?: string
   links: { link: string, textContent: string }[]
   ids: string[]
+  images: { src: string }[]
+  textHtmlRatio: number
 }
 
 export interface InspectionContext {
@@ -39,7 +41,7 @@ export async function generateReports(reports: PathReport[], ctx: InspectionCont
   const report = ctx.config.report || {}
   const reportPaths: string[] = []
   if (report.html) {
-    reportPaths.push(await generateHtmlReport(reports, ctx))
+    // TODO
   }
 
   if (report.markdown) {
@@ -58,200 +60,6 @@ export async function generateReports(reports: PathReport[], ctx: InspectionCont
       nitro.logger.log(`  • \`${relative(process.cwd(), path)}\``)
     })
   }
-}
-
-async function generateHtmlReport(reports: PathReport[], {
-  storage,
-  storageFilepath,
-  totalRoutes,
-  version,
-}: InspectionContext) {
-  const timestamp = new Date().toLocaleString()
-  const totalErrors = reports.reduce((sum, { reports }) =>
-    sum + reports.filter(r => r.error?.length).length, 0)
-  const totalWarnings = reports.reduce((sum, { reports }) =>
-    sum + reports.filter(r => r.warning?.length).length, 0)
-
-  // Collect issue frequencies
-  const issueFrequency: Record<string, { count: number, type: 'error' | 'warning' }> = {}
-
-  reports.forEach(({ reports: routeReports }) => {
-    routeReports.forEach((report) => {
-      // Process errors
-      report.error?.forEach((err) => {
-        const key = `${err.name}: ${err.message}`
-        if (!issueFrequency[key]) {
-          issueFrequency[key] = { count: 0, type: 'error' }
-        }
-        issueFrequency[key].count++
-      })
-
-      // Process warnings
-      report.warning?.forEach((warning) => {
-        const key = `${warning.name}: ${warning.message}`
-        if (!issueFrequency[key]) {
-          issueFrequency[key] = { count: 0, type: 'warning' }
-        }
-        issueFrequency[key].count++
-      })
-    })
-  })
-
-  const issuesList = Object.entries(issueFrequency)
-    .sort((a, b) => b[1].count - a[1].count)
-    .map(([issue, { count, type }]) => {
-      const iconClass = type === 'error' ? 'error-icon' : 'warning-icon'
-      const icon = type === 'error' ? '✖' : '⚠'
-      return `
-      <li class="common-issue ${type}">
-        <span class="${iconClass}" aria-hidden="true">${icon}</span>
-        <span class="issue-count">${count}</span>
-        <span class="issue-text">${issue}</span>
-      </li>
-    `
-    })
-    .join('')
-
-  const issueSummary = issuesList
-    ? `
-  <div class="issues-summary">
-    <ul class="common-issues-list">
-      ${issuesList}
-    </ul>
-  </div>
-`
-    : ''
-
-  // Get package version - you can add this to your module context
-  const reportMeta = `
-    <div class="report-meta">
-      <div class="version">Nuxt Link Checker v${version}</div>
-      <div class="timestamp">Generated: ${timestamp}</div>
-    </div>
-  `
-
-  // Create summary section
-  const summary = `
-   <div class="summary">
-      <h2>Summary</h2>
-      <ul class="summary-stats">
-        <li>
-          <span class="stat-icon">📄</span>
-          <span class="stat-label">Failing Pages</span>
-          <span class="stat-value">${reports.length} / ${totalRoutes}</span>
-        </li>
-        <li>
-          <span class="stat-icon">❌</span>
-          <span class="stat-label">Total errors</span>
-          <span class="stat-value error-count">${totalErrors}</span>
-        </li>
-        <li>
-          <span class="stat-icon">⚠️</span>
-          <span class="stat-label">Total warnings</span>
-          <span class="stat-value warning-count">${totalWarnings}</span>
-        </li>
-      </ul>
-    </div>
-  `
-  // Create a table of contents
-  const tocHtml = reports
-    .map(({ route, reports }) => {
-      const errors = reports.filter(r => r.error?.length).length
-      const warnings = reports.filter(r => r.warning?.length).length
-
-      const statusClass = errors > 0 ? 'toc-error' : warnings > 0 ? 'toc-warning' : 'toc-valid'
-      const statusEmoji = errors > 0 ? '❌' : warnings > 0 ? '⚠️' : '✅'
-      const statusString = [
-        errors > 0 ? `${errors} error${errors > 1 ? 's' : ''}` : '',
-        warnings > 0 ? `${warnings} warning${warnings > 1 ? 's' : ''}` : '',
-      ].filter(Boolean).join(', ')
-
-      return `<li class="${statusClass}">
-        <a style="display: block;" href="#route-${createAnchor(route)}">${statusEmoji} ${route}
-        ${statusString ? `<span class="toc-status">(${statusString})</span>` : ''}
-        </a>
-      </li>`
-    })
-    .join('')
-
-  const reportHtml = reports
-    .map(({ route, reports }) => {
-      const errors = reports.filter(r => r.error?.length).length
-      const warnings = reports.filter(r => r.warning?.length).length
-
-      const statusClass = errors > 0 ? 'status-error' : warnings > 0 ? 'status-warning' : 'status-valid'
-      const statusString = [
-        errors > 0 ? `${errors} error${errors > 1 ? 's' : ''}` : false,
-        warnings > 0 ? `${warnings} warning${warnings > 1 ? 's' : ''}` : false,
-      ].filter(Boolean).join(', ')
-
-      const reportsHtml = reports
-        .filter(r => r.error?.length || r.warning?.length)
-        .map((r) => {
-          const hasErrors = r.error?.length > 0
-          const hasWarnings = r.warning?.length > 0
-          const linkClass = hasErrors ? 'link-error' : hasWarnings ? 'link-warning' : 'link-valid'
-
-          const errors = r.error?.map(error =>
-            `<li class="error">
-              <span class="error-icon" aria-hidden="true">✖</span>
-              <span class="error-message">${error.message}</span>
-              <span class="error-type">${error.name}</span>
-              ${error.fix ? `<div class="fix-suggestion"><span class="fix-label">Suggestion:</span> ${error.fixDescription}</div>` : ''}
-            </li>`,
-          ) || []
-
-          const warnings = r.warning?.map(warning =>
-            `<li class="warning">
-              <span class="warning-icon" aria-hidden="true">⚠</span>
-              <span class="warning-message">${warning.message}</span>
-              <span class="warning-type">${warning.name}</span>
-              ${warning.fix ? `<div class="fix-suggestion"><span class="fix-label">Suggestion:</span> ${warning.fixDescription}</div>` : ''}
-            </li>`,
-          ) || []
-
-          return `
-          <div class="link-item ${linkClass}">
-            <div class="link-header">
-              <a href="${r.link}" class="link-url">${r.link}</a>
-              <div class="link-text">${r.textContent ? `"${r.textContent}"` : ''}</div>
-            </div>
-            ${(errors.length + warnings.length) > 0
-              ? `<ul class="issues-list">${[...errors, ...warnings].join('')}</ul>`
-              : '<div class="valid-message">Valid</div>'}
-          </div>`
-        })
-        .join('')
-
-      return `
-      <section id="route-${createAnchor(route)}" class="route-section ${statusClass}">
-        <h2 class="route-header">
-          <a href="${route}" class="route-link">${route}</a>
-          <span class="route-status">${statusString}</span>
-        </h2>
-        <div class="route-issues">
-          ${reportsHtml || '<div class="no-issues">No issues found</div>'}
-        </div>
-        <div class="back-to-top"><a href="#toc">↑ Back to Table of Contents</a></div>
-      </section>`
-    })
-    .join('')
-  // Add table of contents and styles for it
-  const tableOfContents = `
-      <h2>Table of Contents</h2>
-    <div id="toc" class="table-of-contents">
-      <ul class="toc-list">
-        ${tocHtml || '<li>No issues found</li>'}
-      </ul>
-    </div>
-    `
-
-  const html = htmlTemplate
-    .replace('<!-- REPORT -->', `${reportMeta}\n${summary}\n${issueSummary}\n${tableOfContents}\n${reportHtml || '<div class="no-issues">All links are valid! 🎉</div>'}`)
-    .replaceAll('<!-- SiteName -->', `Link Report - ${useSiteConfig()?.name || ''}`)
-
-  await storage.setItem('link-checker-report.html', html)
-  return resolve(storageFilepath, 'link-checker-report.html')
 }
 
 async function generateMarkdownReport(reports: PathReport[], { storage, storageFilepath }: InspectionContext) {

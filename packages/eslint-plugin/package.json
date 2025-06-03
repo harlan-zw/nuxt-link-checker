@@ -10,7 +10,8 @@
     "directory": "packages/eslint-plugin"
   },
   "exports": {
-    ".": "./dist/index.mjs"
+    ".": "./dist/index.mjs",
+    "./rules": "./dist/rules/index.mjs"
   },
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
@@ -28,10 +29,9 @@
     "vue-router": "^4.5.0"
   },
   "dependencies": {
-    "@html-eslint/eslint-plugin": "^0.38.1",
-    "@html-eslint/parser": "^0.38.0",
-    "@typescript-eslint/types": "^8.29.0",
-    "@typescript-eslint/utils": "^8.29.0",
+    "@html-eslint/eslint-plugin": "^0.41.0",
+    "@html-eslint/parser": "^0.41.0",
+    "@typescript-eslint/types": "^8.33.1",
     "defu": "^6.1.4",
     "eslint-plugin-vuejs-accessibility": "^2.4.1",
     "fuse.js": "^7.1.0",

@@ -2,10 +2,10 @@ import type { useRoute } from '#imports'
 import type { NuxtDevtoolsIframeClient } from '@nuxt/devtools-kit/types'
 import type { NuxtApp } from 'nuxt/app'
 import type { UnwrapRef } from 'vue'
-import type { LinkInspectionResult, NuxtLinkCheckerClient } from '../../../types'
+import type { NuxtLinkCheckerClient } from '../../../types'
 import { useRuntimeConfig } from '#imports'
 import { useLocalStorage } from '@vueuse/core'
-import { computed, createApp, h, ref, shallowReactive, unref } from 'vue'
+import { computed, createApp, h, ref, shallowReactive } from 'vue'
 import { createFilter } from '../../../shared/sharedUtils'
 import Main from './Main.vue'
 import { linkDb } from './state'
@@ -33,13 +33,13 @@ function resolvePathsForEl(el: Element): string[] {
 }
 
 export async function setupLinkCheckerClient({ nuxt, route }: { nuxt: NuxtApp, route: ReturnType<typeof useRoute> }) {
-  let queue: { link: string, paths: string[], textContent: string, role: string }[] = []
+  const queue: { link: string, paths: string[], textContent: string, role: string }[] = []
   let queueWorkerTimer: any
   const inspectionEls = ref<UnwrapRef<NuxtLinkCheckerClient['inspectionEls']>>([])
   const highlightedLink = ref<string | null>(null)
   const visibleLinks = new Set<string>()
-  let lastIds: string[] = []
-  let elMap: Record<string, Element[]> = {}
+  const lastIds: string[] = []
+  const elMap: Record<string, Element[]> = {}
   let devtoolsClient: NuxtDevtoolsIframeClient | undefined
   let isOpeningDevtools = false
   let startQueueIdleId: number
@@ -54,95 +54,6 @@ export async function setupLinkCheckerClient({ nuxt, route }: { nuxt: NuxtApp, r
   const client: NuxtLinkCheckerClient = shallowReactive({
     isWorkingQueue: false,
     isStarted: false,
-    scanLinks() {
-      elMap = {}
-      visibleLinks.clear()
-      lastIds = [...new Set([...document.querySelectorAll('#__nuxt [id]')].map(el => el.id))]
-      ;[...document.querySelectorAll('#__nuxt a')]
-        .map(el => ({ el, link: el.getAttribute('href')! }))
-        .forEach(({ el, link }) => {
-          if (!link)
-            return
-          if (!filter(link))
-            return
-          visibleLinks.add(link)
-          elMap[link] = elMap[link] || []
-          if (elMap[link].includes(el))
-            return
-          elMap[link].push(el)
-          const paths = resolvePathsForEl(el)
-
-          const payload = linkDb.value[route.path]?.find(d => d.link === link)
-          // if we have a payload or its already queued, skip
-          if (payload || queue.find(q => q.link === link)) {
-            client.maybeAttachEls(payload)
-            return
-          }
-          queue.push({
-            link: link!,
-            role: el.getAttribute('role') || '',
-            textContent: (el.textContent || el.getAttribute('aria-label') || el.getAttribute('title') || '').trim(),
-            paths,
-          })
-        })
-      client.broadcast('updated')
-    },
-    startQueueWorker() {
-      client.stopQueueWorker()
-      async function workQueue() {
-        if (queue.length <= 0) {
-          client.stopQueueWorker()
-          return
-        }
-        // we want to pop the next 50 items in the queue and inspect them
-        const tasks = []
-        while (tasks.length < 50 && queue.length > 0)
-          tasks.push(queue.pop())
-        if (!tasks.length) {
-          client.stopQueueWorker()
-          return
-        }
-        client.isWorkingQueue = true
-        linkDb.value[route.path] = linkDb.value[route.path] || []
-        // create a fetch for the tasks
-        const payloads = await $fetch('/__link-checker__/inspect', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: {
-            tasks,
-            ids: lastIds,
-            path: route.path,
-          },
-        })
-        payloads.forEach((payload: LinkInspectionResult) => {
-          if (!payload)
-            return
-          linkDb.value[route.path].push(payload)
-          client.maybeAttachEls(payload)
-        })
-        client.broadcast('queueWorking', { queueLength: queue.length })
-        queueWorkerTimer = setTimeout(workQueue, 200)
-      }
-      workQueue()
-    },
-    maybeAttachEls(payload?: LinkInspectionResult) {
-      // must not pass
-      if (!payload || payload.passes)
-        return
-      const els = elMap?.[payload.link] || []
-      for (const el of els)
-        client.inspectionEls.value.push({ ...unref(payload), el })
-    },
-    stopQueueWorker() {
-      if (client.isWorkingQueue) {
-        queue = []
-        client.isWorkingQueue = false
-        if (queueWorkerTimer)
-          clearInterval(queueWorkerTimer)
-      }
-    },
     broadcast(event: string, payload?: any) {
       if (!import.meta.hot) {
         console.warn('No hot context')

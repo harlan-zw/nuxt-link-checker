@@ -1,5 +1,4 @@
 import type { Nitro } from 'nitropack'
-import type { createESLintWorker } from 'nuxt-analyze-eslint-worker/controller'
 import type { Nuxt } from 'nuxt/schema'
 import type { ExtractedPayload, InspectionContext, PathReport } from './build/report'
 import type { ModuleOptions } from './module'
@@ -12,42 +11,52 @@ import Fuse from 'fuse.js'
 import { useSiteConfig } from 'nuxt-site-config/kit'
 import { resolve } from 'pathe'
 import { withoutLeadingSlash } from 'ufo'
-import { ELEMENT_NODE, parse, walkSync } from 'ultrahtml'
+import { ELEMENT_NODE, parse, TEXT_NODE, walkSync } from 'ultrahtml'
 import { createStorage } from 'unstorage'
 import fsDriver from 'unstorage/drivers/fs'
-import { runParallel } from './build/util'
 import { getLinkResponse, setLinkResponse } from './runtime/shared/crawl'
 import { createFilter } from './runtime/shared/sharedUtils'
+import { runParallel } from './util'
 
 const { gray, yellow, dim, red, white } = colors
 
 const linkMap: Record<string, ExtractedPayload> = {}
 
-export async function extractPayload(html: string, rootNodeId = '#__nuxt'): Promise<ExtractedPayload> {
-  if (String(rootNodeId).length) {
-    rootNodeId = rootNodeId[0] === '#' ? rootNodeId : `#${rootNodeId}`
-  }
-
-  const ast = parse(html
+export async function computeHtmlMetaPayload(html: string): Promise<ExtractedPayload> {
+  const cleanedHtml = html
     // vue template comments that cause issues
     .replaceAll('<!--]-->', '')
     .replaceAll('<!--[-->', '')
     .replaceAll('<!---->', '')
     // ultrahtml can't pass this (from tailwind)
-    .replaceAll('&amp;>', '&amp;&gt;'),
-  )
+    .replaceAll('&amp;>', '&amp;&gt;')
+
+  const ast = parse(cleanedHtml)
   const meta = {}
   const ids: string[] = []
   const links: { role: string, link: string, textContent: string }[] = []
+  const images: { src: string, alt: string, width?: string, height?: string }[] = []
 
-  let enteredRoot = !rootNodeId
+  // Variables for text-HTML ratio calculation
+  const htmlSize = cleanedHtml.length
+  let bodyNode = null
+
+  let innerText = ''
+
+  // let enteredRoot = !rootNodeId
   walkSync(ast, (node) => {
-    if (node.attributes?.id === rootNodeId.substring(1)) {
-      enteredRoot = true
+    // if (node.attributes?.id === rootNodeId.substring(1)) {
+    //   enteredRoot = true
+    // }
+    // if (!enteredRoot) {
+    //   return
+    // }
+
+    // Find body node for text extraction
+    if (node.type === ELEMENT_NODE && node.name === 'body') {
+      bodyNode = node
     }
-    if (!enteredRoot) {
-      return
-    }
+
     // Extract title
     if (node.type === ELEMENT_NODE && node.name === 'title') {
       if (node.children && node.children.length > 0) {
@@ -61,6 +70,9 @@ export async function extractPayload(html: string, rootNodeId = '#__nuxt'): Prom
     // get og image
     if (node.type === ELEMENT_NODE && node.name === 'meta' && node.attributes?.property === 'og:image') {
       meta.ogImage = node.attributes.content || ''
+      images.push({
+        src: node.attributes.content,
+      })
     }
 
     // Extract IDs from elements inside rootNodeId
@@ -76,9 +88,49 @@ export async function extractPayload(html: string, rootNodeId = '#__nuxt'): Prom
         textContent: getTextContent(node),
       })
     }
+
+    // Extract images
+    if (node.type === ELEMENT_NODE && (node.name === 'img' || node.name === 'image')) {
+      if (node.attributes?.src) {
+        images.push({
+          src: node.attributes.src,
+          alt: node.attributes?.alt || '',
+          width: node.attributes?.width,
+          height: node.attributes?.height,
+        })
+      }
+    }
+
+    // Also grab picture source elements
+    if (node.type === ELEMENT_NODE && node.name === 'source' && node.attributes?.srcset) {
+      // We'll use the first srcset value as the src
+      const srcset = node.attributes.srcset.split(',')[0].trim().split(' ')[0]
+      if (srcset) {
+        images.push({
+          src: srcset,
+          alt: '', // sources don't have alt text
+          width: node.attributes?.width,
+          height: node.attributes?.height,
+        })
+      }
+    }
+
+    if (node.type === TEXT_NODE) {
+      innerText += node.value
+    }
   })
 
-  return { meta, ids, links } satisfies ExtractedPayload
+  const textContentSize = innerText.length
+  // round to 2 decimal places
+  const textHtmlRatio = Math.round((textContentSize / htmlSize) * 100) / 100
+
+  return {
+    ...meta,
+    ids,
+    links,
+    images,
+    textHtmlRatio,
+  } satisfies ExtractedPayload
 }
 
 // Helper function to get text content from node
@@ -108,7 +160,7 @@ export function isNuxtGenerate(nuxt: Nuxt = useNuxt()) {
   return nuxt.options._generate || nuxt.options.nitro.static || nuxt.options.nitro.preset === 'static'
 }
 
-async function lintHtmlFiles(filePaths: string[], eslintController: ReturnType<typeof createESLintWorker>) {
+async function lintHtmlFiles(filePaths: string[], eslintController: ReturnType<typeof createESLintWorkerPool>) {
   // Create a queue of files to process
   const fileQueue = new Set(filePaths)
   const results = []
@@ -137,7 +189,7 @@ async function lintHtmlFiles(filePaths: string[], eslintController: ReturnType<t
   return results
 }
 
-export function prerender(config: ModuleOptions, version?: string, eslintContainer: any, nuxt = useNuxt()) {
+export function prerender(config: ModuleOptions, version: string, nuxt = useNuxt()) {
   if (config.report?.publish) {
     // make paths non indexable using X-Robots-Tag
     nuxt.options.nitro.routeRules = nuxt.options.nitro.routeRules || {}
@@ -165,12 +217,12 @@ export function prerender(config: ModuleOptions, version?: string, eslintContain
     const generatedHtmlPaths = new Set<string>()
     const siteConfig = useSiteConfig()
     nitro.hooks.hook('prerender:init', () => {
-      eslintContainer.init()
+      // eslintContainer.init()
     })
     nitro.hooks.hook('prerender:generate', async (ctx) => {
       const route = decodeURI(ctx.route)
       if (ctx.contents && !ctx.error && ctx.fileName?.endsWith('.html') && !route.endsWith('.html') && urlFilter(route)) {
-        linkMap[route] = await extractPayload(ctx.contents, nuxt.options.app.rootAttrs?.id || '')
+        linkMap[route] = await computeHtmlMetaPayload(ctx.contents, nuxt.options.app.rootAttrs?.id || '')
         if (ctx.fileName) {
           generatedHtmlPaths.add(join(nitro.options.output.publicDir, ctx.fileName))
         }
@@ -188,13 +240,13 @@ export function prerender(config: ModuleOptions, version?: string, eslintContain
       // if (!payloads?.length)
       //   return
       //
-      const { storage, storageFilepath } = createNuxtAuditStorage(config, nuxt, nitro)
-      // const pageSearcher = createPageSearcher(payloads)
-
-      nitro.logger.info('Running link inspections...')
-
-      const res = await lintHtmlFiles(Array.from(generatedHtmlPaths), eslintContainer.controller)
-      await storage.setItem('eslint-results.json', JSON.stringify(res, null, 2))
+      // const { storage, storageFilepath } = createNuxtAuditStorage(config, nuxt, nitro)
+      // // const pageSearcher = createPageSearcher(payloads)
+      //
+      // nitro.logger.info('Running link inspections...')
+      //
+      // const res = await lintHtmlFiles(Array.from(generatedHtmlPaths), eslintContainer.controller)
+      // await storage.setItem('eslint-results.json', JSON.stringify(res, null, 2))
 
       // TODO write eslint rules ...
       // console.log(payloads)
@@ -230,7 +282,8 @@ export function prerender(config: ModuleOptions, version?: string, eslintContain
       //   nitro.logger.log(gray('You can disable this by setting "linkChecker: { failOnError: false }" in your nuxt.config.'))
       //   process.exit(1)
       // }
-      eslint?.terminate()
+      // eslint?.terminate()
+      // eslintContainer.controller.terminate()
     })
   })
 }

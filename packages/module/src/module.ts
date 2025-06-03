@@ -2,20 +2,17 @@ import type { NuxtPage } from '@nuxt/schema'
 import type { CreateStorageOptions } from 'unstorage'
 import {
   addPlugin,
-  addServerHandler,
   createResolver,
   defineNuxtModule,
   extendPages,
   hasNuxtModule,
   hasNuxtModuleCompatibility,
-  resolveModule,
   useLogger,
 } from '@nuxt/kit'
 import { installNuxtSiteConfig } from 'nuxt-site-config/kit'
-import { dirname } from 'pathe'
 import { readPackageJSON } from 'pkg-types'
 import { provider } from 'std-env'
-import { setupDevToolsUI } from './devtools'
+import { setupDevToolsUI } from './devtools/devtools'
 import { setupEslint } from './eslint'
 import { prerender } from './prerender'
 import { crawlFetch } from './runtime/shared/crawl'
@@ -86,13 +83,6 @@ export interface ModuleOptions {
    */
   fetchRemoteUrls: boolean
   /**
-   * Enable when your nuxt/content files match your pages. This will automatically detect link sources
-   * for the current page.
-   *
-   * This is the same behavior to using `nuxt/content` with `documentDriven: true`.
-   */
-  strictNuxtContentPaths: boolean
-  /**
    * Whether the module is enabled.
    *
    * @default true
@@ -120,7 +110,6 @@ export default defineNuxtModule<ModuleOptions>({
   },
   defaults(nuxt) {
     return {
-      strictNuxtContentPaths: false,
       fetchRemoteUrls: nuxt.options._build && provider !== 'stackblitz',
       runOnBuild: true,
       debug: false,
@@ -144,7 +133,20 @@ export default defineNuxtModule<ModuleOptions>({
 
     await installNuxtSiteConfig()
 
-    const eslintContainer = await setupEslint()
+    config.nuxtAnalyzeCliPath = import.meta.filename.endsWith('.ts') ? resolve('./cli/index.ts') : resolve('../bin/cli.mjs')
+    console.log({ nuxtAnalyzeCliPath: config.nuxtAnalyzeCliPath })
+
+    await setupEslint()
+
+    if (import.meta.env.NUXT_ANALYZE_SUBPROCESS) {
+      // force prerendering off
+      nuxt.options.nitro.prerender = {
+        routes: [],
+        crawlLinks: false,
+      }
+      // force node server preset
+      // nuxt.options.nitro.preset = 'node-server'
+    }
 
     if (config.fetchRemoteUrls) {
       const { status } = (await crawlFetch('https://nuxtseo.com/robots.txt').catch(() => ({ status: 404 })))
@@ -158,18 +160,6 @@ export default defineNuxtModule<ModuleOptions>({
       addPlugin({
         src: resolve('./runtime/app/plugins/ui.client'),
         mode: 'client',
-      })
-      addServerHandler({
-        route: '/__link-checker__/inspect',
-        handler: resolve('./runtime/server/routes/__link-checker__/inspect'),
-      })
-      addServerHandler({
-        route: '/__link-checker__/links',
-        handler: resolve('./runtime/server/routes/__link-checker__/links'),
-      })
-      addServerHandler({
-        route: '/__link-checker__/debug.json',
-        handler: resolve('./runtime/server/routes/__link-checker__/debug'),
       })
       const pagePromise = new Promise<NuxtPage[]>((_resolve) => {
         extendPages((pages) => {
@@ -187,21 +177,10 @@ export default defineNuxtModule<ModuleOptions>({
         //  @ts-expect-error runtime
         && nuxt.options.sitemap?.enabled !== false
       nuxt.options.nitro.alias = nuxt.options.nitro.alias || {}
-      const usingNuxtContent = hasNuxtModule('@nuxt/content')
-      const isNuxtContentV3 = usingNuxtContent && await hasNuxtModuleCompatibility('@nuxt/content', '^3')
-      if (usingNuxtContent) {
-        if (isNuxtContentV3) {
-          nuxt.options.nitro.alias['#link-checker/content-provider'] = resolve('./runtime/server/providers/content-v3')
-          nuxt.options.alias['#sitemap/content-v3-nitro-path'] = resolve(dirname(resolveModule('@nuxt/content')), 'runtime/nitro')
-        }
-        else {
-          nuxt.options.nitro.alias['#link-checker/content-provider'] = resolve('./runtime/server/providers/content-v2')
-        }
-      }
-      else {
-        nuxt.options.nitro.alias['#link-checker/content-provider'] = resolve('./runtime/server/providers/noop')
-      }
       nuxt.options.alias['#link-checker'] = resolve('./runtime')
+      nuxt.options.runtimeConfig.nuxtAnalyze = {
+        storageDir: resolve(nuxt.options.rootDir, `.data/analyze`),
+      }
       nuxt.options.runtimeConfig.public['nuxt-link-checker'] = {
         version,
         hasSitemapModule,
@@ -212,11 +191,11 @@ export default defineNuxtModule<ModuleOptions>({
         showLiveInspections: config.showLiveInspections,
         fetchRemoteUrls: config.fetchRemoteUrls,
       }
-      setupDevToolsUI(config, resolve, eslintContainer)
+      await setupDevToolsUI(config, resolve)
     }
 
     if (config.runOnBuild) {
-      prerender(config, version, eslintContainer)
+      prerender(config, version)
     }
   },
 })

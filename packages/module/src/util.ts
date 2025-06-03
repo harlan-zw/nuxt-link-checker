@@ -39,3 +39,5 @@ export function useNitro(nuxt: Nuxt = useNuxt()) {
     })
   })
 }
+
+export { runParallel } from './lib/concurrency'

@@ -2,13 +2,11 @@ import { resolve } from 'node:path'
 import { startSubprocess } from '@nuxt/devtools-kit'
 import { defineNuxtModule } from '@nuxt/kit'
 import { defineNuxtConfig } from 'nuxt/config'
+import Module from '../packages/module/src/module'
 
 export default defineNuxtConfig({
   modules: [
-    'nuxt-link-checker',
-    '@nuxtjs/sitemap',
-    '@nuxt/content',
-    '@nuxt/eslint',
+    Module,
     '@nuxt/ui',
 
     /**
@@ -64,20 +62,8 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
-    // redirect: {
-    //   redirect: '/valid',
-    // },
-  },
-
-  linkChecker: {
-    excludeLinks: ['/ignored'],
-    skipInspections: ['missing-hash'],
-    debug: true,
-    report: {
-      html: true,
-      markdown: true,
-      json: true,
-      publish: true,
+    redirect: {
+      redirect: '/redirected',
     },
   },
 
