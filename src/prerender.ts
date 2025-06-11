@@ -97,7 +97,7 @@ function getTextContent(node: any): string {
 }
 
 export function isNuxtGenerate(nuxt: Nuxt = useNuxt()) {
-  return nuxt.options.nitro.static || (nuxt.options as any)._generate /* TODO: remove in future */ || nuxt.options.nitro.static || nuxt.options.nitro.preset === 'static'
+  return (nuxt.options as any)._generate /* TODO: remove in future */ || nuxt.options.nitro.static || nuxt.options.nitro.preset === 'static'
 }
 
 export function prerender(config: ModuleOptions, version?: string, nuxt = useNuxt()) {
