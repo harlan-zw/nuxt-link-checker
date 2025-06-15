@@ -90,7 +90,8 @@
     "execa": "^9.6.0",
     "nuxt": "^3.17.5",
     "typescript": "5.8.3",
-    "vitest": "^3.2.3"
+    "vitest": "^3.2.3",
+    "vue-tsc": "^2.2.10"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
