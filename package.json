@@ -84,6 +84,7 @@
     "@nuxtjs/eslint-config-typescript": "^12.1.0",
     "@nuxtjs/sitemap": "^7.4.0",
     "@types/diff": "^8.0.0",
+    "better-sqlite3": "^11.10.0",
     "bumpp": "^10.1.1",
     "eslint": "^9.29.0",
     "execa": "^9.6.0",
