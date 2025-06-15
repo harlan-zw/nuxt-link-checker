@@ -1,15 +1,7 @@
-import { defineVitestConfig } from '@nuxt/test-utils/config'
-/// <reference types="vitest" />
-/// <reference types="vitest/globals" />
-import { isCI } from 'std-env'
+import { defineConfig } from 'vitest/config'
 
-export default defineVitestConfig({
+export default defineConfig({
   test: {
-    poolOptions: {
-      threads: {
-        singleThread: !isCI,
-      },
-    },
     testTimeout: 60000,
   },
 })
