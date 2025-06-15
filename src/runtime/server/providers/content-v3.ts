@@ -1,7 +1,6 @@
 import type { H3Event } from 'h3'
 // @ts-expect-error alias
 import manifest from '#content/manifest'
-// @ts-expect-error alias
 import { queryCollection } from '@nuxt/content/nitro'
 
 export default async (e: H3Event) => {

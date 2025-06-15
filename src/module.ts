@@ -188,8 +188,11 @@ export default defineNuxtModule<ModuleOptions>({
       const isNuxtContentV3 = usingNuxtContent && await hasNuxtModuleCompatibility('@nuxt/content', '^3')
       if (usingNuxtContent) {
         if (isNuxtContentV3) {
+          if (await hasNuxtModuleCompatibility('@nuxt/content', '<3.6.0')) {
+            nuxt.options.alias['@nuxt/content/nitro'] = resolve('./runtime/server/content-compat')
+            nuxt.options.alias['#link-checker/content-v3-nitro-path'] = resolve(dirname(resolveModule('@nuxt/content')), 'runtime/nitro')
+          }
           nuxt.options.nitro.alias['#link-checker/content-provider'] = resolve('./runtime/server/providers/content-v3')
-          nuxt.options.alias['#sitemap/content-v3-nitro-path'] = resolve(dirname(resolveModule('@nuxt/content')), 'runtime/nitro')
         }
         else {
           nuxt.options.nitro.alias['#link-checker/content-provider'] = resolve('./runtime/server/providers/content-v2')
