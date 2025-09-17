@@ -117,6 +117,19 @@ export default defineNuxtModule<ModuleOptions>({
     },
     configKey: 'linkChecker',
   },
+  moduleDependencies: {
+    'nuxt-site-config': {
+      version: '>=3',
+    },
+    '@nuxt/content': {
+      version: '>=2',
+      optional: true,
+    },
+    '@nuxtjs/sitemap': {
+      version: '>=7',
+      optional: true,
+    },
+  },
   defaults(nuxt) {
     return {
       strictNuxtContentPaths: false,
