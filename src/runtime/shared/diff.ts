@@ -58,7 +58,7 @@ export async function generateFileLinkPreviews(filepath: string, link: string) {
     lang = 'vue'
   lruFsCache.set(filepath, contents)
   if (lruFsCache.size > 100)
-    lruFsCache.delete(lruFsCache.keys().next().value)
+    lruFsCache.delete(lruFsCache.keys().next().value!)
   return { previews, lang, filepath }
 }
 
@@ -66,7 +66,7 @@ export async function generateFileLinkDiff(filepath: string, original: string, r
   const contents = lruFsCache.has(filepath) ? lruFsCache.get(filepath)! : await readFile(filepath, 'utf8')
   lruFsCache.set(filepath, contents)
   if (lruFsCache.size > 100)
-    lruFsCache.delete(lruFsCache.keys().next().value)
+    lruFsCache.delete(lruFsCache.keys().next().value!)
   return {
     ...generateLinkDiff(contents, original, replacement),
     filepath,

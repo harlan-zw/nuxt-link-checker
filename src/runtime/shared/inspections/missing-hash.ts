@@ -8,10 +8,12 @@ export default function RuleMissingHash() {
     id: 'missing-hash',
     test({ link, report, ids, fromPath }) {
       const [path, hash] = link.split('#')
+      if (!path)
+        return
       if (!link.includes('#') || link.endsWith('#top') || fixSlashes(false, path) !== fromPath)
         return
 
-      if (ids.includes(hash))
+      if (!hash || ids.includes(hash))
         return
 
       const fuse = new Fuse(ids, {

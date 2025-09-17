@@ -1,9 +1,9 @@
-import { defineCachedEventHandler, useRuntimeConfig } from '#imports'
+import { useRuntimeConfig } from '#imports'
 // @ts-expect-error untyped
 import contentLinkProvider from '#link-checker/content-provider'
-
 // @ts-expect-error untyped
 import pagePaths from '#nuxt-link-checker-sitemap/pages.mjs'
+import { defineCachedEventHandler } from 'nitropack/runtime'
 
 export default defineCachedEventHandler(async (e) => {
   const runtimeConfig = useRuntimeConfig().public['nuxt-link-checker'] || {} as any

@@ -42,7 +42,7 @@ export async function getResolvedLinkResponses() {
   // wait for all responses to resolve
   const data: Record<string, LinkResponse> = {}
   for (const link in responses) {
-    data[link] = await responses[link]
+    data[link] = await responses[link]!
   }
   return data
 }
@@ -75,11 +75,11 @@ export async function crawlFetch(link: string, options: { timeout?: number, base
       if (res.headers) {
         // If headers is a Headers object with entries method
         if (typeof res.headers.entries === 'function') {
-          headersObj = Object.fromEntries(Array.from(res.headers.entries()))
+          headersObj = Object.fromEntries(Array.from(res.headers.entries())) as Record<string, string>
         }
         // If headers is already a plain object
         else if (typeof res.headers === 'object') {
-          headersObj = { ...res.headers }
+          headersObj = { ...res.headers } as any as Record<string, string>
         }
       }
       return { status: res.status, statusText: res.statusText, headers: headersObj, time: Date.now() - start }

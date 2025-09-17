@@ -74,7 +74,7 @@ export default defineEventHandler(async (e) => {
           const [filepath] = p.split(':')
           return filepath
         }),
-      ].filter(Boolean)
+      ].filter(Boolean) as string[]
       if (!result.passes) {
         result.sources = (await Promise.all(filePaths.map(async filepath => await generateFileLinkPreviews(filepath, link))))
           .filter(s => s.previews.length)

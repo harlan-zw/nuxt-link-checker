@@ -105,7 +105,7 @@ export async function setupLinkCheckerClient({ nuxt, route }: { nuxt: NuxtApp, r
         client.isWorkingQueue = true
         linkDb.value[route.path] = linkDb.value[route.path] || []
         // create a fetch for the tasks
-        const payloads = await $fetch('/__link-checker__/inspect', {
+        const payloads = await $fetch<any[]>('/__link-checker__/inspect', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -119,7 +119,7 @@ export async function setupLinkCheckerClient({ nuxt, route }: { nuxt: NuxtApp, r
         payloads.forEach((payload: LinkInspectionResult) => {
           if (!payload)
             return
-          linkDb.value[route.path].push(payload)
+          linkDb.value[route.path]!.push(payload)
           client.maybeAttachEls(payload)
         })
         client.broadcast('queueWorking', { queueLength: queue.length })
