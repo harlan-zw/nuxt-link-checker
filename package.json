@@ -51,6 +51,7 @@
     "play:dev": "nuxi dev playground",
     "play:prod": "npm run build && nuxi dev playground",
     "release": "pnpm build && bumpp && pnpm -r publish",
+    "release": "pnpm build && bumpp -x \"npx changelogen --output=CHANGELOG.md\"",
     "lint": "eslint . --fix",
     "test": "vitest run",
     "test:types": "npx nuxi typecheck",
