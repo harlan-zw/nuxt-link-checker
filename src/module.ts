@@ -113,7 +113,6 @@ export default defineNuxtModule<ModuleOptions>({
     name: 'nuxt-link-checker',
     compatibility: {
       nuxt: '>=3.9.0',
-      bridge: false,
     },
     configKey: 'linkChecker',
   },
@@ -133,7 +132,7 @@ export default defineNuxtModule<ModuleOptions>({
   defaults(nuxt) {
     return {
       strictNuxtContentPaths: false,
-      fetchRemoteUrls: nuxt.options._build && provider !== 'stackblitz',
+      fetchRemoteUrls: (!nuxt.options._prepare && !nuxt.options.dev) && provider !== 'stackblitz',
       runOnBuild: true,
       debug: false,
       showLiveInspections: false,
