@@ -5,7 +5,7 @@ import { defineNuxtConfig } from 'nuxt/config'
 
 export default defineNuxtConfig({
   modules: [
-    'nuxt-link-checker',
+    '../src/module',
     '@nuxtjs/sitemap',
     '@nuxt/content',
 
