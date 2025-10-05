@@ -155,11 +155,11 @@ export default defineNuxtModule<ModuleOptions>({
 
     await installNuxtSiteConfig()
 
-    if (config.fetchRemoteUrls) {
-      const { status } = (await crawlFetch('https://nuxtseo.com/robots.txt').catch(() => ({ status: 404 })))
+    if (nuxt.options.dev && !nuxt.options._prepare && config.fetchRemoteUrls) {
+      const { status } = (await crawlFetch('https://nuxtseo.com/robots.txt', { timeout: 400 }).catch(() => ({ status: 404 })))
       config.fetchRemoteUrls = status < 400
       if (!config.fetchRemoteUrls)
-        logger.warn('Remote URL fetching is disabled because you appear to be offline.')
+        logger.warn('Remote URL fetching is disabled because you appear to be offline. Set `fetchRemoteUrls: false` to avoid this warning.')
     }
 
     const isDevToolsEnabled = typeof nuxt.options.devtools === 'boolean' ? nuxt.options.devtools : nuxt.options.devtools.enabled
