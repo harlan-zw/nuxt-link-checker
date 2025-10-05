@@ -132,7 +132,7 @@ export default defineNuxtModule<ModuleOptions>({
   defaults(nuxt) {
     return {
       strictNuxtContentPaths: false,
-      fetchRemoteUrls: (!nuxt.options._prepare && !nuxt.options.dev) && provider !== 'stackblitz',
+      fetchRemoteUrls: false,
       runOnBuild: true,
       debug: false,
       showLiveInspections: false,
@@ -155,7 +155,7 @@ export default defineNuxtModule<ModuleOptions>({
 
     await installNuxtSiteConfig()
 
-    if (nuxt.options.dev && !nuxt.options._prepare && config.fetchRemoteUrls) {
+    if (!nuxt.options._prepare && config.fetchRemoteUrls) {
       const { status } = (await crawlFetch('https://nuxtseo.com/robots.txt', { timeout: 400 }).catch(() => ({ status: 404 })))
       config.fetchRemoteUrls = status < 400
       if (!config.fetchRemoteUrls)
