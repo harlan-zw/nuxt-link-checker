@@ -1,5 +1,6 @@
 import type { NuxtPage } from '@nuxt/schema'
 import type { CreateStorageOptions } from 'unstorage'
+import { existsSync } from 'node:fs'
 import {
   addPlugin,
   addServerHandler,
@@ -14,7 +15,6 @@ import {
 import { installNuxtSiteConfig } from 'nuxt-site-config/kit'
 import { dirname } from 'pathe'
 import { readPackageJSON } from 'pkg-types'
-import { provider } from 'std-env'
 import { setupDevToolsUI } from './devtools'
 import { prerender } from './prerender'
 import { crawlFetch } from './runtime/shared/crawl'
@@ -129,7 +129,7 @@ export default defineNuxtModule<ModuleOptions>({
       optional: true,
     },
   },
-  defaults(nuxt) {
+  defaults() {
     return {
       strictNuxtContentPaths: false,
       fetchRemoteUrls: false,
@@ -180,11 +180,14 @@ export default defineNuxtModule<ModuleOptions>({
         route: '/__link-checker__/debug.json',
         handler: resolve('./runtime/server/routes/__link-checker__/debug'),
       })
-      const pagePromise = new Promise<NuxtPage[]>((_resolve) => {
-        extendPages((pages) => {
-          _resolve(pages)
+      const pagesEnabled = existsSync(resolve(nuxt.options.srcDir, nuxt.options.dir.pages)) || nuxt.options.pages
+      const pagePromise = pagesEnabled
+        ? new Promise<NuxtPage[]>((_resolve) => {
+          extendPages((pages) => {
+            _resolve(pages)
+          })
         })
-      })
+        : Promise.resolve([])
       nuxt.hooks.hook('nitro:config', (nitroConfig) => {
         // @ts-expect-error runtime types
         nitroConfig.virtual['#nuxt-link-checker-sitemap/pages.mjs'] = async () => {
