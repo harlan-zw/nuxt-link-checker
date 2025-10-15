@@ -2,7 +2,7 @@
   "name": "nuxt-link-checker",
   "type": "module",
   "version": "4.3.5",
-  "packageManager": "pnpm@10.18.2",
+  "packageManager": "pnpm@10.18.3",
   "description": "Find and magically fix links that may be negatively effecting your Nuxt sites SEO.",
   "author": {
     "name": "Harlan Wilton",
@@ -71,13 +71,13 @@
     "pkg-types": "^2.3.0",
     "radix3": "^1.1.2",
     "sirv": "^3.0.2",
-    "std-env": "^3.9.0",
+    "std-env": "^3.10.0",
     "ufo": "^1.6.1",
     "ultrahtml": "^1.6.0",
     "unstorage": "^1.17.1"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^5.4.1",
+    "@antfu/eslint-config": "^6.0.0",
     "@nuxt/content": "^3.7.1",
     "@nuxt/devtools": "^2.6.5",
     "@nuxt/module-builder": "^1.0.2",
