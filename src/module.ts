@@ -35,8 +35,25 @@ export interface ModuleOptions {
   fetchTimeout: number
   /**
    * Links to ignore when running inspections.
+   *
+   * Supports:
+   * - Exact matches: `/about`
+   * - Wildcards: `/admin/**`, `/api/*`
+   * - RegExp patterns: `/^\\/blog\\/\\d+$/`
+   *
+   * Uses radix3 route matching for string patterns.
+   *
+   * @example
+   * ```ts
+   * excludeLinks: [
+   *   '/admin/**',        // Exclude all admin routes
+   *   '/api/*',           // Exclude direct /api children
+   *   /^\/blog\/\d+$/,    // Exclude blog posts using regex
+   *   'https://example.com/**'  // Exclude external domain
+   * ]
+   * ```
    */
-  excludeLinks: string[]
+  excludeLinks: (string | RegExp)[]
   /**
    * Generate a report when using nuxt build` or `nuxt generate`.
    */
@@ -137,7 +154,10 @@ export default defineNuxtModule<ModuleOptions>({
       enabled: true,
       fetchTimeout: 10000,
       failOnError: false,
-      excludeLinks: [],
+      excludeLinks: [
+        // ignore all links starting with /_** using regex
+        /^\/_.*$/,
+      ],
       skipInspections: [],
     }
   },
