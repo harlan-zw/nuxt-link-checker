@@ -4,6 +4,8 @@ export default function RuleNoNonAsciiChars() {
   return defineRule({
     id: 'no-non-ascii-chars',
     test({ link, url, report }) {
+      if (link.startsWith('#'))
+        return
       // test path segments individually
       function test(s: string) {
         // use regex to detect non-ascii chars

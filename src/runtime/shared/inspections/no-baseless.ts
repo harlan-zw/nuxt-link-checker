@@ -5,7 +5,7 @@ export default function RuleNoDocumentRelative() {
   return defineRule({
     id: 'no-baseless', // TODO rename to no-document-relative
     test({ link, fromPath, report }) {
-      if (link.startsWith('/') || link.startsWith('http') || isNonFetchableLink(link))
+      if (link.startsWith('#') || link.startsWith('/') || link.startsWith('http') || isNonFetchableLink(link))
         return
 
       report({

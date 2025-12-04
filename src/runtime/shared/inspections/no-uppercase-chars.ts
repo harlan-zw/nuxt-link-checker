@@ -4,6 +4,8 @@ export default function RuleNoUppercaseChars() {
   return defineRule({
     id: 'no-uppercase-chars',
     test({ report, link }) {
+      if (link.startsWith('#'))
+        return
       if (link.match(/[A-Z]/)) {
         report({
           name: 'no-uppercase-chars',
