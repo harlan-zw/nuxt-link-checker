@@ -255,11 +255,28 @@ async function generateHtmlReport(reports: PathReport[], {
 }
 
 async function generateMarkdownReport(reports: PathReport[], { storage, storageFilepath }: InspectionContext) {
+  // Sort reports like a file tree (parents before children, alphabetically at each level)
+  const sortedReports = [...reports].sort((a, b) => {
+    const segmentsA = a.route.split('/').filter(Boolean)
+    const segmentsB = b.route.split('/').filter(Boolean)
+    const minLength = Math.min(segmentsA.length, segmentsB.length)
+
+    // Compare segment by segment
+    for (let i = 0; i < minLength; i++) {
+      const cmp = segmentsA[i].localeCompare(segmentsB[i])
+      if (cmp !== 0)
+        return cmp
+    }
+
+    // If all segments match, shorter path comes first
+    return segmentsA.length - segmentsB.length
+  })
+
   // Create document header with timestamp and summary
   const timestamp = new Date().toLocaleString()
-  const totalErrors = reports.reduce((sum, { reports }) =>
+  const totalErrors = sortedReports.reduce((sum, { reports }) =>
     sum + reports.filter(r => r.error?.length).length, 0)
-  const totalWarnings = reports.reduce((sum, { reports }) =>
+  const totalWarnings = sortedReports.reduce((sum, { reports }) =>
     sum + reports.filter(r => r.warning?.length).length, 0)
 
   const header = [
@@ -269,7 +286,7 @@ async function generateMarkdownReport(reports: PathReport[], { storage, storageF
     '',
     '## Summary',
     '',
-    `- **Pages checked:** ${reports.length}`,
+    `- **Pages checked:** ${sortedReports.length}`,
     `- **Total errors:** ${totalErrors}`,
     `- **Total warnings:** ${totalWarnings}`,
     '',
@@ -278,8 +295,8 @@ async function generateMarkdownReport(reports: PathReport[], { storage, storageF
   ].join('\n')
 
   // Table of contents for quick navigation
-  const toc = reports.map(({ route }) => `- [${route}](#${createAnchor(route)})`).join('\n')
-  const reportMarkdown = reports
+  const toc = sortedReports.map(({ route }) => `- [${route}](#${createAnchor(route)})`).join('\n')
+  const reportMarkdown = sortedReports
     .map(({ route, reports }) => {
       const errors = reports.filter(r => r.error?.length).length
       const warnings = reports.filter(r => r.warning?.length).length
