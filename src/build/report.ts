@@ -408,7 +408,14 @@ function truncateString(str: string, maxLength: number): string {
 }
 
 async function generateJsonReport(reports: PathReport[], { storage, storageFilepath }: InspectionContext) {
-  const json = JSON.stringify(reports, null, 2)
+  const filteredReports = reports
+    .map(report => ({
+      ...report,
+      reports: report.reports.filter(r => r.error?.length || r.warning?.length),
+    }))
+    .filter(report => report.reports.length > 0)
+
+  const json = JSON.stringify(filteredReports, null, 2)
   await storage.setItem('link-checker-report.json', json)
   return resolve(storageFilepath, 'link-checker-report.json')
 }
