@@ -567,38 +567,8 @@ describe('generate', () => {
 
       ## Table of Contents
 
-      - [/fix-test](#fix-test)
       - [/](#)
-
-      ---
-
-      ## ❌ [/fix-test](/fix-test) (4 errors, 2 warnings)
-
-      ### Link: [/abt](/abt)
-      > Link text: "page typo with magic fix"
-      #### Errors
-      - **no-error-response:** Should not respond with status code 404 (Page not found).
-        - *Suggestion:* Did you mean /about?
-      ### Link: [/404link/](/404link/)
-      > Link text: "404 links"
-      #### Errors
-      - **no-error-response:** Should not respond with status code 404 (Page not found).
-      #### Warnings
-      - **trailing-slash:** Should not have a trailing slash.
-        - *Suggestion:* Removing trailing slash.
-      ### Link: [javascript:history.back()](javascript:history.back())
-      > Link text: "javascript link"
-      #### Errors
-      - **no-javascript:** Should not use JavaScript
-      ### Link: [/completely-broken/](/completely-broken/)
-      > Link text: "error and warning"
-      #### Errors
-      - **no-error-response:** Should not respond with status code 404 (Page not found).
-      #### Warnings
-      - **trailing-slash:** Should not have a trailing slash.
-        - *Suggestion:* Removing trailing slash.
-
-      <div align="right"><a href="#nuxt-link-checker-report">↑ Back to top</a></div>
+      - [/fix-test](#fix-test)
 
       ---
 
@@ -674,6 +644,36 @@ describe('generate', () => {
       - **no-whitespace:** Links should not contain whitespace.
       - **no-baseless:** Links should be root relative.
         - *Suggestion:* Add base /.
+
+      <div align="right"><a href="#nuxt-link-checker-report">↑ Back to top</a></div>
+
+      ---
+
+      ## ❌ [/fix-test](/fix-test) (4 errors, 2 warnings)
+
+      ### Link: [/abt](/abt)
+      > Link text: "page typo with magic fix"
+      #### Errors
+      - **no-error-response:** Should not respond with status code 404 (Page not found).
+        - *Suggestion:* Did you mean /about?
+      ### Link: [/404link/](/404link/)
+      > Link text: "404 links"
+      #### Errors
+      - **no-error-response:** Should not respond with status code 404 (Page not found).
+      #### Warnings
+      - **trailing-slash:** Should not have a trailing slash.
+        - *Suggestion:* Removing trailing slash.
+      ### Link: [javascript:history.back()](javascript:history.back())
+      > Link text: "javascript link"
+      #### Errors
+      - **no-javascript:** Should not use JavaScript
+      ### Link: [/completely-broken/](/completely-broken/)
+      > Link text: "error and warning"
+      #### Errors
+      - **no-error-response:** Should not respond with status code 404 (Page not found).
+      #### Warnings
+      - **trailing-slash:** Should not have a trailing slash.
+        - *Suggestion:* Removing trailing slash.
 
       <div align="right"><a href="#nuxt-link-checker-report">↑ Back to top</a></div>
 
