@@ -30,35 +30,6 @@ describe('generate', () => {
           "route": "/fix-test",
           "reports": [
             {
-              "error": [],
-              "warning": [],
-              "fix": "/",
-              "link": "/",
-              "passes": true,
-              "textContent": "Nuxt nuxt-link-checker-playground"
-            },
-            {
-              "error": [],
-              "warning": [],
-              "fix": "/#anchor",
-              "link": "/#anchor",
-              "passes": true,
-              "textContent": "valid anchor"
-            },
-            {
-              "error": [],
-              "warning": [],
-              "fix": "/valid",
-              "link": "/valid",
-              "passes": true,
-              "textContent": "valid link"
-            },
-            {
-              "error": [],
-              "warning": [],
-              "link": "/ignored"
-            },
-            {
               "error": [
                 {
                   "name": "no-error-response",
@@ -73,14 +44,6 @@ describe('generate', () => {
               "link": "/abt",
               "passes": false,
               "textContent": "page typo with magic fix"
-            },
-            {
-              "error": [],
-              "warning": [],
-              "fix": "/#broken-anchor",
-              "link": "/#broken-anchor",
-              "passes": true,
-              "textContent": "broken anchor dd"
             },
             {
               "error": [
@@ -106,14 +69,6 @@ describe('generate', () => {
               "textContent": "404 links"
             },
             {
-              "error": [],
-              "warning": [],
-              "fix": "https://example.com/absolute",
-              "link": "https://example.com/absolute",
-              "passes": true,
-              "textContent": "absolute 404 link"
-            },
-            {
               "error": [
                 {
                   "name": "no-javascript",
@@ -127,14 +82,6 @@ describe('generate', () => {
               "link": "javascript:history.back()",
               "passes": false,
               "textContent": "javascript link"
-            },
-            {
-              "error": [],
-              "warning": [],
-              "fix": "/error",
-              "link": "/error",
-              "passes": true,
-              "textContent": "to an error page"
             },
             {
               "error": [
@@ -158,97 +105,12 @@ describe('generate', () => {
               "link": "/completely-broken/",
               "passes": false,
               "textContent": "error and warning"
-            },
-            {
-              "error": [],
-              "warning": [],
-              "fix": "/about",
-              "link": "/about",
-              "passes": true,
-              "textContent": "page typo with magic fix - AGAIN 123"
-            },
-            {
-              "error": [],
-              "warning": [],
-              "fix": "/trailingslash",
-              "link": "/trailingslash",
-              "passes": true,
-              "textContent": "trailing slash"
-            },
-            {
-              "error": [],
-              "warning": [],
-              "fix": "/redirected",
-              "link": "/redirected",
-              "passes": true,
-              "textContent": "redirect link"
-            },
-            {
-              "error": [],
-              "warning": [],
-              "fix": "/about",
-              "link": "/about",
-              "passes": true,
-              "textContent": "Absolute internal link"
             }
           ]
         },
         {
           "route": "/",
           "reports": [
-            {
-              "error": [],
-              "warning": [],
-              "fix": "/",
-              "link": "/",
-              "passes": true,
-              "textContent": "Nuxt nuxt-link-checker-playground"
-            },
-            {
-              "error": [],
-              "warning": [],
-              "fix": "/#anchor",
-              "link": "/#anchor",
-              "passes": true,
-              "textContent": "valid anchor"
-            },
-            {
-              "error": [],
-              "warning": [],
-              "fix": "/valid",
-              "link": "/valid",
-              "passes": true,
-              "textContent": "valid link"
-            },
-            {
-              "error": [],
-              "warning": [],
-              "fix": "/redirect",
-              "link": "/redirect",
-              "passes": true,
-              "textContent": "valid link to redirect"
-            },
-            {
-              "error": [],
-              "warning": [],
-              "link": "/ignored"
-            },
-            {
-              "error": [],
-              "warning": [],
-              "fix": "mailto:harlan@harlanzw.com",
-              "link": "mailto:harlan@harlanzw.com",
-              "passes": true,
-              "textContent": "mail to link"
-            },
-            {
-              "error": [],
-              "warning": [],
-              "fix": "/some-file.pdf",
-              "link": "/some-file.pdf",
-              "passes": true,
-              "textContent": "file link"
-            },
             {
               "error": [],
               "warning": [
@@ -264,11 +126,6 @@ describe('generate', () => {
               "link": "/about/Billy%20Bob",
               "passes": false,
               "textContent": "Dynamic Encoded Path"
-            },
-            {
-              "error": [],
-              "warning": [],
-              "link": ""
             },
             {
               "error": [],
@@ -385,14 +242,6 @@ describe('generate', () => {
               "textContent": "page typo with magic fix"
             },
             {
-              "error": [],
-              "warning": [],
-              "fix": "/#broken-anchor",
-              "link": "/#broken-anchor",
-              "passes": true,
-              "textContent": "broken anchor"
-            },
-            {
               "error": [
                 {
                   "name": "no-error-response",
@@ -405,14 +254,6 @@ describe('generate', () => {
               "link": "/404link",
               "passes": false,
               "textContent": "404 links"
-            },
-            {
-              "error": [],
-              "warning": [],
-              "fix": "https://example.com/absolute",
-              "link": "https://example.com/absolute",
-              "passes": true,
-              "textContent": "absolute 404 link"
             },
             {
               "error": [
@@ -428,14 +269,6 @@ describe('generate', () => {
               "link": "javascript:history.back()",
               "passes": false,
               "textContent": "javascript link"
-            },
-            {
-              "error": [],
-              "warning": [],
-              "fix": "/error",
-              "link": "/error",
-              "passes": true,
-              "textContent": "to an error page"
             },
             {
               "error": [
@@ -478,14 +311,6 @@ describe('generate', () => {
             },
             {
               "error": [],
-              "warning": [],
-              "fix": "https://nuxt.com/docs/",
-              "link": "https://nuxt.com/docs/",
-              "passes": true,
-              "textContent": "nuxt.com - remote URL"
-            },
-            {
-              "error": [],
               "warning": [
                 {
                   "name": "trailing-slash",
@@ -500,22 +325,6 @@ describe('generate', () => {
               "link": "/trailingslash/",
               "passes": false,
               "textContent": "trailing slash"
-            },
-            {
-              "error": [],
-              "warning": [],
-              "fix": "/redirect",
-              "link": "/redirect",
-              "passes": true,
-              "textContent": "redirect link"
-            },
-            {
-              "error": [],
-              "warning": [],
-              "fix": "https://nuxt-link-checker.com/about",
-              "link": "https://nuxt-link-checker.com/about",
-              "passes": true,
-              "textContent": "Absolute internal link"
             },
             {
               "error": [
