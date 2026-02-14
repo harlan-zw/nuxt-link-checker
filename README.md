@@ -37,6 +37,12 @@ Install `nuxt-link-checker` dependency to your project:
 npx nuxi@latest module add link-checker
 ```
 
+> [!TIP]
+> Generate an Agent Skill for this package using [skilld](https://github.com/harlan-zw/skilld):
+> ```bash
+> npx skilld add nuxt-link-checker
+> ```
+
 ## Documentation
 
 [📖 Read the full documentation](https://nuxtseo.com/link-checker/getting-started/installation) for more information.
