@@ -1,7 +1,6 @@
 import type { LinkInspectionResult } from '../../src/runtime/types'
 import { useStorage } from '@vueuse/core'
 import { ref } from 'vue'
-import { appFetch } from './rpc'
 
 export const linkDb = ref<LinkInspectionResult[]>([])
 export const showLiveInspections = useStorage<boolean>('nuxt-link-checker:show-live-inspections', true)

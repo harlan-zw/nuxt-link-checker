@@ -1,11 +1,9 @@
 import { resolve } from 'pathe'
 
 export default defineNuxtConfig({
-  ssr: false,
+  extends: ['nuxtseo-layer-devtools'],
 
-  modules: [
-    '@nuxt/devtools-ui-kit',
-  ],
+  linkChecker: false,
 
   nitro: {
     output: {
@@ -16,6 +14,4 @@ export default defineNuxtConfig({
   app: {
     baseURL: '/__nuxt-link-checker',
   },
-
-  compatibilityDate: '2025-01-20',
 })

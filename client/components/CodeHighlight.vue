@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { BundledLanguage } from 'shiki'
-import { ref } from '#imports'
+import { ref } from 'vue'
 
 const props = defineProps<{
   code: string

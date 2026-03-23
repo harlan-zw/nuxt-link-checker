@@ -66,6 +66,7 @@
     "fuse.js": "^7.1.0",
     "magic-string": "^0.30.21",
     "nuxt-site-config": "^3.2.11",
+    "nuxtseo-shared": "^0.1.9",
     "ofetch": "^1.5.1",
     "pathe": "^2.0.3",
     "pkg-types": "^2.3.0",
@@ -89,6 +90,7 @@
     "eslint": "^9.39.1",
     "execa": "^9.6.1",
     "nuxt": "^4.2.1",
+    "nuxtseo-layer-devtools": "catalog:",
     "typescript": "5.9.3",
     "vitest": "^4.0.15",
     "vue-tsc": "^3.1.5"

@@ -19,7 +19,6 @@ function transformRendered(code: string) {
       count++
       const hasAdded = props.diff.added.includes(count - 1)
       const hasRemoved = props.diff.removed.includes(count - 1)
-      // add 3 before and 3 after to linesToInclude
       if (hasAdded || hasRemoved) {
         for (let i = count - 3; i < count + 3; i++) {
           if (i >= 0)
@@ -32,7 +31,6 @@ function transformRendered(code: string) {
         return 'class="line line-removed"'
       return _
     })
-  // get inner contents of pre and replace lines
   return diffed.replace(/<code>([\s\S]*)<\/code>/, (_, p1) => {
     const lines = p1.split('\n')
     const filtered = lines.filter((_: any, i: number) => linesToInclude.has(i + 1))
