@@ -254,7 +254,7 @@ export default defineNuxtModule<ModuleOptions>({
     let staticRoutes: string[] = []
     let dynamicRoutes: string[] = []
 
-    const writeRoutesFile = async () => {
+    const writeRoutesFile = async (): Promise<void> => {
       await mkdir(routesDir, { recursive: true })
       await writeFile(routesPath, JSON.stringify({ staticRoutes, dynamicRoutes }))
     }
@@ -271,7 +271,7 @@ export default defineNuxtModule<ModuleOptions>({
       let debounceTimer: ReturnType<typeof setTimeout> | undefined
       nuxt.hooks.hook('listen', (_server, listener) => {
         const baseURL = `http://localhost:${listener.port}`
-        const enrichRoutes = async () => {
+        const enrichRoutes = async (): Promise<void> => {
           const debug = await $fetch<{ globalSources: { urls: { loc: string }[] }[] }>(`${baseURL}/__sitemap__/debug.json`).catch(() => null)
           if (!debug)
             return

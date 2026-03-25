@@ -31,7 +31,7 @@ const rule: Rule.RuleModule = {
     const matchDynamic = createRouteMatcher(routes.dynamicRoutes)
     const suggest = createSuggester(routes.staticRoutes)
 
-    const check = (link: string, node: any) => {
+    const check = (link: string, node: any): void => {
       // Only check relative links starting with /
       if (!link.startsWith('/'))
         return

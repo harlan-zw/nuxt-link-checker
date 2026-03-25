@@ -1,6 +1,8 @@
 import type { Linter } from 'eslint'
 
 const MD_LINK_RE = /\[([^\]]*)\]\(([^)]+)\)/g
+const BACKSLASH_RE = /\\/g
+const SINGLE_QUOTE_RE = /'/g
 
 interface ExtractedLink {
   url: string
@@ -48,7 +50,7 @@ export const markdownProcessor: Linter.Processor = {
     const lineMap: Map<number, ExtractedLink> = new Map()
 
     for (let i = 0; i < links.length; i++) {
-      const escaped = links[i].url.replace(/\\/g, '\\\\').replace(/'/g, '\\\'')
+      const escaped = links[i].url.replace(BACKSLASH_RE, '\\\\').replace(SINGLE_QUOTE_RE, '\\\'')
       virtualLines.push(`navigateTo('${escaped}')`)
       lineMap.set(i + 1, links[i])
     }

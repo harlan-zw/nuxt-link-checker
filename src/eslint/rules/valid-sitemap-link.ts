@@ -39,7 +39,7 @@ const rule: Rule.RuleModule = {
         patternsWithSitemapEntries.add(pattern)
     }
 
-    const check = (link: string, node: any) => {
+    const check = (link: string, node: any): void => {
       if (!link.startsWith('/'))
         return
 

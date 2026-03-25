@@ -3,6 +3,7 @@ import type { Rule } from 'eslint'
 const LINK_ELEMENTS = new Set(['a', 'NuxtLink', 'nuxt-link', 'RouterLink', 'router-link'])
 const LINK_ATTRS = new Set(['to', 'href'])
 const SKIP_PREFIXES = ['http://', 'https://', '//', 'mailto:', 'tel:', 'javascript:', 'blob:', 'data:', 'ftp:']
+const WHITESPACE_RE = /\s+/
 const STATIC_FILE_EXTENSIONS = new Set([
   '.pdf',
   '.png',
@@ -68,7 +69,7 @@ function hasRelNofollow(element: any): boolean {
     !attr.directive
     && attr.key?.name === 'rel'
     && typeof attr.value?.value === 'string'
-    && attr.value.value.split(/\s+/).includes('nofollow'),
+    && attr.value.value.split(WHITESPACE_RE).includes('nofollow'),
   )
 }
 
