@@ -1,6 +1,7 @@
+import type { ObjectPlugin } from 'nuxt/app'
 import { defineNuxtPlugin, useRoute } from '#imports'
 
-export default defineNuxtPlugin((nuxt: any) => {
+const plugin: ObjectPlugin = defineNuxtPlugin((nuxt: any) => {
   if (typeof document === 'undefined' || typeof window === 'undefined')
     return
 
@@ -27,3 +28,4 @@ export default defineNuxtPlugin((nuxt: any) => {
       })
     })
 })
+export default plugin
