@@ -9,8 +9,8 @@ packages:
 catalog:
   '@antfu/eslint-config': ^7.7.3
   '@nuxt/content': ^3.12.0
-  '@nuxt/devtools': ^3.2.4
-  '@nuxt/devtools-kit': ^3.2.4
+  '@nuxt/devtools': 4.0.0-alpha.3
+  '@nuxt/devtools-kit': 4.0.0-alpha.3
   '@nuxt/kit': ^4.4.2
   '@nuxt/module-builder': ^1.0.2
   '@nuxt/test-utils': ^4.0.0
@@ -36,7 +36,7 @@ catalog:
   shiki: ^4.0.2
   sirv: ^3.0.2
   std-env: ^4.0.0
-  typescript: 5.9.3
+  typescript: 6.0.2
   ufo: ^1.6.3
   ultrahtml: ^1.6.0
   unstorage: ^1.17.4
@@ -49,5 +49,4 @@ onlyBuiltDependencies:
   - better-sqlite3
   - esbuild
   - vue-demi
-
 trustPolicyIgnoreAfter: 262800

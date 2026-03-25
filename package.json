@@ -45,7 +45,7 @@
   "scripts": {
     "build": "nuxt-module-build build",
     "dev": "nuxi dev playground",
-    "dev:prepare": "nuxt-module-build prepare && nuxi prepare playground",
+    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
     "prepack": "pnpm run build",
     "release": "pnpm build && bumpp --output=CHANGELOG.md",
     "lint": "eslint .",
