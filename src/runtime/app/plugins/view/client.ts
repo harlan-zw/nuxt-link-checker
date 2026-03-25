@@ -6,7 +6,7 @@ import type { LinkInspectionResult, NuxtLinkCheckerClient } from '../../../types
 import { useRuntimeConfig } from '#imports'
 import { useLocalStorage } from '@vueuse/core'
 import { computed, createApp, h, ref, unref } from 'vue'
-import { createFilter } from '../../../shared/sharedUtils'
+import { createFilter, deserializeFilterEntries } from '../../../shared/sharedUtils'
 import Main from './Main.vue'
 import { linkDb } from './state'
 
@@ -48,7 +48,7 @@ export async function setupLinkCheckerClient({ nuxt, route }: { nuxt: NuxtApp, r
 
   const runtimeConfig = useRuntimeConfig().public['nuxt-link-checker'] || {} as any
   const filter = createFilter({
-    exclude: runtimeConfig.excludeLinks,
+    exclude: deserializeFilterEntries(runtimeConfig.excludeLinks || []),
   })
 
   const client: NuxtLinkCheckerClient = {
