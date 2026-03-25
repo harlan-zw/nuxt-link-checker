@@ -1,17 +1,15 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
 import FixActionDialog from './components/FixActionDialog.vue'
 import { linkCheckerRpc } from './composables/rpc'
 import {
   data,
+  fetchDebugData,
   linkDb,
   linkFilter,
   queueLength,
-  refreshSources,
   showLiveInspections,
   visibleLinks,
 } from './composables/state'
-import './composables/rpc'
 
 await loadShiki({
   extraLangs: [
@@ -21,11 +19,17 @@ await loadShiki({
 
 const refreshSnippets = ref(0)
 
-const interval = setInterval(() => {
-  refreshSnippets.value++
-  if (refreshSnippets.value >= 3)
-    clearInterval(interval)
-}, 2000)
+onMounted(() => {
+  const timer = setInterval(() => {
+    refreshSnippets.value++
+    if (refreshSnippets.value >= 3)
+      clearInterval(interval)
+  }, 2000)
+
+  onUnmounted(() => {
+    clearInterval(timer)
+  })
+})
 
 const nodes = computed(() => {
   const validLinks = visibleLinks.value
@@ -40,18 +44,10 @@ const nodes = computed(() => {
 })
 
 const errorCount = computed(() => {
-  let count = 0
-  nodes.value.map(n => n.error.length).forEach((n) => {
-    count += n
-  })
-  return count
+  return nodes.value.reduce((count, n) => count + n.error.length, 0)
 })
 const warningCount = computed(() => {
-  let count = 0
-  nodes.value.map(n => n.warning.length).forEach((n) => {
-    count += n
-  })
-  return count
+  return nodes.value.reduce((count, n) => count + n.warning.length, 0)
 })
 
 const visibleLinkCount = computed(() => {
@@ -82,7 +78,7 @@ async function refresh() {
   loading.value = true
   data.value = null
   await retryAll()
-  await refreshSources()
+  await fetchDebugData()
   setTimeout(() => {
     loading.value = false
   }, 300)
@@ -112,37 +108,56 @@ async function refresh() {
 
     <!-- Inspections tab -->
     <div v-if="tab === 'inspections'" class="space-y-2">
-      <div class="flex items-center gap-3 text-sm px-1 py-2">
-        <div v-if="queueLength" class="flex items-center gap-1.5">
-          <UIcon name="carbon:progress-bar-round" class="animate-spin text-[var(--color-text-muted)]" />
-          <span class="text-xs">{{ Math.round((Math.abs(queueLength - visibleLinkCount) / visibleLinkCount) * 100) }}%</span>
-        </div>
-        <div v-if="errorCount" class="flex items-center gap-1 text-xs">
-          <UIcon name="carbon:error" class="text-red-500" />
-          {{ errorCount }} Errors
-        </div>
-        <div v-if="warningCount" class="flex items-center gap-1 text-xs">
-          <UIcon name="carbon:warning" class="text-yellow-500" />
-          {{ warningCount }} Warnings
-        </div>
-        <div v-if="!warningCount && !errorCount" class="flex items-center gap-1 text-xs">
-          <UIcon name="carbon:checkmark-outline" class="text-green-500" />
-          All links passing
-        </div>
-      </div>
+      <DevtoolsToolbar>
+        <DevtoolsMetric
+          v-if="queueLength"
+          icon="carbon:progress-bar-round"
+          :value="`${Math.round((Math.abs(queueLength - visibleLinkCount) / visibleLinkCount) * 100)}%`"
+        />
+        <DevtoolsMetric
+          v-if="errorCount"
+          icon="carbon:error"
+          :value="errorCount"
+          label="Errors"
+          variant="danger"
+        />
+        <DevtoolsMetric
+          v-if="warningCount"
+          icon="carbon:warning"
+          :value="warningCount"
+          label="Warnings"
+          variant="warning"
+        />
+        <DevtoolsMetric
+          v-if="!warningCount && !errorCount"
+          icon="carbon:checkmark-outline"
+          value="All links passing"
+          variant="success"
+        />
+      </DevtoolsToolbar>
 
       <p v-if="linkFilter" class="text-sm flex items-center gap-1 mb-4">
         <UIcon name="carbon:filter" />
         Filtering Results.
-        <button type="button" class="underline" @click="linkFilter = false">Show All</button>
+        <button type="button" class="underline" @click="linkFilter = false">
+          Show All
+        </button>
       </p>
 
       <div v-if="!linkFilter">
-        <LinkInspection
-          v-for="(item, index) of [...nodes.filter(n => n.error.length), ...nodes.filter(n => n.warning.length)]"
-          :key="index"
-          :item="item"
-          class="odd:bg-[var(--color-bg-elevated)] p-2"
+        <template v-if="[...nodes.filter(n => n.error.length), ...nodes.filter(n => n.warning.length)].length">
+          <LinkInspection
+            v-for="(item, index) of [...nodes.filter(n => n.error.length), ...nodes.filter(n => n.warning.length)]"
+            :key="index"
+            :item="item"
+            class="odd:bg-[var(--color-bg-elevated)] p-2"
+          />
+        </template>
+        <DevtoolsEmptyState
+          v-else-if="!queueLength"
+          icon="carbon:checkmark-outline"
+          title="No issues found"
+          description="All visible links are passing validation."
         />
       </div>
       <div v-else>
@@ -155,9 +170,11 @@ async function refresh() {
     <div v-else-if="tab === 'links'" class="space-y-4">
       <DevtoolsSection icon="carbon:chart-network" text="Internal Links">
         <LinkPassing v-for="(item, index) of nodes.filter(n => n.passes && n.link.startsWith('/'))" :key="index" :item="item" />
+        <DevtoolsEmptyState v-if="!nodes.filter(n => n.passes && n.link.startsWith('/')).length" icon="carbon:link" title="No internal links" />
       </DevtoolsSection>
       <DevtoolsSection icon="carbon:launch" text="External Links">
         <LinkPassing v-for="(item, index) of nodes.filter(n => n.passes && !n.link.startsWith('/'))" :key="index" :item="item" />
+        <DevtoolsEmptyState v-if="!nodes.filter(n => n.passes && !n.link.startsWith('/')).length" icon="carbon:link" title="No external links" />
       </DevtoolsSection>
     </div>
 

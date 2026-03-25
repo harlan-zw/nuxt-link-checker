@@ -1,5 +1,6 @@
 import type { Nitro } from 'nitropack'
 import type { Nuxt } from 'nuxt/schema'
+import type { Storage } from 'unstorage'
 import type { ExtractedPayload, InspectionContext, PathReport } from './build/report'
 import type { ModuleOptions } from './module'
 import type { LinkInspectionResult } from './runtime/types'
@@ -8,6 +9,7 @@ import { useNuxt } from '@nuxt/kit'
 import { colors } from 'consola/utils'
 import Fuse from 'fuse.js'
 import { useSiteConfig } from 'nuxt-site-config/kit'
+import { isNuxtGenerate } from 'nuxtseo-shared/kit'
 import { resolve } from 'pathe'
 import { withoutLeadingSlash } from 'ufo'
 import { ELEMENT_NODE, parse, walkSync } from 'ultrahtml'
@@ -96,11 +98,7 @@ function getTextContent(node: any): string {
   return text.filter(Boolean).map(s => s.trim()).join(' ')
 }
 
-export function isNuxtGenerate(nuxt: Nuxt = useNuxt()) {
-  return (nuxt.options as any)._generate /* TODO: remove in future */ || nuxt.options.nitro.static || nuxt.options.nitro.preset === 'static'
-}
-
-export function prerender(config: ModuleOptions, version?: string, nuxt = useNuxt()) {
+export function prerender(config: ModuleOptions, version?: string, nuxt = useNuxt()): void {
   if (config.report?.publish) {
     // make paths non indexable using X-Robots-Tag
     nuxt.options.nitro.routeRules = nuxt.options.nitro.routeRules || {}
@@ -181,7 +179,7 @@ export function prerender(config: ModuleOptions, version?: string, nuxt = useNux
   })
 }
 
-function createReportStorage(config: ModuleOptions, nuxt: Nuxt, nitro: Nitro) {
+function createReportStorage(config: ModuleOptions, nuxt: Nuxt, nitro: Nitro): { storage: Storage, storageFilepath: string } {
   const storageFilepath = typeof config.report?.storage === 'string'
     ? resolve(nuxt.options.rootDir, config.report?.storage)
     : (config.report?.publish ? `${nitro.options.output.publicDir}/__link-checker__/` : nitro.options.output.dir)
@@ -199,7 +197,7 @@ function createReportStorage(config: ModuleOptions, nuxt: Nuxt, nitro: Nitro) {
   return { storage, storageFilepath }
 }
 
-function createPageSearcher(payloads: [route: string, payload: ExtractedPayload][]) {
+function createPageSearcher(payloads: [route: string, payload: ExtractedPayload][]): Fuse<{ link: string, title?: string }> {
   const links = payloads?.map(([route, payload]) => ({
     link: route,
     title: payload.title,
@@ -278,7 +276,7 @@ async function processRouteLinks(
   route: string,
   payload: ExtractedPayload,
   context: InspectionContext,
-) {
+): Promise<Partial<LinkInspectionResult>[]> {
   const { urlFilter, config, nuxt, siteConfig, pageSearcher } = context
 
   // Process links in parallel but with controlled concurrency
@@ -334,7 +332,7 @@ function logSummary(
   errorCount: number,
   warningCount: number,
   nitro: Nitro,
-) {
+): void {
   // Always show the summary header with check mark or x
   nitro.logger.info(`Nuxt Link Checker Summary`)
 

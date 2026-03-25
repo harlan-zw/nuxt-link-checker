@@ -6,8 +6,11 @@ export default defineNuxtConfig({
   linkChecker: false,
 
   nitro: {
+    prerender: {
+      routes: ['/'],
+    },
     output: {
-      publicDir: resolve(__dirname, '../dist/client'),
+      publicDir: resolve(__dirname, '../dist/devtools'),
     },
   },
 

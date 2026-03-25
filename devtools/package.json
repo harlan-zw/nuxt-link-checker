@@ -6,7 +6,6 @@
     "@nuxt/kit": "catalog:",
     "nuxt": "catalog:",
     "nuxtseo-layer-devtools": "catalog:",
-    "nuxtseo-shared": "catalog:",
     "shiki": "catalog:",
     "vue": "catalog:",
     "vue-router": "catalog:"

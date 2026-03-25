@@ -1,8 +1,9 @@
+import type { Rule } from '../../types'
 import { fixSlashes } from 'nuxt-site-config/urls'
 import { parseURL } from 'ufo'
 import { defineRule } from './util'
 
-export default function RuleTrailingSlash() {
+export default function RuleTrailingSlash(): Rule {
   return defineRule({
     id: 'trailing-slash',
     test({ report, link, siteConfig }) {

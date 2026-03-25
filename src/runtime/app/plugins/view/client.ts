@@ -5,12 +5,12 @@ import type { UnwrapRef } from 'vue'
 import type { LinkInspectionResult, NuxtLinkCheckerClient } from '../../../types'
 import { useRuntimeConfig } from '#imports'
 import { useLocalStorage } from '@vueuse/core'
-import { computed, createApp, h, ref, shallowReactive, unref } from 'vue'
+import { computed, createApp, h, ref, unref } from 'vue'
 import { createFilter } from '../../../shared/sharedUtils'
 import Main from './Main.vue'
 import { linkDb } from './state'
 
-function resolveDevtoolsIframe() {
+function resolveDevtoolsIframe(): NuxtDevtoolsIframeClient | undefined {
   const iframe = document.querySelector('#nuxt-devtools-iframe') as Element & { contentWindow: { __NUXT_DEVTOOLS__: NuxtDevtoolsIframeClient } }
   if (!iframe)
     return
@@ -32,7 +32,7 @@ function resolvePathsForEl(el: Element): string[] {
   ].filter(Boolean) as string[]
 }
 
-export async function setupLinkCheckerClient({ nuxt, route }: { nuxt: NuxtApp, route: ReturnType<typeof useRoute> }) {
+export async function setupLinkCheckerClient({ nuxt, route }: { nuxt: NuxtApp, route: ReturnType<typeof useRoute> }): Promise<void> {
   let queue: { link: string, paths: string[], textContent: string, role: string }[] = []
   let queueWorkerTimer: any
   const inspectionEls = ref<UnwrapRef<NuxtLinkCheckerClient['inspectionEls']>>([])
@@ -51,15 +51,14 @@ export async function setupLinkCheckerClient({ nuxt, route }: { nuxt: NuxtApp, r
     exclude: runtimeConfig.excludeLinks,
   })
 
-  const client: NuxtLinkCheckerClient = shallowReactive({
+  const client: NuxtLinkCheckerClient = {
     isWorkingQueue: false,
     isStarted: false,
     scanLinks() {
       elMap = {}
       visibleLinks.clear()
-      lastIds = [...new Set([...document.querySelectorAll('#__nuxt [id]')].map(el => el.id))]
-      ;[...document.querySelectorAll('#__nuxt a')]
-        .map(el => ({ el, link: el.getAttribute('href')! }))
+      lastIds = [...new Set(Array.from(document.querySelectorAll('#__nuxt [id]'), el => el.id))]
+      Array.from(document.querySelectorAll('#__nuxt a'), el => ({ el, link: el.getAttribute('href')! }))
         .forEach(({ el, link }) => {
           if (!link)
             return
@@ -74,7 +73,7 @@ export async function setupLinkCheckerClient({ nuxt, route }: { nuxt: NuxtApp, r
 
           const payload = linkDb.value[route.path]?.find(d => d.link === link)
           // if we have a payload or its already queued, skip
-          if (payload || queue.find(q => q.link === link)) {
+          if (payload || queue.some(q => q.link === link)) {
             client.maybeAttachEls(payload)
             return
           }
@@ -89,7 +88,7 @@ export async function setupLinkCheckerClient({ nuxt, route }: { nuxt: NuxtApp, r
     },
     startQueueWorker() {
       client.stopQueueWorker()
-      async function workQueue() {
+      async function workQueue(): Promise<void> {
         if (queue.length <= 0) {
           client.stopQueueWorker()
           return
@@ -270,7 +269,7 @@ export async function setupLinkCheckerClient({ nuxt, route }: { nuxt: NuxtApp, r
     inspectionEls,
     linkDb: computed(() => linkDb.value[route.path] || []),
     showInspections,
-  })
+  }
 
   if (nuxt.vueApp._instance)
     nuxt.vueApp._instance.appContext.provides.linkChecker = client

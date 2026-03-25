@@ -1,6 +1,7 @@
+import type { Rule } from '../../types'
 import { defineRule } from './util'
 
-export default function RuleNoJavascript() {
+export default function RuleNoJavascript(): Rule {
   return defineRule({
     id: 'no-javascript',
     externalLinks: true,

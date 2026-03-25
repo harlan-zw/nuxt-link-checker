@@ -1,9 +1,9 @@
-import type { RuleReport } from '../../types'
+import type { Rule, RuleReport } from '../../types'
 import Fuse from 'fuse.js'
 import { fixSlashes } from 'nuxt-site-config/urls'
 import { defineRule } from './util'
 
-export default function RuleMissingHash() {
+export default function RuleMissingHash(): Rule {
   return defineRule({
     id: 'missing-hash',
     test({ link, report, ids, fromPath }) {

@@ -11,6 +11,7 @@ import {
   useLogger,
 } from '@nuxt/kit'
 import { installNuxtSiteConfig } from 'nuxt-site-config/kit'
+import { resolveNuxtContentVersion } from 'nuxtseo-shared/kit'
 import { dirname } from 'pathe'
 import { readPackageJSON } from 'pkg-types'
 import { setupDevToolsUI } from './devtools'
@@ -123,6 +124,8 @@ export interface ModuleOptions {
 export interface ModuleHooks {
 }
 
+const excludeUnderscorePathsRe = /^\/_/
+
 export default defineNuxtModule<ModuleOptions>({
   meta: {
     name: 'nuxt-link-checker',
@@ -133,7 +136,7 @@ export default defineNuxtModule<ModuleOptions>({
   },
   moduleDependencies: {
     'nuxt-site-config': {
-      version: '>=3',
+      version: '>=3.2',
     },
     '@nuxt/content': {
       version: '>=2',
@@ -155,8 +158,7 @@ export default defineNuxtModule<ModuleOptions>({
       fetchTimeout: 10000,
       failOnError: false,
       excludeLinks: [
-        // ignore all links starting with /_** using regex
-        /^\/_.*$/,
+        excludeUnderscorePathsRe,
       ],
       skipInspections: [],
     }
@@ -212,9 +214,9 @@ export default defineNuxtModule<ModuleOptions>({
         //  @ts-expect-error runtime
         && nuxt.options.sitemap?.enabled !== false
       nuxt.options.nitro.alias = nuxt.options.nitro.alias || {}
-      const usingNuxtContent = hasNuxtModule('@nuxt/content')
-      const isNuxtContentV3 = usingNuxtContent && await hasNuxtModuleCompatibility('@nuxt/content', '^3')
-      if (usingNuxtContent) {
+      const contentVersion = await resolveNuxtContentVersion()
+      const isNuxtContentV3 = contentVersion && contentVersion.version === 3
+      if (contentVersion) {
         if (isNuxtContentV3) {
           if (await hasNuxtModuleCompatibility('@nuxt/content', '<3.6.0')) {
             nuxt.options.alias['@nuxt/content/nitro'] = resolve('./runtime/server/content-compat')

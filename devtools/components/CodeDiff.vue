@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { BundledLanguage } from 'shiki'
-import { ref } from 'vue'
 
 const props = defineProps<{
   code: string
@@ -10,12 +9,16 @@ const props = defineProps<{
 
 const start = ref(props.diff.added[0] - 2)
 
+const shikiClassRe = /class="shiki/
+const lineClassRe = /class="line"/g
+const codeContentRe = /<code>([\s\S]*)<\/code>/
+
 function transformRendered(code: string) {
   let count = 0
   const linesToInclude = new Set<number>()
   const diffed = code
-    .replace(/class="shiki/, 'class="shiki diff')
-    .replace(/class="line"/g, (_) => {
+    .replace(shikiClassRe, 'class="shiki diff')
+    .replace(lineClassRe, (_) => {
       count++
       const hasAdded = props.diff.added.includes(count - 1)
       const hasRemoved = props.diff.removed.includes(count - 1)
@@ -31,14 +34,14 @@ function transformRendered(code: string) {
         return 'class="line line-removed"'
       return _
     })
-  return diffed.replace(/<code>([\s\S]*)<\/code>/, (_, p1) => {
+  return diffed.replace(codeContentRe, (_, p1) => {
     const lines = p1.split('\n')
     const filtered = lines.filter((_: any, i: number) => linesToInclude.has(i + 1))
     return `<code>${filtered.join('\n')}</code>`
   })
 }
 
-const elRef = ref<HTMLDivElement>()
+const elRef = useTemplateRef<HTMLDivElement>('elRef')
 </script>
 
 <template>

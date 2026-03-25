@@ -3,8 +3,7 @@ import type { BirpcReturn } from 'birpc'
 import type { ClientFunctions, ServerFunctions } from '../../src/rpc-types'
 import type { NuxtLinkCheckerClient } from '../../src/runtime/types'
 import { getQuery } from 'ufo'
-import { ref, unref } from 'vue'
-import { linkDb, linkFilter, queueLength, visibleLinks } from './state'
+import { fetchDebugData, linkDb, linkFilter, queueLength, visibleLinks } from './state'
 
 const RPC_NAMESPACE = 'nuxt-link-checker-rpc'
 
@@ -40,9 +39,11 @@ useDevtoolsConnection({
     })
 
     linkCheckerRpc.value!.connected()
+    fetchDebugData()
     refreshSources()
   },
   onRouteChange() {
+    fetchDebugData()
     refreshSources()
   },
 })

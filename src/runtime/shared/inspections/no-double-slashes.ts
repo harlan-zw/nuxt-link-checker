@@ -1,6 +1,10 @@
+import type { Rule } from '../../types'
 import { defineRule } from './util'
 
-export default function RuleNoDoubleSlashes() {
+const doubleSlashRe = /^\/{2,}|\/{2,}/g
+const doubleSlashTestRe = /^\/{2,}|\/{2,}/
+
+export default function RuleNoDoubleSlashes(): Rule {
   return defineRule({
     id: 'no-double-slashes',
     test({ url, link, report }) {
@@ -10,17 +14,17 @@ export default function RuleNoDoubleSlashes() {
           name: 'no-double-slashes',
           scope: 'warning',
           message: 'Links should not contain double slashes.',
-          fix: link.replaceAll(/(^\/{2,}|\/{2,})/g, '/'),
+          fix: link.replaceAll(doubleSlashRe, '/'),
           fixDescription: 'Remove double slashes.',
         })
       }
       // we want to match any paths that have double slashes (or triple etc)
-      else if (url.pathname.match(/(^\/{2,}|\/{2,})/)) {
+      else if (doubleSlashTestRe.test(url.pathname)) {
         report({
           name: 'no-double-slashes',
           scope: 'warning',
           message: 'Links should not contain double slashes.',
-          fix: link.replace(url.pathname, url.pathname.replaceAll(/(^\/{2,}|\/{2,})/g, '/')),
+          fix: link.replace(url.pathname, url.pathname.replaceAll(doubleSlashRe, '/')),
           fixDescription: 'Remove double slashes.',
         })
       }

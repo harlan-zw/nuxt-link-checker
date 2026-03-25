@@ -1,15 +1,17 @@
+import type { Rule } from '../../types'
 import { defineRule } from './util'
 
-export default function RuleNoNonAsciiChars() {
+const nonAsciiRe = /[^\u0020-\u007F]/
+
+export default function RuleNoNonAsciiChars(): Rule {
   return defineRule({
     id: 'no-non-ascii-chars',
     test({ link, url, report }) {
       if (link.startsWith('#'))
         return
       // test path segments individually
-      function test(s: string) {
-        // use regex to detect non-ascii chars
-        if (/[^\u0020-\u007F]/.test(s)) {
+      function test(s: string): void {
+        if (nonAsciiRe.test(s)) {
           report({
             name: 'no-non-ascii-chars',
             scope: 'warning',

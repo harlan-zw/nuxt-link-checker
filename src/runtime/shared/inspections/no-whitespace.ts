@@ -1,6 +1,9 @@
+import type { Rule } from '../../types'
 import { defineRule } from './util'
 
-export default function RuleNoWhitespace() {
+const whitespaceRe = /\s/
+
+export default function RuleNoWhitespace(): Rule {
   return defineRule({
     id: 'no-whitespace',
     test({ link, report }) {
@@ -15,7 +18,7 @@ export default function RuleNoWhitespace() {
         })
       }
       // test for whitespace
-      if (link.trim().match(/\s/)) {
+      if (whitespaceRe.test(link.trim())) {
         report({
           name: 'no-whitespace',
           scope: 'warning',

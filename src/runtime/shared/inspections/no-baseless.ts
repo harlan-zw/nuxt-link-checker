@@ -1,7 +1,8 @@
+import type { Rule } from '../../types'
 import { joinURL } from 'ufo'
 import { defineRule, isNonFetchableLink } from './util'
 
-export default function RuleNoDocumentRelative() {
+export default function RuleNoDocumentRelative(): Rule {
   return defineRule({
     id: 'no-baseless', // TODO rename to no-document-relative
     test({ link, fromPath, report }) {

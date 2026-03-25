@@ -35,7 +35,7 @@ export interface InspectionContext {
   isPrerenderingAllRoutes: boolean
 }
 
-export async function generateReports(reports: PathReport[], ctx: InspectionContext) {
+export async function generateReports(reports: PathReport[], ctx: InspectionContext): Promise<void> {
   const report = ctx.config.report || {}
   const reportPaths: string[] = []
   if (report.html) {
@@ -65,7 +65,7 @@ async function generateHtmlReport(reports: PathReport[], {
   storageFilepath,
   totalRoutes,
   version,
-}: InspectionContext) {
+}: InspectionContext): Promise<string> {
   const timestamp = new Date().toLocaleString()
   const totalErrors = reports.reduce((sum, { reports }) =>
     sum + reports.filter(r => r.error?.length).length, 0)
@@ -254,7 +254,7 @@ async function generateHtmlReport(reports: PathReport[], {
   return resolve(storageFilepath, 'link-checker-report.html')
 }
 
-async function generateMarkdownReport(reports: PathReport[], { storage, storageFilepath }: InspectionContext) {
+async function generateMarkdownReport(reports: PathReport[], { storage, storageFilepath }: InspectionContext): Promise<string> {
   // Sort reports like a file tree (parents before children, alphabetically at each level)
   const sortedReports = [...reports].sort((a, b) => {
     const segmentsA = a.route.split('/').filter(Boolean)
@@ -391,13 +391,17 @@ async function generateMarkdownReport(reports: PathReport[], { storage, storageF
   return resolve(storageFilepath, 'link-checker-report.md')
 }
 
+const nonWordRe = /[^\w\s-]/g
+const whitespaceRe = /\s+/g
+const multiDashRe = /-+/g
+
 // Helper function to create GitHub-compatible anchor links
 function createAnchor(text: string): string {
   return text
     .toLowerCase()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
+    .replace(nonWordRe, '')
+    .replace(whitespaceRe, '-')
+    .replace(multiDashRe, '-')
 }
 
 // Helper function to truncate long strings
@@ -407,7 +411,7 @@ function truncateString(str: string, maxLength: number): string {
   return `${str.substring(0, maxLength - 3)}...`
 }
 
-async function generateJsonReport(reports: PathReport[], { storage, storageFilepath }: InspectionContext) {
+async function generateJsonReport(reports: PathReport[], { storage, storageFilepath }: InspectionContext): Promise<string> {
   const filteredReports = reports
     .map(report => ({
       ...report,

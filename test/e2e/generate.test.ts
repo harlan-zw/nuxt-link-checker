@@ -27,88 +27,6 @@ describe('generate', () => {
     expect(reportJson).toMatchInlineSnapshot(`
       "[
         {
-          "route": "/fix-test",
-          "reports": [
-            {
-              "error": [
-                {
-                  "name": "no-error-response",
-                  "scope": "error",
-                  "message": "Should not respond with status code 404 (Page not found).",
-                  "fix": "/about",
-                  "fixDescription": "Did you mean /about?"
-                }
-              ],
-              "warning": [],
-              "fix": "/about",
-              "link": "/abt",
-              "passes": false,
-              "textContent": "page typo with magic fix"
-            },
-            {
-              "error": [
-                {
-                  "name": "no-error-response",
-                  "scope": "error",
-                  "message": "Should not respond with status code 404 (Page not found)."
-                }
-              ],
-              "warning": [
-                {
-                  "name": "trailing-slash",
-                  "scope": "warning",
-                  "message": "Should not have a trailing slash.",
-                  "tip": "Incorrect trailing slashes can cause duplicate pages in search engines and waste crawl budget.",
-                  "fix": "/404link",
-                  "fixDescription": "Removing trailing slash."
-                }
-              ],
-              "fix": "/404link",
-              "link": "/404link/",
-              "passes": false,
-              "textContent": "404 links"
-            },
-            {
-              "error": [
-                {
-                  "name": "no-javascript",
-                  "scope": "error",
-                  "tip": "Using a <button type=\\"button\\"> instead as a better practice.",
-                  "message": "Should not use JavaScript"
-                }
-              ],
-              "warning": [],
-              "fix": "javascript:history.back()",
-              "link": "javascript:history.back()",
-              "passes": false,
-              "textContent": "javascript link"
-            },
-            {
-              "error": [
-                {
-                  "name": "no-error-response",
-                  "scope": "error",
-                  "message": "Should not respond with status code 404 (Page not found)."
-                }
-              ],
-              "warning": [
-                {
-                  "name": "trailing-slash",
-                  "scope": "warning",
-                  "message": "Should not have a trailing slash.",
-                  "tip": "Incorrect trailing slashes can cause duplicate pages in search engines and waste crawl budget.",
-                  "fix": "/completely-broken",
-                  "fixDescription": "Removing trailing slash."
-                }
-              ],
-              "fix": "/completely-broken",
-              "link": "/completely-broken/",
-              "passes": false,
-              "textContent": "error and warning"
-            }
-          ]
-        },
-        {
           "route": "/",
           "reports": [
             {
@@ -230,6 +148,35 @@ describe('generate', () => {
                 {
                   "name": "no-error-response",
                   "scope": "error",
+                  "message": "Should not respond with status code 404 (Not Found).",
+                  "canRetry": true
+                }
+              ],
+              "warning": [
+                {
+                  "name": "no-whitespace",
+                  "scope": "warning",
+                  "message": "Links should not contain whitespace.",
+                  "tip": "Use hyphens to separate words instead of spaces."
+                },
+                {
+                  "name": "no-baseless",
+                  "scope": "warning",
+                  "message": "Links should be root relative.",
+                  "fix": "/this is a very bad link",
+                  "fixDescription": "Add base /."
+                }
+              ],
+              "fix": "/this is a very bad link",
+              "link": "this is a very bad link",
+              "passes": false,
+              "textContent": "very bad link"
+            },
+            {
+              "error": [
+                {
+                  "name": "no-error-response",
+                  "scope": "error",
                   "message": "Should not respond with status code 404 (Page not found).",
                   "fix": "/about",
                   "fixDescription": "Did you mean /about?"
@@ -325,35 +272,88 @@ describe('generate', () => {
               "link": "/trailingslash/",
               "passes": false,
               "textContent": "trailing slash"
+            }
+          ]
+        },
+        {
+          "route": "/fix-test",
+          "reports": [
+            {
+              "error": [
+                {
+                  "name": "no-error-response",
+                  "scope": "error",
+                  "message": "Should not respond with status code 404 (Page not found).",
+                  "fix": "/about",
+                  "fixDescription": "Did you mean /about?"
+                }
+              ],
+              "warning": [],
+              "fix": "/about",
+              "link": "/abt",
+              "passes": false,
+              "textContent": "page typo with magic fix"
             },
             {
               "error": [
                 {
                   "name": "no-error-response",
                   "scope": "error",
-                  "message": "Should not respond with status code 404 (Not Found).",
-                  "canRetry": true
+                  "message": "Should not respond with status code 404 (Page not found)."
                 }
               ],
               "warning": [
                 {
-                  "name": "no-whitespace",
+                  "name": "trailing-slash",
                   "scope": "warning",
-                  "message": "Links should not contain whitespace.",
-                  "tip": "Use hyphens to separate words instead of spaces."
-                },
-                {
-                  "name": "no-baseless",
-                  "scope": "warning",
-                  "message": "Links should be root relative.",
-                  "fix": "/this is a very bad link",
-                  "fixDescription": "Add base /."
+                  "message": "Should not have a trailing slash.",
+                  "tip": "Incorrect trailing slashes can cause duplicate pages in search engines and waste crawl budget.",
+                  "fix": "/404link",
+                  "fixDescription": "Removing trailing slash."
                 }
               ],
-              "fix": "/this is a very bad link",
-              "link": "this is a very bad link",
+              "fix": "/404link",
+              "link": "/404link/",
               "passes": false,
-              "textContent": "very bad link"
+              "textContent": "404 links"
+            },
+            {
+              "error": [
+                {
+                  "name": "no-javascript",
+                  "scope": "error",
+                  "tip": "Using a <button type=\\"button\\"> instead as a better practice.",
+                  "message": "Should not use JavaScript"
+                }
+              ],
+              "warning": [],
+              "fix": "javascript:history.back()",
+              "link": "javascript:history.back()",
+              "passes": false,
+              "textContent": "javascript link"
+            },
+            {
+              "error": [
+                {
+                  "name": "no-error-response",
+                  "scope": "error",
+                  "message": "Should not respond with status code 404 (Page not found)."
+                }
+              ],
+              "warning": [
+                {
+                  "name": "trailing-slash",
+                  "scope": "warning",
+                  "message": "Should not have a trailing slash.",
+                  "tip": "Incorrect trailing slashes can cause duplicate pages in search engines and waste crawl budget.",
+                  "fix": "/completely-broken",
+                  "fixDescription": "Removing trailing slash."
+                }
+              ],
+              "fix": "/completely-broken",
+              "link": "/completely-broken/",
+              "passes": false,
+              "textContent": "error and warning"
             }
           ]
         }
@@ -415,6 +415,14 @@ describe('generate', () => {
       > Link text: "uppercase"
       #### Errors
       - **no-error-response:** Should not respond with status code 404 (Page not found).
+      ### Link: [this is a very bad link](this is a very bad link)
+      > Link text: "very bad link"
+      #### Errors
+      - **no-error-response:** Should not respond with status code 404 (Not Found).
+      #### Warnings
+      - **no-whitespace:** Links should not contain whitespace.
+      - **no-baseless:** Links should be root relative.
+        - *Suggestion:* Add base /.
       ### Link: [/abot](/abot)
       > Link text: "page typo with magic fix"
       #### Errors
@@ -445,14 +453,6 @@ describe('generate', () => {
       #### Warnings
       - **trailing-slash:** Should not have a trailing slash.
         - *Suggestion:* Removing trailing slash.
-      ### Link: [this is a very bad link](this is a very bad link)
-      > Link text: "very bad link"
-      #### Errors
-      - **no-error-response:** Should not respond with status code 404 (Not Found).
-      #### Warnings
-      - **no-whitespace:** Links should not contain whitespace.
-      - **no-baseless:** Links should be root relative.
-        - *Suggestion:* Add base /.
 
       <div align="right"><a href="#nuxt-link-checker-report">↑ Back to top</a></div>
 

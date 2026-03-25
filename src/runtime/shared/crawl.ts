@@ -8,7 +8,7 @@ const responses: Record<string, MaybePromise<LinkResponse>> = {}
 
 const MockSuccessResponse = Promise.resolve({ status: 200, statusText: 'OK', headers: {} })
 
-export async function getLinkResponse({ link, timeout, fetchRemoteUrls, baseURL, isInStorage }: { link: string, baseURL?: string, timeout?: number, fetchRemoteUrls?: boolean, isInStorage: () => boolean }) {
+export async function getLinkResponse({ link, timeout, fetchRemoteUrls, baseURL, isInStorage }: { link: string, baseURL?: string, timeout?: number, fetchRemoteUrls?: boolean, isInStorage: () => boolean }): Promise<LinkResponse | null> {
   // if the link has an anchor on it, do the request without the anchor
   if (link.includes('#') && !link.startsWith('#'))
     link = link.split('#')[0]
@@ -34,11 +34,11 @@ export async function getLinkResponse({ link, timeout, fetchRemoteUrls, baseURL,
   return responses[link]
 }
 
-export function setLinkResponse(link: string, response: Promise<{ status: number, statusText: string, headers: Record<string, any> }>) {
+export function setLinkResponse(link: string, response: Promise<{ status: number, statusText: string, headers: Record<string, any> }>): void {
   responses[link] = response
 }
 
-export async function getResolvedLinkResponses() {
+export async function getResolvedLinkResponses(): Promise<Record<string, LinkResponse>> {
   // wait for all responses to resolve
   const data: Record<string, LinkResponse> = {}
   for (const link in responses) {
@@ -47,7 +47,7 @@ export async function getResolvedLinkResponses() {
   return data
 }
 
-export async function crawlFetch(link: string, options: { timeout?: number, baseURL?: string } = {}) {
+export async function crawlFetch(link: string, options: { timeout?: number, baseURL?: string } = {}): Promise<LinkResponse> {
   const timeout = options.timeout || 5000
   const timeoutController = new AbortController()
   const abortRequestTimeout = setTimeout(() => timeoutController.abort(), timeout)

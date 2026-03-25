@@ -2,7 +2,7 @@ export async function runParallel<T>(
   inputs: Set<T>,
   cb: (input: T) => unknown | Promise<unknown>,
   opts: { concurrency: number, interval?: number },
-) {
+): Promise<void> {
   const tasks = new Set<Promise<unknown>>()
 
   function queueNext(): undefined | Promise<unknown> {
@@ -33,7 +33,7 @@ export async function runParallel<T>(
 
   function refillQueue(): Promise<unknown> {
     const workers = Math.min(opts.concurrency - tasks.size, inputs.size)
-    return Promise.all(Array.from({ length: workers }, () => queueNext()))
+    return Promise.all(Array.from({ length: workers }).fill(queueNext()))
   }
 
   await refillQueue()

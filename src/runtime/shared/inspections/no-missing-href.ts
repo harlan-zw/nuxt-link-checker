@@ -1,6 +1,7 @@
+import type { Rule } from '../../types'
 import { defineRule } from './util'
 
-export default function RuleNoMissingHref() {
+export default function RuleNoMissingHref(): Rule {
   return defineRule({
     id: 'no-missing-href',
     test({ report, link, role }) {

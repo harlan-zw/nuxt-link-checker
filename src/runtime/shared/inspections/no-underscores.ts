@@ -1,6 +1,7 @@
+import type { Rule } from '../../types'
 import { defineRule } from './util'
 
-export default function RuleNoUnderscores() {
+export default function RuleNoUnderscores(): Rule {
   return defineRule({
     id: 'no-underscores',
     test({ url, report }) {

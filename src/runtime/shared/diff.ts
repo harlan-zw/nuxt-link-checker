@@ -1,3 +1,4 @@
+import type { InspectionDiff, InspectionPreview } from '../types'
 import { readFile } from 'node:fs/promises'
 import { diffLines } from 'diff'
 import MagicString from 'magic-string'
@@ -5,9 +6,11 @@ import MagicString from 'magic-string'
 // 100 max size
 export const lruFsCache = new Map<string, string>()
 
-export function generateLinkSources(s: string, link: string) {
+const regexEscapeRe = /[-/\\^$*+?.()|[\]{}]/g
+
+export function generateLinkSources(s: string, link: string): { start: number, end: number, lineNumber: number, columnNumber: number }[] {
   // escape link for regex
-  const regEscapedLink = link.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
+  const regEscapedLink = link.replace(regexEscapeRe, '\\$&')
   const VueLinkRegExp = new RegExp(`(['"])${regEscapedLink}(['"])`)
   // need to match links like [About Us](/about-us)
   const MdLinkRegExp = new RegExp(`\\[.*\\]\\((${regEscapedLink})\\)`)
@@ -49,7 +52,7 @@ export function generateLinkSources(s: string, link: string) {
 // amount of lines before and after the source line to show
 const LINE_PREVIEW_OFFSET = 2
 
-export async function generateFileLinkPreviews(filepath: string, link: string) {
+export async function generateFileLinkPreviews(filepath: string, link: string): Promise<{ previews: InspectionPreview[], lang: string, filepath: string }> {
   // use lruFsCache
   const contents = lruFsCache.has(filepath) ? lruFsCache.get(filepath)! : await readFile(filepath, 'utf8').catch(() => '')
   const previews = contents ? generateLinkSourcePreviews(contents, link) : []
@@ -62,7 +65,7 @@ export async function generateFileLinkPreviews(filepath: string, link: string) {
   return { previews, lang, filepath }
 }
 
-export async function generateFileLinkDiff(filepath: string, original: string, replacement: string) {
+export async function generateFileLinkDiff(filepath: string, original: string, replacement: string): Promise<{ diff: InspectionDiff, code: string, filepath: string }> {
   const contents = lruFsCache.has(filepath) ? lruFsCache.get(filepath)! : await readFile(filepath, 'utf8')
   lruFsCache.set(filepath, contents)
   if (lruFsCache.size > 100)
@@ -73,7 +76,7 @@ export async function generateFileLinkDiff(filepath: string, original: string, r
   }
 }
 
-export function generateLinkSourcePreviews(s: string, link: string) {
+export function generateLinkSourcePreviews(s: string, link: string): InspectionPreview[] {
   const sources = generateLinkSources(s, link)
   const lines = s.split('\n')
   return sources.map(({ lineNumber, columnNumber }) => {
@@ -83,7 +86,7 @@ export function generateLinkSourcePreviews(s: string, link: string) {
   })
 }
 
-export function generateLinkDiff(s: string, originalLink: string, newLink: string) {
+export function generateLinkDiff(s: string, originalLink: string, newLink: string): { diff: InspectionDiff, code: string } {
   const ms = new MagicString(s)
   const sources = generateLinkSources(s, originalLink)
   sources.forEach(({ start, end }) => {
@@ -94,7 +97,7 @@ export function generateLinkDiff(s: string, originalLink: string, newLink: strin
   return { diff: calculateDiff(s, ms.toString()), code: ms.toString() }
 }
 
-function calculateDiff(from: string, to: string) {
+function calculateDiff(from: string, to: string): InspectionDiff {
   const diffs = diffLines(from.trim(), to.trim())
 
   const added: number[] = []

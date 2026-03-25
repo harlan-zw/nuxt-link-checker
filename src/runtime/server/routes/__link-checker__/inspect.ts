@@ -1,4 +1,4 @@
-import { useNitroOrigin, useRuntimeConfig, useSiteConfig } from '#imports'
+import { getNitroOrigin, getSiteConfig, useRuntimeConfig } from '#imports'
 import { createDefu } from 'defu'
 import Fuse from 'fuse.js'
 import { defineEventHandler, readBody } from 'h3'
@@ -14,7 +14,7 @@ const merger = createDefu((obj, key, value) => {
   return obj[key]
 })
 
-function mergeOnKey<T, K extends keyof T>(arr: T[], key: K) {
+function mergeOnKey<T, K extends keyof T>(arr: T[], key: K): T[] {
   const res: Record<string, T> = {}
   arr.forEach((item) => {
     const k = item[key] as string
@@ -24,7 +24,7 @@ function mergeOnKey<T, K extends keyof T>(arr: T[], key: K) {
   return Object.values(res)
 }
 
-function isInternalRoute(path: string) {
+function isInternalRoute(path: string): boolean {
   const lastSegment = path.split('/').pop() || path
   return lastSegment.includes('.') || path.startsWith('/__') || path.startsWith('@')
 }
@@ -36,7 +36,7 @@ export default defineEventHandler(async (e) => {
   const partialCtx = {
     ids,
     fromPath: fixSlashes(false, path),
-    siteConfig: useSiteConfig(e),
+    siteConfig: getSiteConfig(e),
   } as const
   // allow editing files to trigger a cache clear
   lruFsCache.clear()
@@ -55,7 +55,7 @@ export default defineEventHandler(async (e) => {
         link,
         timeout: runtimeConfig.fetchTimeout,
         fetchRemoteUrls: runtimeConfig.fetchRemoteUrls,
-        baseURL: useNitroOrigin(e),
+        baseURL: getNitroOrigin(e),
         isInStorage() {
           return false
         },

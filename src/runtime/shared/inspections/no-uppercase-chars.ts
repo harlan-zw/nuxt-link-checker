@@ -1,12 +1,15 @@
+import type { Rule } from '../../types'
 import { defineRule } from './util'
 
-export default function RuleNoUppercaseChars() {
+const uppercaseRe = /[A-Z]/
+
+export default function RuleNoUppercaseChars(): Rule {
   return defineRule({
     id: 'no-uppercase-chars',
     test({ report, link }) {
       if (link.startsWith('#'))
         return
-      if (link.match(/[A-Z]/)) {
+      if (uppercaseRe.test(link)) {
         report({
           name: 'no-uppercase-chars',
           scope: 'warning',
