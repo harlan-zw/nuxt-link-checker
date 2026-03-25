@@ -32,8 +32,7 @@
   "build": {
     "externals": [
       "unstorage/drivers/fs"
-    ],
-    "failOnWarn": false
+    ]
   },
   "main": "./dist/module.mjs",
   "types": "./dist/types.d.mts",
@@ -48,7 +47,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "nuxt-module-build build && unbuild --config build.eslint.config.ts",
+    "build": "nuxt-module-build build",
     "dev": "nuxi dev playground",
     "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
     "prepack": "pnpm run build",
