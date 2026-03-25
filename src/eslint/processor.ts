@@ -13,15 +13,16 @@ function extractMarkdownLinks(text: string): ExtractedLink[] {
   const lines = text.split('\n')
 
   for (let i = 0; i < lines.length; i++) {
-    let match: RegExpExecArray | null
     MD_LINK_RE.lastIndex = 0
-    while ((match = MD_LINK_RE.exec(lines[i])) !== null) {
+    let match = MD_LINK_RE.exec(lines[i])
+    while (match !== null) {
       const urlStart = match.index + match[1].length + 2 // [text](
       links.push({
         url: match[2],
         line: i + 1,
         column: urlStart + 1,
       })
+      match = MD_LINK_RE.exec(lines[i])
     }
   }
 
