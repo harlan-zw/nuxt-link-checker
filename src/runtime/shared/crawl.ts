@@ -69,7 +69,7 @@ export async function crawlFetch(link: string, options: { timeout?: number, base
       return { status: 404, statusText: 'Not Found', headers: {} }
     })
     .finally(() => clearTimeout(abortRequestTimeout))
-    .then((res: Response) => {
+    .then((res: any) => {
       let headersObj: Record<string, string> = {}
 
       if (res.headers) {

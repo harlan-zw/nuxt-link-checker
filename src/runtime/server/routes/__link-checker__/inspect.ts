@@ -1,3 +1,4 @@
+// @ts-expect-error auto-imported by nuxt-site-config at runtime
 import { getNitroOrigin, getSiteConfig, useRuntimeConfig } from '#imports'
 import { createDefu } from 'defu'
 import Fuse from 'fuse.js'
@@ -40,7 +41,8 @@ export default defineEventHandler(async (e) => {
   } as const
   // allow editing files to trigger a cache clear
   lruFsCache.clear()
-  const links = await $fetch('/__link-checker__/links') as { link: string, title: string, file?: string }[]
+  // @ts-expect-error excessive stack depth from $fetch type inference
+  const links: { link: string, title: string, file?: string }[] = await $fetch('/__link-checker__/links')
   const pageSearch = new Fuse<{ link: string, title: string }>(mergeOnKey(links, 'link'), {
     keys: ['link', 'title'],
     threshold: 0.5,
