@@ -1,5 +1,6 @@
 import type { NuxtPage } from '@nuxt/schema'
 import type { CreateStorageOptions } from 'unstorage'
+import { mkdir, writeFile } from 'node:fs/promises'
 import {
   addPlugin,
   addServerHandler,
@@ -12,7 +13,8 @@ import {
 } from '@nuxt/kit'
 import { installNuxtSiteConfig } from 'nuxt-site-config/kit'
 import { resolveNuxtContentVersion } from 'nuxtseo-shared/kit'
-import { dirname } from 'pathe'
+import { $fetch } from 'ofetch'
+import { dirname, join } from 'pathe'
 import { readPackageJSON } from 'pkg-types'
 import { setupDevToolsUI } from './devtools'
 import { prerender } from './prerender'
@@ -182,6 +184,10 @@ export default defineNuxtModule<ModuleOptions>({
         logger.warn('Remote URL fetching is disabled because you appear to be offline. Set `fetchRemoteUrls: false` to avoid this warning.')
     }
 
+    const hasSitemapModule = (hasNuxtModule('@nuxtjs/sitemap') || (hasNuxtModule('nuxt-simple-sitemap') && await hasNuxtModuleCompatibility('nuxt-simple-sitemap', '>=4')))
+      //  @ts-expect-error runtime
+      && nuxt.options.sitemap?.enabled !== false
+
     const isDevToolsEnabled = typeof nuxt.options.devtools === 'boolean' ? nuxt.options.devtools : nuxt.options.devtools.enabled
     if (nuxt.options.dev && isDevToolsEnabled !== false) {
       addPlugin({
@@ -210,9 +216,6 @@ export default defineNuxtModule<ModuleOptions>({
           return `export default ${JSON.stringify(convertNuxtPagesToPaths(pages), null, 2)}`
         }
       })
-      const hasSitemapModule = (hasNuxtModule('@nuxtjs/sitemap') || (hasNuxtModule('nuxt-simple-sitemap') && await hasNuxtModuleCompatibility('nuxt-simple-sitemap', '>=4')))
-        //  @ts-expect-error runtime
-        && nuxt.options.sitemap?.enabled !== false
       nuxt.options.nitro.alias = nuxt.options.nitro.alias || {}
       const contentVersion = await resolveNuxtContentVersion()
       const isNuxtContentV3 = contentVersion && contentVersion.version === 3
@@ -244,6 +247,67 @@ export default defineNuxtModule<ModuleOptions>({
       }
       setupDevToolsUI(config, resolve)
     }
+
+    // ESLint integration: write route data for eslint rules
+    const routesDir = join(nuxt.options.buildDir, 'link-checker')
+    const routesPath = join(routesDir, 'routes.json')
+    let staticRoutes: string[] = []
+    let dynamicRoutes: string[] = []
+
+    const writeRoutesFile = async () => {
+      await mkdir(routesDir, { recursive: true })
+      await writeFile(routesPath, JSON.stringify({ staticRoutes, dynamicRoutes }))
+    }
+
+    nuxt.hooks.hook('pages:resolved', async (resolved) => {
+      const allPaths = convertNuxtPagesToPaths(resolved, { keepDynamic: true })
+      staticRoutes = allPaths.filter(p => !p.link.includes(':')).map(p => p.link)
+      dynamicRoutes = allPaths.filter(p => p.link.includes(':')).map(p => p.link)
+      await writeRoutesFile()
+    })
+
+    // Enrich with sitemap URLs once dev server is ready
+    if (hasSitemapModule && nuxt.options.dev) {
+      let debounceTimer: ReturnType<typeof setTimeout> | undefined
+      nuxt.hooks.hook('listen', (_server, listener) => {
+        const baseURL = `http://localhost:${listener.port}`
+        const enrichRoutes = async () => {
+          const debug = await $fetch<{ globalSources: { urls: { loc: string }[] }[] }>(`${baseURL}/__sitemap__/debug.json`).catch(() => null)
+          if (!debug)
+            return
+          const sitemapUrls = debug.globalSources.flatMap(s => s.urls).map(u => u.loc)
+          staticRoutes = [...new Set([...staticRoutes, ...sitemapUrls])]
+          await writeRoutesFile()
+        }
+        enrichRoutes()
+        nuxt.hooks.hook('builder:watch', () => {
+          clearTimeout(debounceTimer)
+          debounceTimer = setTimeout(enrichRoutes, 500)
+        })
+      })
+    }
+
+    // @nuxt/eslint auto-registration
+    // @ts-expect-error untyped hook from @nuxt/eslint
+    nuxt.hook('eslint:config:addons', (addons) => {
+      addons.push({
+        name: 'nuxt-link-checker',
+        getConfigs: () => ({
+          imports: [{ from: 'nuxt-link-checker/eslint', name: 'default', as: 'linkCheckerPlugin' }],
+          configs: [
+            `{
+              name: 'nuxt-link-checker/valid-route',
+              files: ['**/*.vue', '**/*.ts', '**/*.md'],
+              plugins: { 'link-checker': linkCheckerPlugin },
+              rules: {
+                'link-checker/valid-route': 'error',
+                'link-checker/valid-sitemap-link': 'warn',
+              },
+            }`,
+          ],
+        }),
+      })
+    })
 
     if (config.runOnBuild) {
       prerender(config, version)

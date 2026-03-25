@@ -1,0 +1,97 @@
+import type { Rule } from 'eslint'
+
+const LINK_ELEMENTS = new Set(['a', 'NuxtLink', 'nuxt-link', 'RouterLink', 'router-link'])
+const LINK_ATTRS = new Set(['to', 'href'])
+const SKIP_PREFIXES = ['http://', 'https://', '//', 'mailto:', 'tel:', 'javascript:', 'blob:', 'data:', 'ftp:']
+
+export function shouldSkipLink(link: string): boolean {
+  if (!link || link === '#' || link.startsWith('#'))
+    return true
+  return SKIP_PREFIXES.some(prefix => link.startsWith(prefix))
+}
+
+export function stripQueryAndHash(link: string): string {
+  const hashIndex = link.indexOf('#')
+  const queryIndex = link.indexOf('?')
+  const endIndex = Math.min(
+    hashIndex === -1 ? link.length : hashIndex,
+    queryIndex === -1 ? link.length : queryIndex,
+  )
+  return link.slice(0, endIndex)
+}
+
+type ReportFn = (link: string, node: unknown) => void
+
+function createTemplateVisitors(report: ReportFn): Record<string, (node: any) => void> {
+  return {
+    'VAttribute[directive=false]': function (node: any) {
+      if (!LINK_ATTRS.has(node.key?.name))
+        return
+      const parent = node.parent?.parent
+      if (!parent || !LINK_ELEMENTS.has(parent.rawName))
+        return
+      const value = node.value?.value
+      if (typeof value === 'string' && !shouldSkipLink(value))
+        report(value, node)
+    },
+    'VAttribute[directive=true][key.name.name="bind"]': function (node: any) {
+      if (!LINK_ATTRS.has(node.key?.argument?.name))
+        return
+      const parent = node.parent?.parent
+      if (!parent || !LINK_ELEMENTS.has(parent.rawName))
+        return
+      const expr = node.value?.expression
+      if (expr?.type === 'Literal' && typeof expr.value === 'string' && !shouldSkipLink(expr.value))
+        report(expr.value, expr)
+    },
+  }
+}
+
+function createScriptVisitors(report: ReportFn): Record<string, (node: any) => void> {
+  return {
+    CallExpression(node: any) {
+      const callee = node.callee
+      if (!callee)
+        return
+
+      let isNavCall = false
+
+      if (callee.type === 'Identifier' && callee.name === 'navigateTo')
+        isNavCall = true
+
+      if (
+        callee.type === 'MemberExpression'
+        && callee.object?.type === 'Identifier'
+        && callee.object.name === 'router'
+        && callee.property?.type === 'Identifier'
+        && (callee.property.name === 'push' || callee.property.name === 'replace')
+      ) {
+        isNavCall = true
+      }
+
+      if (!isNavCall)
+        return
+
+      const arg = node.arguments?.[0]
+      if (arg?.type === 'Literal' && typeof arg.value === 'string' && !shouldSkipLink(arg.value))
+        report(arg.value, arg)
+    },
+  }
+}
+
+export function createCombinedVisitors(context: Rule.RuleContext, check: (link: string, node: any) => void): Record<string, (node: any) => void> {
+  const isVue = context.filename.endsWith('.vue')
+  const scriptVisitors = createScriptVisitors(check)
+
+  if (isVue) {
+    const parserServices = context.sourceCode.parserServices as any
+    if (parserServices?.defineTemplateBodyVisitor) {
+      return parserServices.defineTemplateBodyVisitor(
+        createTemplateVisitors(check),
+        scriptVisitors,
+      )
+    }
+  }
+
+  return scriptVisitors
+}

@@ -23,6 +23,9 @@
     ".": {
       "types": "./dist/types.d.mts",
       "import": "./dist/module.mjs"
+    },
+    "./eslint": {
+      "import": "./dist/eslint.mjs"
     }
   },
   "build": {
@@ -43,7 +46,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "nuxt-module-build build",
+    "build": "nuxt-module-build build && unbuild",
     "dev": "nuxi dev playground",
     "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
     "prepack": "pnpm run build",
@@ -82,6 +85,7 @@
     "@antfu/eslint-config": "catalog:",
     "@nuxt/content": "catalog:",
     "@nuxt/devtools": "catalog:",
+    "@nuxt/eslint": "catalog:",
     "@nuxt/module-builder": "catalog:",
     "@nuxt/test-utils": "catalog:",
     "@nuxtjs/sitemap": "catalog:",
@@ -93,7 +97,9 @@
     "nuxt": "catalog:",
     "nuxtseo-layer-devtools": "catalog:",
     "typescript": "catalog:",
+    "unbuild": "catalog:",
     "vitest": "catalog:",
+    "vue-eslint-parser": "catalog:",
     "vue-tsc": "catalog:"
   },
   "resolutions": {
