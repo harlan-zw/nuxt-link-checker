@@ -23,6 +23,7 @@ export interface ExtractedPayload {
 
 export interface InspectionContext {
   urlFilter: (url: string) => boolean
+  pageFilter: (url: string) => boolean
   config: ModuleOptions
   nuxt: Nuxt
   pageSearcher: Fuse<{ link: string, title?: string }>

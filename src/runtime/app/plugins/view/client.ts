@@ -6,7 +6,7 @@ import type { LinkInspectionResult, NuxtLinkCheckerClient } from '../../../types
 import { useRuntimeConfig } from '#imports'
 import { useLocalStorage } from '@vueuse/core'
 import { computed, createApp, h, ref, unref } from 'vue'
-import { createFilter } from '../../../shared/sharedUtils'
+import { createFilter, deserializeFilterEntries } from '../../../shared/sharedUtils'
 import Main from './Main.vue'
 import { linkDb } from './state'
 
@@ -48,7 +48,10 @@ export async function setupLinkCheckerClient({ nuxt, route }: { nuxt: NuxtApp, r
 
   const runtimeConfig = useRuntimeConfig().public['nuxt-link-checker'] || {} as any
   const filter = createFilter({
-    exclude: runtimeConfig.excludeLinks,
+    exclude: deserializeFilterEntries(runtimeConfig.excludeLinks || []),
+  })
+  const pageFilter = createFilter({
+    exclude: deserializeFilterEntries(runtimeConfig.excludePages || []),
   })
 
   const client: NuxtLinkCheckerClient = {
@@ -57,6 +60,8 @@ export async function setupLinkCheckerClient({ nuxt, route }: { nuxt: NuxtApp, r
     scanLinks() {
       elMap = {}
       visibleLinks.clear()
+      if (!pageFilter(route.path))
+        return
       lastIds = [...new Set(Array.from(document.querySelectorAll('#__nuxt [id]'), el => el.id))]
       Array.from(document.querySelectorAll('#__nuxt a'), el => ({ el, link: el.getAttribute('href')! }))
         .forEach(({ el, link }) => {
