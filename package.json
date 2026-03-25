@@ -47,7 +47,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "nuxt-module-build build",
+    "client:build": "nuxt generate devtools",
+    "build": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build && npm run client:build",
     "dev": "nuxi dev playground",
     "devtools": "nuxt dev devtools --port 3030",
     "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",

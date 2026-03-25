@@ -15,7 +15,7 @@ catalog:
   '@nuxt/kit': ^4.4.2
   '@nuxt/module-builder': ^1.0.2
   '@nuxt/test-utils': ^4.0.0
-  '@nuxtjs/sitemap': ^8.0.1
+  '@nuxtjs/sitemap': ^8.0.3
   '@vueuse/core': ^14.2.1
   better-sqlite3: ^12.8.0
   bumpp: ^11.0.1
@@ -27,8 +27,8 @@ catalog:
   fuse.js: ^7.1.0
   magic-string: ^0.30.21
   nuxt: ^4.4.2
-  nuxt-site-config: ^4.0.1
-  nuxtseo-layer-devtools: ^0.3.1
+  nuxt-site-config: ^4.0.6
+  nuxtseo-layer-devtools: ^0.3.8
   nuxtseo-shared: ^0.7.1
   ofetch: ^1.5.1
   pathe: ^2.0.3
@@ -43,7 +43,7 @@ catalog:
   unbuild: ^3.6.1
   unstorage: ^1.17.4
   vitest: ^4.1.1
-  vue: ^3.5.30
+  vue: ^3.5.31
   vue-eslint-parser: ^10.4.0
   vue-router: ^5.0.4
   vue-tsc: ^3.2.6
