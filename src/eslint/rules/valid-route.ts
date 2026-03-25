@@ -18,7 +18,6 @@ const rule: Rule.RuleModule = {
     }],
     messages: {
       invalidRoute: 'Link "{{link}}" does not match any known route.{{suggestion}}',
-      noRouteData: 'No route data found. Run `nuxt prepare` or `nuxt dev` to generate route data for ESLint.',
     },
   },
   create(context) {

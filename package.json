@@ -25,6 +25,7 @@
       "import": "./dist/module.mjs"
     },
     "./eslint": {
+      "types": "./dist/eslint.d.mts",
       "import": "./dist/eslint.mjs"
     }
   },

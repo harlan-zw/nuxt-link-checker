@@ -275,8 +275,17 @@ export default defineNuxtModule<ModuleOptions>({
           const debug = await $fetch<{ globalSources: { urls: { loc: string }[] }[] }>(`${baseURL}/__sitemap__/debug.json`).catch(() => null)
           if (!debug)
             return
-          const sitemapUrls = debug.globalSources.flatMap(s => s.urls).map(u => u.loc)
-          staticRoutes = [...new Set([...staticRoutes, ...sitemapUrls])]
+          const baseOrigin = new URL(baseURL).origin
+          const sitemapPaths = debug.globalSources
+            .flatMap(s => s.urls)
+            .map((u) => {
+              const parsed = new URL(u.loc, baseURL)
+              if (parsed.origin !== baseOrigin)
+                return null
+              return parsed.pathname || '/'
+            })
+            .filter((p): p is string => !!p && p.startsWith('/'))
+          staticRoutes = [...new Set([...staticRoutes, ...sitemapPaths])]
           await writeRoutesFile()
         }
         enrichRoutes()
@@ -297,8 +306,18 @@ export default defineNuxtModule<ModuleOptions>({
           configs: [
             `{
               name: 'nuxt-link-checker/valid-route',
-              files: ['**/*.vue', '**/*.ts', '**/*.md'],
+              files: ['**/*.vue', '**/*.ts'],
               plugins: { 'link-checker': linkCheckerPlugin },
+              rules: {
+                'link-checker/valid-route': 'error',
+                'link-checker/valid-sitemap-link': 'warn',
+              },
+            }`,
+            `{
+              name: 'nuxt-link-checker/valid-route-markdown',
+              files: ['**/*.md'],
+              plugins: { 'link-checker': linkCheckerPlugin },
+              processor: 'link-checker/markdown',
               rules: {
                 'link-checker/valid-route': 'error',
                 'link-checker/valid-sitemap-link': 'warn',
