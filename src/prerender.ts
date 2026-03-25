@@ -98,7 +98,7 @@ function getTextContent(node: any): string {
   return text.filter(Boolean).map(s => s.trim()).join(' ')
 }
 
-export function prerender(config: ModuleOptions, version?: string, nuxt = useNuxt()): void {
+export function prerender(config: ModuleOptions, version?: string, routeFileMap: Record<string, string> = {}, nuxt = useNuxt()): void {
   if (config.report?.publish) {
     // make paths non indexable using X-Robots-Tag
     nuxt.options.nitro.routeRules = nuxt.options.nitro.routeRules || {}
@@ -156,6 +156,7 @@ export function prerender(config: ModuleOptions, version?: string, nuxt = useNux
         storageFilepath,
         isPrerenderingAllRoutes: isNuxtGenerate(nuxt) || Boolean(nuxt.options.nitro.prerender?.crawlLinks),
         totalRoutes: payloads.length,
+        routeFileMap,
       } satisfies InspectionContext
       const { allReports, errorCount } = await runInspections(payloads, inspectionCtx)
 
@@ -247,7 +248,7 @@ async function runInspections(
 
         // Only log detailed results if reports are not enabled
         if (!hasReportsEnabled(config)) {
-          logRouteIssues(route, reports, routeErrors, routeWarnings, nitro)
+          logRouteIssues(route, reports, routeErrors, routeWarnings, nitro, context.routeFileMap)
         }
       }
 
@@ -374,14 +375,16 @@ function logRouteIssues(
   errors: number,
   warnings: number,
   nitro: Nitro,
+  routeFileMap: Record<string, string> = {},
 ): void {
   const statusString = [
     errors > 0 ? red(`${errors} error${errors > 1 ? 's' : ''}`) : false,
     warnings > 0 ? yellow(`${warnings} warning${warnings > 1 ? 's' : ''}`) : false,
   ].filter(Boolean).join(gray(', '))
 
+  const filePath = routeFileMap[route]
   nitro.logger.log(gray(''))
-  nitro.logger.log(`${white(route)} ${gray('[')}${statusString}${gray(']')}`)
+  nitro.logger.log(`${white(route)} ${gray('[')}${statusString}${gray(']')}${filePath ? ` ${dim(filePath)}` : ''}`)
 
   const reportsByLink = groupReportsByLink(reports)
 
