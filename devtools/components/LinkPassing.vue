@@ -6,7 +6,7 @@ defineProps<{
 
 <template>
   <div class="text-sm flex w-full gap-5">
-    <div style="min-width: 600px;">
+    <div class="min-w-0 flex-1">
       <a :href="item.link" target="_blank" class="font-mono mb-3 text-[var(--color-primary)] hover:underline">
         {{ item.link }}
       </a>

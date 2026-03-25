@@ -139,7 +139,7 @@ export async function setupLinkCheckerClient({ nuxt, route }: { nuxt: NuxtApp, r
         queue = []
         client.isWorkingQueue = false
         if (queueWorkerTimer)
-          clearInterval(queueWorkerTimer)
+          clearTimeout(queueWorkerTimer)
       }
     },
     broadcast(event: string, payload?: any) {

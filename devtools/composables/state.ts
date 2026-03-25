@@ -7,11 +7,13 @@ export const queueLength = ref(0)
 
 export const linkFilter = ref<string | false>('')
 
-export const data = ref<{
-  runtimeConfig: any
-} | null>(null)
-
-export async function fetchDebugData(): Promise<void> {
-  if (appFetch.value)
-    data.value = await appFetch.value('/__link-checker__/debug.json')
+export function useDebugData() {
+  return useAsyncData<{ runtimeConfig: any } | null>('link-checker-debug', () => {
+    if (!appFetch.value)
+      return null
+    return appFetch.value('/__link-checker__/debug.json')
+  }, {
+    watch: [appFetch, refreshTime],
+    default: () => null,
+  })
 }

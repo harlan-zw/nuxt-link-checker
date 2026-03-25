@@ -2,12 +2,11 @@
 import FixActionDialog from './components/FixActionDialog.vue'
 import { linkCheckerRpc } from './composables/rpc'
 import {
-  data,
-  fetchDebugData,
   linkDb,
   linkFilter,
   queueLength,
   showLiveInspections,
+  useDebugData,
   visibleLinks,
 } from './composables/state'
 
@@ -17,13 +16,15 @@ await loadShiki({
   ],
 })
 
+const { data } = await useDebugData()
+
 const refreshSnippets = ref(0)
 
 onMounted(() => {
   const timer = setInterval(() => {
     refreshSnippets.value++
     if (refreshSnippets.value >= 3)
-      clearInterval(interval)
+      clearInterval(timer)
   }, 2000)
 
   onUnmounted(() => {
@@ -43,6 +44,21 @@ const nodes = computed(() => {
   })
 })
 
+const failingNodes = computed(() => {
+  const seen = new Set<string>()
+  return nodes.value.filter((n) => {
+    if (!n.error.length && !n.warning.length)
+      return false
+    if (seen.has(n.link))
+      return false
+    seen.add(n.link)
+    return true
+  })
+})
+
+const internalLinks = computed(() => nodes.value.filter(n => n.passes && n.link.startsWith('/')))
+const externalLinks = computed(() => nodes.value.filter(n => n.passes && !n.link.startsWith('/')))
+
 const errorCount = computed(() => {
   return nodes.value.reduce((count, n) => count + n.error.length, 0)
 })
@@ -52,6 +68,19 @@ const warningCount = computed(() => {
 
 const visibleLinkCount = computed(() => {
   return visibleLinks.value.length
+})
+
+const runtimeConfigItems = computed(() => {
+  const config = data.value?.runtimeConfig || {}
+  return Object.entries(config)
+    .filter(([key]) => key !== 'version')
+    .map(([key, value]) => ({
+      key,
+      value: typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value ?? ''),
+      mono: true,
+      copyable: true,
+      code: typeof value === 'object' ? 'json' as const : undefined,
+    }))
 })
 
 async function retryAll() {
@@ -68,17 +97,16 @@ const tab = ref('inspections')
 const loading = ref(false)
 
 const navItems = [
-  { value: 'inspections', icon: 'carbon:warning-diamond', label: 'Inspections' },
-  { value: 'links', icon: 'carbon:checkmark-outline', label: 'Links' },
-  { value: 'debug', icon: 'carbon:debug', label: 'Debug' },
-  { value: 'docs', icon: 'carbon:book', label: 'Docs' },
+  { value: 'inspections', icon: 'carbon:warning-diamond', label: 'Inspections', devOnly: false },
+  { value: 'links', icon: 'carbon:checkmark-outline', label: 'Links', devOnly: false },
+  { value: 'debug', icon: 'carbon:debug', label: 'Debug', devOnly: true },
+  { value: 'docs', icon: 'carbon:book', label: 'Docs', devOnly: false },
 ]
 
 async function refresh() {
   loading.value = true
-  data.value = null
   await retryAll()
-  await fetchDebugData()
+  refreshSources()
   setTimeout(() => {
     loading.value = false
   }, 300)
@@ -112,7 +140,7 @@ async function refresh() {
         <DevtoolsMetric
           v-if="queueLength"
           icon="carbon:progress-bar-round"
-          :value="`${Math.round((Math.abs(queueLength - visibleLinkCount) / visibleLinkCount) * 100)}%`"
+          :value="`${visibleLinkCount ? Math.round((Math.abs(queueLength - visibleLinkCount) / visibleLinkCount) * 100) : 0}%`"
         />
         <DevtoolsMetric
           v-if="errorCount"
@@ -145,9 +173,9 @@ async function refresh() {
       </p>
 
       <div v-if="!linkFilter">
-        <template v-if="[...nodes.filter(n => n.error.length), ...nodes.filter(n => n.warning.length)].length">
+        <template v-if="failingNodes.length">
           <LinkInspection
-            v-for="(item, index) of [...nodes.filter(n => n.error.length), ...nodes.filter(n => n.warning.length)]"
+            v-for="(item, index) of failingNodes"
             :key="index"
             :item="item"
             class="odd:bg-[var(--color-bg-elevated)] p-2"
@@ -169,23 +197,19 @@ async function refresh() {
     <!-- Links tab -->
     <div v-else-if="tab === 'links'" class="space-y-4">
       <DevtoolsSection icon="carbon:chart-network" text="Internal Links">
-        <LinkPassing v-for="(item, index) of nodes.filter(n => n.passes && n.link.startsWith('/'))" :key="index" :item="item" />
-        <DevtoolsEmptyState v-if="!nodes.filter(n => n.passes && n.link.startsWith('/')).length" icon="carbon:link" title="No internal links" />
+        <LinkPassing v-for="(item, index) of internalLinks" :key="index" :item="item" />
+        <DevtoolsEmptyState v-if="!internalLinks.length" icon="carbon:link" title="No internal links" />
       </DevtoolsSection>
       <DevtoolsSection icon="carbon:launch" text="External Links">
-        <LinkPassing v-for="(item, index) of nodes.filter(n => n.passes && !n.link.startsWith('/'))" :key="index" :item="item" />
-        <DevtoolsEmptyState v-if="!nodes.filter(n => n.passes && !n.link.startsWith('/')).length" icon="carbon:link" title="No external links" />
+        <LinkPassing v-for="(item, index) of externalLinks" :key="index" :item="item" />
+        <DevtoolsEmptyState v-if="!externalLinks.length" icon="carbon:link" title="No external links" />
       </DevtoolsSection>
     </div>
 
     <!-- Debug tab -->
     <div v-else-if="tab === 'debug'" class="space-y-4">
       <DevtoolsSection icon="carbon:settings" text="Runtime Config">
-        <DevtoolsSnippet
-          :code="JSON.stringify(data?.runtimeConfig || {}, null, 2)"
-          lang="json"
-          label="Runtime Config"
-        />
+        <DevtoolsKeyValue :items="runtimeConfigItems" striped />
       </DevtoolsSection>
     </div>
 

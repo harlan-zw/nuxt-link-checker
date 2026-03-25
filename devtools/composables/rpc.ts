@@ -3,7 +3,7 @@ import type { BirpcReturn } from 'birpc'
 import type { ClientFunctions, ServerFunctions } from '../../src/rpc-types'
 import type { NuxtLinkCheckerClient } from '../../src/runtime/types'
 import { getQuery } from 'ufo'
-import { fetchDebugData, linkDb, linkFilter, queueLength, visibleLinks } from './state'
+import { linkDb, linkFilter, queueLength, visibleLinks } from './state'
 
 const RPC_NAMESPACE = 'nuxt-link-checker-rpc'
 
@@ -15,6 +15,11 @@ useDevtoolsConnection({
   onConnected(client) {
     devtoolsClient.value = client
     devtoolsRpc.value = client.devtools.rpc
+
+    base.value = client.host.nuxt.vueApp.config.globalProperties?.$router?.options?.history?.base || client.host.app.baseURL || '/'
+    const $route = client.host.nuxt.vueApp.config.globalProperties?.$route
+    if ($route)
+      path.value = $route.path || '/'
 
     const nuxt = client.host.nuxt
     const linkCheckerClient = nuxt.vueApp._instance?.appContext.provides.linkChecker as NuxtLinkCheckerClient
@@ -39,11 +44,10 @@ useDevtoolsConnection({
     })
 
     linkCheckerRpc.value!.connected()
-    fetchDebugData()
     refreshSources()
   },
-  onRouteChange() {
-    fetchDebugData()
+  onRouteChange(route) {
+    path.value = route.path
     refreshSources()
   },
 })

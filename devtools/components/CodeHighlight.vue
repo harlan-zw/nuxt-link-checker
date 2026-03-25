@@ -8,7 +8,7 @@ const props = defineProps<{
 }>()
 
 function transformRendered(code: string) {
-  return code.replace(props.link, `<span class="highlight">${props.link}</span>`)
+  return code.replaceAll(props.link, `<span class="highlight">${props.link}</span>`)
 }
 
 const elRef = useTemplateRef<HTMLDivElement>('elRef')
@@ -29,7 +29,7 @@ const elRef = useTemplateRef<HTMLDivElement>('elRef')
   background-color: #ffd5d5;
 }
 
-.vitesse-dark .highlight {
+.dark .highlight {
   background-color: #5c0000;
 }
 </style>

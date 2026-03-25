@@ -26,7 +26,7 @@ async function scrollToLink() {
     <div class="flex-shrink-0">
       <UButton variant="ghost" size="xs" icon="carbon:cursor-2" @click="scrollToLink" />
     </div>
-    <div style="min-width: 600px;">
+    <div class="min-w-0 flex-1">
       <div class="flex space-x-2">
         <UTooltip :text="item.textContent">
           <div class="opacity-90 truncate" style="max-width: 150px;">
