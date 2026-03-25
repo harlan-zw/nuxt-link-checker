@@ -3,11 +3,51 @@ import type { Rule } from 'eslint'
 const LINK_ELEMENTS = new Set(['a', 'NuxtLink', 'nuxt-link', 'RouterLink', 'router-link'])
 const LINK_ATTRS = new Set(['to', 'href'])
 const SKIP_PREFIXES = ['http://', 'https://', '//', 'mailto:', 'tel:', 'javascript:', 'blob:', 'data:', 'ftp:']
+const STATIC_FILE_EXTENSIONS = new Set([
+  '.pdf',
+  '.png',
+  '.jpg',
+  '.jpeg',
+  '.gif',
+  '.svg',
+  '.ico',
+  '.webp',
+  '.avif',
+  '.mp3',
+  '.mp4',
+  '.webm',
+  '.ogg',
+  '.wav',
+  '.zip',
+  '.gz',
+  '.tar',
+  '.rar',
+  '.xml',
+  '.txt',
+  '.json',
+  '.csv',
+  '.rss',
+  '.atom',
+  '.woff',
+  '.woff2',
+  '.ttf',
+  '.eot',
+  '.js',
+  '.css',
+  '.map',
+])
 
 export function shouldSkipLink(link: string): boolean {
   if (!link || link === '#' || link.startsWith('#'))
     return true
-  return SKIP_PREFIXES.some(prefix => link.startsWith(prefix))
+  if (SKIP_PREFIXES.some(prefix => link.startsWith(prefix)))
+    return true
+  // Skip links to static files (served from public/, not vue-router)
+  const pathname = link.split('?')[0].split('#')[0]
+  const lastDot = pathname.lastIndexOf('.')
+  if (lastDot !== -1 && STATIC_FILE_EXTENSIONS.has(pathname.slice(lastDot).toLowerCase()))
+    return true
+  return false
 }
 
 export function stripQueryAndHash(link: string): string {
@@ -22,6 +62,16 @@ export function stripQueryAndHash(link: string): string {
 
 type ReportFn = (link: string, node: unknown) => void
 
+function hasRelNofollow(element: any): boolean {
+  const attrs = element.startTag?.attributes ?? element.attributes ?? []
+  return attrs.some((attr: any) =>
+    !attr.directive
+    && attr.key?.name === 'rel'
+    && typeof attr.value?.value === 'string'
+    && attr.value.value.split(/\s+/).includes('nofollow'),
+  )
+}
+
 function createTemplateVisitors(report: ReportFn): Record<string, (node: any) => void> {
   return {
     'VAttribute[directive=false]': function (node: any) {
@@ -29,6 +79,8 @@ function createTemplateVisitors(report: ReportFn): Record<string, (node: any) =>
         return
       const parent = node.parent?.parent
       if (!parent || !LINK_ELEMENTS.has(parent.rawName))
+        return
+      if (hasRelNofollow(parent))
         return
       const value = node.value?.value
       if (typeof value === 'string' && !shouldSkipLink(value))
@@ -39,6 +91,8 @@ function createTemplateVisitors(report: ReportFn): Record<string, (node: any) =>
         return
       const parent = node.parent?.parent
       if (!parent || !LINK_ELEMENTS.has(parent.rawName))
+        return
+      if (hasRelNofollow(parent))
         return
       const expr = node.value?.expression
       if (expr?.type === 'Literal' && typeof expr.value === 'string' && !shouldSkipLink(expr.value))

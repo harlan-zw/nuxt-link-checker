@@ -40,6 +40,14 @@ describe('valid-route', () => {
         vueCase('<template><NuxtLink to="/about#section" /></template>'),
         vueCase('<template><router-link to="/contact" /></template>'),
         vueCase('<template><NuxtLink :to="dynamicVar" /></template>'),
+        // rel="nofollow" escape hatch
+        vueCase('<template><a href="/nonexistent" rel="nofollow" /></template>'),
+        vueCase('<template><NuxtLink to="/nonexistent" rel="nofollow" /></template>'),
+        // static file extensions (served from public/)
+        vueCase('<template><a href="/document.pdf" /></template>'),
+        vueCase('<template><a href="/image.png" /></template>'),
+        vueCase('<template><a href="/favicon.ico" /></template>'),
+        vueCase('<template><a href="/feed.xml" /></template>'),
       ],
       invalid: [
         vueInvalid('<template><NuxtLink to="/abot" /></template>'),
