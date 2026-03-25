@@ -33,6 +33,7 @@ export interface InspectionContext {
   totalRoutes: number
   version?: string
   isPrerenderingAllRoutes: boolean
+  routeFileMap: Record<string, string>
 }
 
 export async function generateReports(reports: PathReport[], ctx: InspectionContext): Promise<void> {

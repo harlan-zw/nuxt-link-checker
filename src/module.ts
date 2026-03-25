@@ -248,6 +248,15 @@ export default defineNuxtModule<ModuleOptions>({
       setupDevToolsUI(config, resolve)
     }
 
+    // Collect route-to-file mapping for console output (#43)
+    const routeFileMap: Record<string, string> = {}
+    nuxt.hooks.hook('pages:resolved', (resolved) => {
+      for (const entry of convertNuxtPagesToPaths(resolved)) {
+        if (entry.file)
+          routeFileMap[entry.link] = entry.file
+      }
+    })
+
     // ESLint integration: write route data for eslint rules
     const routesDir = join(nuxt.options.buildDir, 'link-checker')
     const routesPath = join(routesDir, 'routes.json')
@@ -329,7 +338,7 @@ export default defineNuxtModule<ModuleOptions>({
     })
 
     if (config.runOnBuild) {
-      prerender(config, version)
+      prerender(config, version, routeFileMap)
     }
   },
 })
