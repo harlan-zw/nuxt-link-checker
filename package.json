@@ -48,14 +48,15 @@
   ],
   "scripts": {
     "build": "nuxt-module-build build",
-    "dev": "nuxi dev playground",
-    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
+    "dev": "nuxt dev playground",
+    "devtools": "nuxt dev --port 3030 devtools",
+    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt prepare playground",
     "prepack": "pnpm run build",
     "release": "pnpm build && bumpp --output=CHANGELOG.md",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "nuxt typecheck",
-    "prepare:fixtures": "nuxi prepare test/fixtures/basic",
+    "prepare:fixtures": "nuxt prepare test/fixtures/basic",
     "test": "pnpm prepare:fixtures && vitest",
     "test:run": "pnpm prepare:fixtures && vitest run"
   },
