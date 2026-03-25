@@ -19,6 +19,7 @@ import { readPackageJSON } from 'pkg-types'
 import { setupDevToolsUI } from './devtools'
 import { prerender } from './prerender'
 import { crawlFetch } from './runtime/shared/crawl'
+import { serializeFilterEntries } from './runtime/shared/sharedUtils'
 import { convertNuxtPagesToPaths } from './util'
 
 export interface ModuleOptions {
@@ -239,7 +240,7 @@ export default defineNuxtModule<ModuleOptions>({
         version,
         hasSitemapModule,
         rootDir: nuxt.options.rootDir,
-        excludeLinks: config.excludeLinks,
+        excludeLinks: serializeFilterEntries(config.excludeLinks),
         skipInspections: config.skipInspections,
         fetchTimeout: config.fetchTimeout,
         showLiveInspections: config.showLiveInspections,
