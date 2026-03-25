@@ -45,7 +45,8 @@ export const markdownProcessor: Linter.Processor = {
     const lineMap: Map<number, ExtractedLink> = new Map()
 
     for (let i = 0; i < links.length; i++) {
-      virtualLines.push(`navigateTo('${links[i].url.replace(/'/g, '\\\'')}')`)
+      const escaped = links[i].url.replace(/\\/g, '\\\\').replace(/'/g, '\\\'')
+      virtualLines.push(`navigateTo('${escaped}')`)
       lineMap.set(i + 1, links[i])
     }
 
