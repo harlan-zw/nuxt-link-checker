@@ -116,6 +116,7 @@ async function refresh() {
 <template>
   <DevtoolsLayout
     v-model:active-tab="tab"
+    module-name="nuxt-link-checker"
     title="Link Checker"
     icon="carbon:cloud-satellite-link"
     :version="data?.runtimeConfig?.version"
