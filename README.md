@@ -24,10 +24,11 @@ need this module.
 
 ## Features
 
-- ✅ 13 SEO focused link inspections
+- ✅ 15 SEO focused link inspections
 - ✨ See live inspections right in your Nuxt App
 - 🧙 Magically fix them in Nuxt Dev Tools
-- 🚩 Generate reports on build (HTML, markdown)
+- 🚩 Generate reports on build (HTML, Markdown, JSON)
+- 🪝 [ESLint plugin](https://nuxtseo.com/link-checker/guides/eslint) for instant feedback in your IDE
 
 ## Installation
 
@@ -46,10 +47,6 @@ npx nuxi@latest module add link-checker
 ## Documentation
 
 [📖 Read the full documentation](https://nuxtseo.com/link-checker/getting-started/installation) for more information.
-
-## Demos
-
-- [StackBlitz](https://stackblitz.com/edit/nuxt-starter-qtaq7x?file=pages%2Findex.vue)
 
 ## Sponsors
 
