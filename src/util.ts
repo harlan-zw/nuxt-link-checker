@@ -4,7 +4,7 @@ import type { WebSocketServer } from 'vite'
 import { useNuxt } from '@nuxt/kit'
 import { joinURL } from 'ufo'
 
-export function convertNuxtPagesToPaths(pages: NuxtPage[]): { title: string, link: string }[] {
+export function convertNuxtPagesToPaths(pages: NuxtPage[], options?: { keepDynamic?: boolean }): { title: string, link: string }[] {
   return pages
     .map((page) => {
       return page.children?.length
@@ -17,7 +17,7 @@ export function convertNuxtPagesToPaths(pages: NuxtPage[]): { title: string, lin
         : { page, path: page.path }
     })
     .flat()
-    .filter(p => !p.path.includes(':'))
+    .filter(p => options?.keepDynamic || !p.path.includes(':'))
     .map(p => ({
       title: p.page?.meta?.title || '',
       link: p.path,
