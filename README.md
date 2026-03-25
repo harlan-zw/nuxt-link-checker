@@ -9,7 +9,7 @@ Nuxt Link Checker is a collection of SEO focused link inspections for your Nuxt 
 
 By keeping your links in check, you can ensure that your site is discoverable and accessible to [search engine crawlers](https://nuxtseo.com/learn/controlling-crawlers) and your users.
 
-New to SEO? Check out the [Controlling Web Crawlers](https://nuxtseo.com/learn/controlling-crawlers) guide to learn more about why you might
+New to SEO? Check out the [Controlling Web Crawlers](https://nuxtseo.com/learn-seo/nuxt/controlling-crawlers) guide to learn more about why you might
 need this module.
 
 <p align="center">
