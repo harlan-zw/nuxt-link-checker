@@ -44,7 +44,7 @@ export function shouldSkipLink(link: string): boolean {
   if (SKIP_PREFIXES.some(prefix => link.startsWith(prefix)))
     return true
   // Skip links to static files (served from public/, not vue-router)
-  const pathname = link.split('?')[0].split('#')[0]
+  const pathname = (link.split('?')[0] ?? '').split('#')[0] ?? ''
   const lastDot = pathname.lastIndexOf('.')
   if (lastDot !== -1 && STATIC_FILE_EXTENSIONS.has(pathname.slice(lastDot).toLowerCase()))
     return true

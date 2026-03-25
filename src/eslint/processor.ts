@@ -15,23 +15,26 @@ function extractMarkdownLinks(text: string): ExtractedLink[] {
   const lines = text.split('\n')
 
   for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]!
     MD_LINK_RE.lastIndex = 0
-    let match = MD_LINK_RE.exec(lines[i])
+    let match = MD_LINK_RE.exec(line)
     while (match !== null) {
-      const urlStart = match.index + match[1].length + 2 // [text](
+      const linkText = match[1] ?? ''
+      const url = match[2] ?? ''
+      const urlStart = match.index + linkText.length + 2 // [text](
       links.push({
-        url: match[2],
+        url,
         line: i + 1,
         column: urlStart + 1,
       })
-      match = MD_LINK_RE.exec(lines[i])
+      match = MD_LINK_RE.exec(line)
     }
   }
 
   return links
 }
 
-// Stack of line maps to support nested preprocess/postprocess pairs
+// Stack of line maps to support sequential preprocess/postprocess pairs
 const lineMapStack: Map<number, ExtractedLink>[] = []
 
 export const markdownProcessor: Linter.Processor = {
@@ -47,12 +50,13 @@ export const markdownProcessor: Linter.Processor = {
     }
 
     const virtualLines: string[] = []
-    const lineMap: Map<number, ExtractedLink> = new Map()
+    const lineMap = new Map<number, ExtractedLink>()
 
     for (let i = 0; i < links.length; i++) {
-      const escaped = links[i].url.replace(BACKSLASH_RE, '\\\\').replace(SINGLE_QUOTE_RE, '\\\'')
+      const link = links[i]!
+      const escaped = link.url.replace(BACKSLASH_RE, '\\\\').replace(SINGLE_QUOTE_RE, '\\\'')
       virtualLines.push(`navigateTo('${escaped}')`)
-      lineMap.set(i + 1, links[i])
+      lineMap.set(i + 1, link)
     }
 
     lineMapStack.push(lineMap)
