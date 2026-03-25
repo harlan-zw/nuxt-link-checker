@@ -7,7 +7,7 @@ export const queueLength = ref(0)
 
 export const linkFilter = ref<string | false>('')
 
-export function useDebugData() {
+export function useDebugData(): any {
   return useAsyncData<{ runtimeConfig: any } | null>('link-checker-debug', () => {
     if (!appFetch.value)
       return null
