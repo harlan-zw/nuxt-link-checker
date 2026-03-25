@@ -14,6 +14,7 @@ export default async (e: H3Event): Promise<{ link: string, title: string, file: 
   // now we need to handle multiple queries here, we want to run the requests in parallel
   const contentList = []
   for (const collection of collections) {
+    // @ts-expect-error collection names are dynamic from manifest
     contentList.push(queryCollection(e, collection).select('id', 'path', 'title').where('path', 'IS NOT NULL').all())
   }
   // we need to wait for all the queries to finish

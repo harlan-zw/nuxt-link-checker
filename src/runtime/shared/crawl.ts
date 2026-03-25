@@ -11,27 +11,27 @@ const MockSuccessResponse = Promise.resolve({ status: 200, statusText: 'OK', hea
 export async function getLinkResponse({ link, timeout, fetchRemoteUrls, baseURL, isInStorage }: { link: string, baseURL?: string, timeout?: number, fetchRemoteUrls?: boolean, isInStorage: () => boolean }): Promise<LinkResponse | null> {
   // if the link has an anchor on it, do the request without the anchor
   if (link.includes('#') && !link.startsWith('#'))
-    link = link.split('#')[0]
+    link = link.split('#')[0]!
   link = decodeURI(link)
   if (link in responses) {
-    return responses[link]
+    return responses[link]!
   }
   if (isNonFetchableLink(link)) {
     return null
   }
   if (isInStorage()) {
     responses[link] = Promise.resolve({ status: 200, statusText: 'OK', headers: { 'X-Nuxt-Prerendered': true } })
-    return responses[link]
+    return responses[link]!
   }
   // handle absolute links
   if (link.startsWith('http') || link.startsWith('//')) {
     // TODO check they don't include the site URL
     responses[link] = fetchRemoteUrls ? crawlFetch(link, { timeout, baseURL }) : MockSuccessResponse
-    return responses[link]
+    return responses[link]!
   }
   // relative link in dev?
   responses[link] = crawlFetch(link, { timeout, baseURL })
-  return responses[link]
+  return responses[link]!
 }
 
 export function setLinkResponse(link: string, response: Promise<{ status: number, statusText: string, headers: Record<string, any> }>): void {

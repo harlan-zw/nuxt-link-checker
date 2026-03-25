@@ -4,7 +4,7 @@ import type { Nuxt } from 'nuxt/schema'
 import type { SiteConfigResolved } from 'site-config-stack'
 import type { Storage } from 'unstorage'
 import type { ModuleOptions } from '../module'
-import type { LinkInspectionResult } from '../runtime/types'
+import type { LinkInspectionResult, RuleReport } from '../runtime/types'
 import { colors } from 'consola/utils'
 import { useSiteConfig } from 'nuxt-site-config/kit'
 import { relative, resolve } from 'pathe'
@@ -188,8 +188,8 @@ async function generateHtmlReport(reports: PathReport[], {
       const reportsHtml = reports
         .filter(r => r.error?.length || r.warning?.length)
         .map((r) => {
-          const hasErrors = r.error?.length > 0
-          const hasWarnings = r.warning?.length > 0
+          const hasErrors = (r.error?.length ?? 0) > 0
+          const hasWarnings = (r.warning?.length ?? 0) > 0
           const linkClass = hasErrors ? 'link-error' : hasWarnings ? 'link-warning' : 'link-valid'
 
           const errors = r.error?.map(error =>
@@ -263,7 +263,7 @@ async function generateMarkdownReport(reports: PathReport[], { storage, storageF
 
     // Compare segment by segment
     for (let i = 0; i < minLength; i++) {
-      const cmp = segmentsA[i].localeCompare(segmentsB[i])
+      const cmp = segmentsA[i]!.localeCompare(segmentsB[i]!)
       if (cmp !== 0)
         return cmp
     }
@@ -307,21 +307,22 @@ async function generateMarkdownReport(reports: PathReport[], { storage, storageF
       ].filter(Boolean).join(', ')
 
       // Group issues by link for better organization
-      const linkIssues = new Map()
+      const linkIssues = new Map<string, { errors: RuleReport[], warnings: RuleReport[], textContent: string }>()
 
       reports.forEach((r) => {
         if ((r.error?.length || 0) + (r.warning?.length || 0) === 0)
           return
 
-        if (!linkIssues.has(r.link)) {
-          linkIssues.set(r.link, {
+        const link = r.link!
+        if (!linkIssues.has(link)) {
+          linkIssues.set(link, {
             errors: [],
             warnings: [],
             textContent: r.textContent || '',
           })
         }
 
-        const issues = linkIssues.get(r.link)
+        const issues = linkIssues.get(link)!
         if (r.error?.length)
           issues.errors.push(...r.error)
         if (r.warning?.length)

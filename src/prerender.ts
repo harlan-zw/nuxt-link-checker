@@ -53,7 +53,7 @@ export async function extractPayload(html: string, rootNodeId = '#__nuxt'): Prom
     // Extract title
     if (node.type === ELEMENT_NODE && node.name === 'title') {
       if (node.children && node.children.length > 0) {
-        title.push(node.children[0].value || '')
+        title.push(node.children[0]?.value || '')
       }
     }
 
@@ -304,7 +304,7 @@ async function processRouteLinks(
       })
 
       const report = inspect({
-        ids: linkMap[route].ids,
+        ids: linkMap[route]!.ids,
         fromPath: route,
         pageSearch: pageSearcher,
         siteConfig,
@@ -437,11 +437,11 @@ function groupReportsByLink(reports: any[]): Record<string, { textContent: strin
     }
 
     if (report.error?.length) {
-      result[report.link].errors.push(...report.error)
+      result[report.link]!.errors.push(...report.error)
     }
 
     if (report.warning?.length) {
-      result[report.link].warnings.push(...report.warning)
+      result[report.link]!.warnings.push(...report.warning)
     }
   })
 

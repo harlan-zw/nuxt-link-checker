@@ -80,12 +80,12 @@ export function setupDevToolsUI(options: ModuleOptions, moduleResolve: Resolver[
       }
     })
 
-    let lastRoutes: string[] = []
+    let lastRoutes: { title: string, link: string }[] = []
     extendPages(async (pages) => {
       const routes = convertNuxtPagesToPaths(pages)
       if (lastRoutes.length) {
         const routeDiff = diffArrays(lastRoutes, routes)
-        if (routeDiff.some(diff => diff.added || diff.removed))
+        if (routeDiff?.some(diff => diff.added || diff.removed))
           ws.send('nuxt-link-checker:reset')
       }
       lastRoutes = routes

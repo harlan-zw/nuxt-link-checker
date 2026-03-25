@@ -40,7 +40,7 @@ export default defineEventHandler(async (e) => {
   } as const
   // allow editing files to trigger a cache clear
   lruFsCache.clear()
-  const links = await $fetch('/__link-checker__/links')
+  const links = await $fetch('/__link-checker__/links') as { link: string, title: string, file?: string }[]
   const pageSearch = new Fuse<{ link: string, title: string }>(mergeOnKey(links, 'link'), {
     keys: ['link', 'title'],
     threshold: 0.5,
@@ -69,7 +69,7 @@ export default defineEventHandler(async (e) => {
         skipInspections: runtimeConfig.skipInspections,
       })
       const filePaths = [
-        resolve(runtimeConfig.rootDir, links.find(l => l.file && l.link === path)?.file),
+        resolve(runtimeConfig.rootDir, links.find(l => l.file && l.link === path)?.file || ''),
         ...paths.map((p) => {
           const [filepath] = p.split(':')
           return filepath
