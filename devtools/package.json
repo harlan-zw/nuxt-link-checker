@@ -3,7 +3,6 @@
   "private": true,
   "devDependencies": {
     "@nuxt/devtools-kit": "catalog:",
-    "@nuxt/kit": "catalog:",
     "nuxt": "catalog:",
     "nuxtseo-layer-devtools": "catalog:",
     "shiki": "catalog:",

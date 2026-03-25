@@ -5,6 +5,7 @@ trustPolicy: no-downgrade
 packages:
   - playground
   - devtools
+  - '!examples/**'
 
 catalog:
   '@antfu/eslint-config': ^7.7.3

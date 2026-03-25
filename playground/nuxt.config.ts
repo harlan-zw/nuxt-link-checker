@@ -1,6 +1,3 @@
-import { resolve } from 'node:path'
-import { startSubprocess } from '@nuxt/devtools-kit'
-import { defineNuxtModule } from '@nuxt/kit'
 import { defineNuxtConfig } from 'nuxt/config'
 
 export default defineNuxtConfig({
@@ -10,7 +7,6 @@ export default defineNuxtConfig({
     '@nuxt/content',
   ],
 
-  // @ts-expect-error untyped
   site: {
     url: 'https://nuxt-link-checker.com',
     // trailingSlash: true,
