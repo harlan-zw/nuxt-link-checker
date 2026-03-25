@@ -117,6 +117,19 @@ export interface ModuleOptions {
    */
   enabled: boolean
   /**
+   * Pages to exclude from link checking entirely.
+   *
+   * When a page matches, none of its links will be inspected.
+   *
+   * Supports the same pattern types as `excludeLinks`:
+   * - Exact matches: `/about`
+   * - Wildcards: `/admin/**`
+   * - RegExp patterns: `/^\/blog\/\d+$/`
+   *
+   * @default []
+   */
+  excludePages: (string | RegExp)[]
+  /**
    * Display debug information.
    *
    * @default false
@@ -163,6 +176,7 @@ export default defineNuxtModule<ModuleOptions>({
       excludeLinks: [
         excludeUnderscorePathsRe,
       ],
+      excludePages: [],
       skipInspections: [],
     }
   },
@@ -241,6 +255,7 @@ export default defineNuxtModule<ModuleOptions>({
         hasSitemapModule,
         rootDir: nuxt.options.rootDir,
         excludeLinks: serializeFilterEntries(config.excludeLinks),
+        excludePages: serializeFilterEntries(config.excludePages),
         skipInspections: config.skipInspections,
         fetchTimeout: config.fetchTimeout,
         showLiveInspections: config.showLiveInspections,

@@ -120,11 +120,14 @@ export function prerender(config: ModuleOptions, version?: string, routeFileMap:
   const urlFilter = createFilter({
     exclude: config.excludeLinks,
   })
+  const pageFilter = createFilter({
+    exclude: config.excludePages,
+  })
   nuxt.hooks.hook('nitro:init', async (nitro) => {
     const siteConfig = useSiteConfig()
     nitro.hooks.hook('prerender:generate', async (ctx) => {
       const route = decodeURI(ctx.route)
-      if (ctx.contents && !ctx.error && ctx.fileName?.endsWith('.html') && !route.endsWith('.html') && urlFilter(route))
+      if (ctx.contents && !ctx.error && ctx.fileName?.endsWith('.html') && !route.endsWith('.html') && pageFilter(route))
         linkMap[route] = await extractPayload(ctx.contents, nuxt.options.app.rootAttrs?.id || '')
 
       setLinkResponse(route, Promise.resolve({
@@ -146,6 +149,7 @@ export function prerender(config: ModuleOptions, version?: string, routeFileMap:
       nitro.logger.info('Running link inspections...')
       const inspectionCtx = {
         urlFilter,
+        pageFilter,
         config,
         nuxt,
         pageSearcher,

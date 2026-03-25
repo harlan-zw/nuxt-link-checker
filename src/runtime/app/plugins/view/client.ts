@@ -50,6 +50,9 @@ export async function setupLinkCheckerClient({ nuxt, route }: { nuxt: NuxtApp, r
   const filter = createFilter({
     exclude: deserializeFilterEntries(runtimeConfig.excludeLinks || []),
   })
+  const pageFilter = createFilter({
+    exclude: deserializeFilterEntries(runtimeConfig.excludePages || []),
+  })
 
   const client: NuxtLinkCheckerClient = {
     isWorkingQueue: false,
@@ -57,6 +60,8 @@ export async function setupLinkCheckerClient({ nuxt, route }: { nuxt: NuxtApp, r
     scanLinks() {
       elMap = {}
       visibleLinks.clear()
+      if (!pageFilter(route.path))
+        return
       lastIds = [...new Set(Array.from(document.querySelectorAll('#__nuxt [id]'), el => el.id))]
       Array.from(document.querySelectorAll('#__nuxt a'), el => ({ el, link: el.getAttribute('href')! }))
         .forEach(({ el, link }) => {
