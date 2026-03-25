@@ -1,0 +1,13 @@
+{
+  "name": "nuxt-link-checker-devtools",
+  "private": true,
+  "devDependencies": {
+    "@nuxt/devtools-kit": "catalog:",
+    "@nuxt/kit": "catalog:",
+    "nuxt": "catalog:",
+    "nuxtseo-layer-devtools": "catalog:",
+    "shiki": "catalog:",
+    "vue": "catalog:",
+    "vue-router": "catalog:"
+  }
+}

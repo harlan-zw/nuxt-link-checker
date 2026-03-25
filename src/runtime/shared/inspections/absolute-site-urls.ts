@@ -1,6 +1,7 @@
+import type { Rule } from '../../types'
 import { defineRule } from './util'
 
-export default function RuleAbsoluteSiteUrls() {
+export default function RuleAbsoluteSiteUrls(): Rule {
   return defineRule({
     id: 'absolute-site-urls',
     test({ report, url, siteConfig }) {

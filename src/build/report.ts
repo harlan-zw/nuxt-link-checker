@@ -4,7 +4,7 @@ import type { Nuxt } from 'nuxt/schema'
 import type { SiteConfigResolved } from 'site-config-stack'
 import type { Storage } from 'unstorage'
 import type { ModuleOptions } from '../module'
-import type { LinkInspectionResult } from '../runtime/types'
+import type { LinkInspectionResult, RuleReport } from '../runtime/types'
 import { colors } from 'consola/utils'
 import { useSiteConfig } from 'nuxt-site-config/kit'
 import { relative, resolve } from 'pathe'
@@ -35,7 +35,7 @@ export interface InspectionContext {
   isPrerenderingAllRoutes: boolean
 }
 
-export async function generateReports(reports: PathReport[], ctx: InspectionContext) {
+export async function generateReports(reports: PathReport[], ctx: InspectionContext): Promise<void> {
   const report = ctx.config.report || {}
   const reportPaths: string[] = []
   if (report.html) {
@@ -65,7 +65,7 @@ async function generateHtmlReport(reports: PathReport[], {
   storageFilepath,
   totalRoutes,
   version,
-}: InspectionContext) {
+}: InspectionContext): Promise<string> {
   const timestamp = new Date().toLocaleString()
   const totalErrors = reports.reduce((sum, { reports }) =>
     sum + reports.filter(r => r.error?.length).length, 0)
@@ -188,8 +188,8 @@ async function generateHtmlReport(reports: PathReport[], {
       const reportsHtml = reports
         .filter(r => r.error?.length || r.warning?.length)
         .map((r) => {
-          const hasErrors = r.error?.length > 0
-          const hasWarnings = r.warning?.length > 0
+          const hasErrors = (r.error?.length ?? 0) > 0
+          const hasWarnings = (r.warning?.length ?? 0) > 0
           const linkClass = hasErrors ? 'link-error' : hasWarnings ? 'link-warning' : 'link-valid'
 
           const errors = r.error?.map(error =>
@@ -254,7 +254,7 @@ async function generateHtmlReport(reports: PathReport[], {
   return resolve(storageFilepath, 'link-checker-report.html')
 }
 
-async function generateMarkdownReport(reports: PathReport[], { storage, storageFilepath }: InspectionContext) {
+async function generateMarkdownReport(reports: PathReport[], { storage, storageFilepath }: InspectionContext): Promise<string> {
   // Sort reports like a file tree (parents before children, alphabetically at each level)
   const sortedReports = [...reports].sort((a, b) => {
     const segmentsA = a.route.split('/').filter(Boolean)
@@ -263,7 +263,7 @@ async function generateMarkdownReport(reports: PathReport[], { storage, storageF
 
     // Compare segment by segment
     for (let i = 0; i < minLength; i++) {
-      const cmp = segmentsA[i].localeCompare(segmentsB[i])
+      const cmp = segmentsA[i]!.localeCompare(segmentsB[i]!)
       if (cmp !== 0)
         return cmp
     }
@@ -307,21 +307,22 @@ async function generateMarkdownReport(reports: PathReport[], { storage, storageF
       ].filter(Boolean).join(', ')
 
       // Group issues by link for better organization
-      const linkIssues = new Map()
+      const linkIssues = new Map<string, { errors: RuleReport[], warnings: RuleReport[], textContent: string }>()
 
       reports.forEach((r) => {
         if ((r.error?.length || 0) + (r.warning?.length || 0) === 0)
           return
 
-        if (!linkIssues.has(r.link)) {
-          linkIssues.set(r.link, {
+        const link = r.link!
+        if (!linkIssues.has(link)) {
+          linkIssues.set(link, {
             errors: [],
             warnings: [],
             textContent: r.textContent || '',
           })
         }
 
-        const issues = linkIssues.get(r.link)
+        const issues = linkIssues.get(link)!
         if (r.error?.length)
           issues.errors.push(...r.error)
         if (r.warning?.length)
@@ -391,13 +392,17 @@ async function generateMarkdownReport(reports: PathReport[], { storage, storageF
   return resolve(storageFilepath, 'link-checker-report.md')
 }
 
+const nonWordRe = /[^\w\s-]/g
+const whitespaceRe = /\s+/g
+const multiDashRe = /-+/g
+
 // Helper function to create GitHub-compatible anchor links
 function createAnchor(text: string): string {
   return text
     .toLowerCase()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
+    .replace(nonWordRe, '')
+    .replace(whitespaceRe, '-')
+    .replace(multiDashRe, '-')
 }
 
 // Helper function to truncate long strings
@@ -407,7 +412,7 @@ function truncateString(str: string, maxLength: number): string {
   return `${str.substring(0, maxLength - 3)}...`
 }
 
-async function generateJsonReport(reports: PathReport[], { storage, storageFilepath }: InspectionContext) {
+async function generateJsonReport(reports: PathReport[], { storage, storageFilepath }: InspectionContext): Promise<string> {
   const filteredReports = reports
     .map(report => ({
       ...report,

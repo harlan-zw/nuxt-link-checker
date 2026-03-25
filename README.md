@@ -27,7 +27,7 @@ need this module.
 - ✅ 13 SEO focused link inspections
 - ✨ See live inspections right in your Nuxt App
 - 🧙 Magically fix them in Nuxt Dev Tools
-- 🚩 Generate reports on build (html, markdown)
+- 🚩 Generate reports on build (HTML, markdown)
 
 ## Installation
 
@@ -55,7 +55,7 @@ npx nuxi@latest module add link-checker
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/harlan-zw/static/main/sponsors.svg">
-    <img src='https://raw.githubusercontent.com/harlan-zw/static/main/sponsors.svg'/>
+    <img src='https://raw.githubusercontent.com/harlan-zw/static/main/sponsors.svg' alt="Sponsors"/>
   </a>
 </p>
 

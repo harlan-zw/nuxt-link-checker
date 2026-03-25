@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { BundledLanguage } from 'shiki'
-import { ref } from '#imports'
 
 const props = defineProps<{
   code: string
@@ -12,7 +11,7 @@ function transformRendered(code: string) {
   return code.replace(props.link, `<span class="highlight">${props.link}</span>`)
 }
 
-const elRef = ref<HTMLDivElement>()
+const elRef = useTemplateRef<HTMLDivElement>('elRef')
 </script>
 
 <template>

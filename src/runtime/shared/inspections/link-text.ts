@@ -1,6 +1,7 @@
+import type { Rule } from '../../types'
 import { defineRule } from './util'
 
-export default function RuleDescriptiveLinkText() {
+export default function RuleDescriptiveLinkText(): Rule {
   return defineRule({
     id: 'link-text',
     test({ textContent, report }) {

@@ -3,7 +3,7 @@ import type { H3Event } from 'h3'
 import manifest from '#content/manifest'
 import { queryCollection } from '@nuxt/content/server'
 
-export default async (e: H3Event) => {
+export default async (e: H3Event): Promise<{ link: string, title: string, file: string }[]> => {
   const collections = []
   // each collection in the manifest has a key => with fields which has a `sitemap`, we want to get all those
   for (const collection in manifest) {
@@ -14,6 +14,7 @@ export default async (e: H3Event) => {
   // now we need to handle multiple queries here, we want to run the requests in parallel
   const contentList = []
   for (const collection of collections) {
+    // @ts-expect-error collection names are dynamic from manifest
     contentList.push(queryCollection(e, collection).select('id', 'path', 'title').where('path', 'IS NOT NULL').all())
   }
   // we need to wait for all the queries to finish

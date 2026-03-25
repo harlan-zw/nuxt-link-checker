@@ -1,7 +1,7 @@
-import type { RuleReport } from '../types'
+import type { Rule, RuleReport } from '../types'
 import { defineRule } from './inspections/util'
 
-export default function RuleRedirects() {
+export default function RuleRedirects(): Rule {
   return defineRule({
     id: 'redirects',
     test({ report, response }) {

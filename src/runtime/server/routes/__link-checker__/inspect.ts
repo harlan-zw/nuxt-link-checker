@@ -1,4 +1,5 @@
-import { useNitroOrigin, useRuntimeConfig, useSiteConfig } from '#imports'
+// @ts-expect-error auto-imported by nuxt-site-config at runtime
+import { getNitroOrigin, getSiteConfig, useRuntimeConfig } from '#imports'
 import { createDefu } from 'defu'
 import Fuse from 'fuse.js'
 import { defineEventHandler, readBody } from 'h3'
@@ -14,7 +15,7 @@ const merger = createDefu((obj, key, value) => {
   return obj[key]
 })
 
-function mergeOnKey<T, K extends keyof T>(arr: T[], key: K) {
+function mergeOnKey<T, K extends keyof T>(arr: T[], key: K): T[] {
   const res: Record<string, T> = {}
   arr.forEach((item) => {
     const k = item[key] as string
@@ -24,7 +25,7 @@ function mergeOnKey<T, K extends keyof T>(arr: T[], key: K) {
   return Object.values(res)
 }
 
-function isInternalRoute(path: string) {
+function isInternalRoute(path: string): boolean {
   const lastSegment = path.split('/').pop() || path
   return lastSegment.includes('.') || path.startsWith('/__') || path.startsWith('@')
 }
@@ -36,11 +37,12 @@ export default defineEventHandler(async (e) => {
   const partialCtx = {
     ids,
     fromPath: fixSlashes(false, path),
-    siteConfig: useSiteConfig(e),
+    siteConfig: getSiteConfig(e),
   } as const
   // allow editing files to trigger a cache clear
   lruFsCache.clear()
-  const links = await $fetch('/__link-checker__/links')
+  // @ts-expect-error excessive stack depth from $fetch type inference
+  const links: { link: string, title: string, file?: string }[] = await $fetch('/__link-checker__/links')
   const pageSearch = new Fuse<{ link: string, title: string }>(mergeOnKey(links, 'link'), {
     keys: ['link', 'title'],
     threshold: 0.5,
@@ -55,7 +57,7 @@ export default defineEventHandler(async (e) => {
         link,
         timeout: runtimeConfig.fetchTimeout,
         fetchRemoteUrls: runtimeConfig.fetchRemoteUrls,
-        baseURL: useNitroOrigin(e),
+        baseURL: getNitroOrigin(e),
         isInStorage() {
           return false
         },
@@ -69,7 +71,7 @@ export default defineEventHandler(async (e) => {
         skipInspections: runtimeConfig.skipInspections,
       })
       const filePaths = [
-        resolve(runtimeConfig.rootDir, links.find(l => l.file && l.link === path)?.file),
+        resolve(runtimeConfig.rootDir, links.find(l => l.file && l.link === path)?.file || ''),
         ...paths.map((p) => {
           const [filepath] = p.split(':')
           return filepath

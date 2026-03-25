@@ -1,6 +1,7 @@
+import type { Rule } from '../../types'
 import { defineRule } from './util'
 
-export default function RuleNoDuplicateQueryParams() {
+export default function RuleNoDuplicateQueryParams(): Rule {
   return defineRule({
     id: 'no-duplicate-query-params',
     test({ report, link, url }) {

@@ -4,7 +4,7 @@ import type { WebSocketServer } from 'vite'
 import { useNuxt } from '@nuxt/kit'
 import { joinURL } from 'ufo'
 
-export function convertNuxtPagesToPaths(pages: NuxtPage[]) {
+export function convertNuxtPagesToPaths(pages: NuxtPage[]): { title: string, link: string }[] {
   return pages
     .map((page) => {
       return page.children?.length
@@ -24,7 +24,7 @@ export function convertNuxtPagesToPaths(pages: NuxtPage[]) {
     }))
 }
 
-export function useViteWebSocket(nuxt: Nuxt = useNuxt()) {
+export function resolveViteWebSocket(nuxt: Nuxt = useNuxt()): Promise<WebSocketServer> {
   return new Promise<WebSocketServer>((_resolve) => {
     nuxt.hooks.hook('vite:serverCreated', (viteServer) => {
       _resolve(viteServer.ws)

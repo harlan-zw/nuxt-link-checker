@@ -8,37 +8,37 @@ const responses: Record<string, MaybePromise<LinkResponse>> = {}
 
 const MockSuccessResponse = Promise.resolve({ status: 200, statusText: 'OK', headers: {} })
 
-export async function getLinkResponse({ link, timeout, fetchRemoteUrls, baseURL, isInStorage }: { link: string, baseURL?: string, timeout?: number, fetchRemoteUrls?: boolean, isInStorage: () => boolean }) {
+export async function getLinkResponse({ link, timeout, fetchRemoteUrls, baseURL, isInStorage }: { link: string, baseURL?: string, timeout?: number, fetchRemoteUrls?: boolean, isInStorage: () => boolean }): Promise<LinkResponse | null> {
   // if the link has an anchor on it, do the request without the anchor
   if (link.includes('#') && !link.startsWith('#'))
-    link = link.split('#')[0]
+    link = link.split('#')[0]!
   link = decodeURI(link)
   if (link in responses) {
-    return responses[link]
+    return responses[link]!
   }
   if (isNonFetchableLink(link)) {
     return null
   }
   if (isInStorage()) {
     responses[link] = Promise.resolve({ status: 200, statusText: 'OK', headers: { 'X-Nuxt-Prerendered': true } })
-    return responses[link]
+    return responses[link]!
   }
   // handle absolute links
   if (link.startsWith('http') || link.startsWith('//')) {
     // TODO check they don't include the site URL
     responses[link] = fetchRemoteUrls ? crawlFetch(link, { timeout, baseURL }) : MockSuccessResponse
-    return responses[link]
+    return responses[link]!
   }
   // relative link in dev?
   responses[link] = crawlFetch(link, { timeout, baseURL })
-  return responses[link]
+  return responses[link]!
 }
 
-export function setLinkResponse(link: string, response: Promise<{ status: number, statusText: string, headers: Record<string, any> }>) {
+export function setLinkResponse(link: string, response: Promise<{ status: number, statusText: string, headers: Record<string, any> }>): void {
   responses[link] = response
 }
 
-export async function getResolvedLinkResponses() {
+export async function getResolvedLinkResponses(): Promise<Record<string, LinkResponse>> {
   // wait for all responses to resolve
   const data: Record<string, LinkResponse> = {}
   for (const link in responses) {
@@ -47,7 +47,7 @@ export async function getResolvedLinkResponses() {
   return data
 }
 
-export async function crawlFetch(link: string, options: { timeout?: number, baseURL?: string } = {}) {
+export async function crawlFetch(link: string, options: { timeout?: number, baseURL?: string } = {}): Promise<LinkResponse> {
   const timeout = options.timeout || 5000
   const timeoutController = new AbortController()
   const abortRequestTimeout = setTimeout(() => timeoutController.abort(), timeout)
@@ -69,7 +69,7 @@ export async function crawlFetch(link: string, options: { timeout?: number, base
       return { status: 404, statusText: 'Not Found', headers: {} }
     })
     .finally(() => clearTimeout(abortRequestTimeout))
-    .then((res: Response) => {
+    .then((res: any) => {
       let headersObj: Record<string, string> = {}
 
       if (res.headers) {
