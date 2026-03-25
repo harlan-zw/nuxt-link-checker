@@ -12,4 +12,5 @@ export default defineBuildConfig({
     'vue-eslint-parser',
   ],
   declaration: true,
+  failOnWarn: false,
 })
