@@ -39,17 +39,17 @@ describe('createSuggester', () => {
 })
 
 describe('createRouteMatcher', () => {
-  it('matches dynamic routes', () => {
+  it('matches dynamic routes and returns pattern', () => {
     const match = createRouteMatcher(['/blog/:slug', '/users/:id', '/users/:id/posts/:postId'])
-    expect(match('/blog/hello')).toBe(true)
-    expect(match('/blog/any-slug')).toBe(true)
-    expect(match('/users/123')).toBe(true)
-    expect(match('/users/123/posts/456')).toBe(true)
+    expect(match('/blog/hello')).toBe('/blog/:slug')
+    expect(match('/blog/any-slug')).toBe('/blog/:slug')
+    expect(match('/users/123')).toBe('/users/:id')
+    expect(match('/users/123/posts/456')).toBe('/users/:id/posts/:postId')
   })
 
-  it('rejects non-matching paths', () => {
+  it('returns null for non-matching paths', () => {
     const match = createRouteMatcher(['/blog/:slug', '/users/:id'])
-    expect(match('/about')).toBe(false)
-    expect(match('/blog/slug/extra')).toBe(false)
+    expect(match('/about')).toBeNull()
+    expect(match('/blog/slug/extra')).toBeNull()
   })
 })

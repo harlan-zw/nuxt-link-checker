@@ -52,7 +52,8 @@ export function createRouteMatcher(dynamicRoutes: string[]) {
   for (const route of dynamicRoutes) {
     router.insert(route, { pattern: route })
   }
-  return (path: string): boolean => {
-    return router.lookup(path) !== null
+  return (path: string): string | null => {
+    const match = router.lookup(path)
+    return match ? match.pattern : null
   }
 }

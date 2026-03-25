@@ -32,12 +32,11 @@ const rule: Rule.RuleModule = {
     const suggest = createSuggester(routes.staticRoutes)
 
     // Build a set of dynamic patterns that have at least one URL in the sitemap
-    // so we can warn when a dynamic route's specific URL is missing from sitemap
     const patternsWithSitemapEntries = new Set<string>()
     for (const url of routes.staticRoutes) {
-      const match = matchDynamic(url)
-      if (match)
-        patternsWithSitemapEntries.add(url)
+      const pattern = matchDynamic(url)
+      if (pattern)
+        patternsWithSitemapEntries.add(pattern)
     }
 
     const check = (link: string, node: any) => {
@@ -46,18 +45,14 @@ const rule: Rule.RuleModule = {
 
       const pathname = stripQueryAndHash(link)
 
-      // Already in sitemap, all good
       if (staticSet.has(pathname))
         return
 
-      // If it matches a dynamic route, only warn if other URLs
-      // with the same pattern exist in the sitemap (suggesting this one should too)
-      if (matchDynamic(pathname)) {
-        // Check if any sibling URLs exist in the sitemap for this pattern
-        // If the pattern has no sitemap entries at all, skip the warning
-        // (user may have intentionally excluded the whole pattern)
-        const hasSiblings = routes.staticRoutes.some(url => matchDynamic(url))
-        if (!hasSiblings)
+      // If it matches a dynamic route, only warn if the same pattern
+      // has other URLs in the sitemap (suggesting this one should too)
+      const matchedPattern = matchDynamic(pathname)
+      if (matchedPattern) {
+        if (!patternsWithSitemapEntries.has(matchedPattern))
           return
       }
 

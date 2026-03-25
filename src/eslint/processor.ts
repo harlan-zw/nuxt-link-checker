@@ -29,6 +29,9 @@ function extractMarkdownLinks(text: string): ExtractedLink[] {
   return links
 }
 
+// Stack of line maps to support nested preprocess/postprocess pairs
+const lineMapStack: Map<number, ExtractedLink>[] = []
+
 export const markdownProcessor: Linter.Processor = {
   meta: {
     name: 'link-checker/markdown',
@@ -36,11 +39,11 @@ export const markdownProcessor: Linter.Processor = {
   },
   preprocess(text) {
     const links = extractMarkdownLinks(text)
-    if (!links.length)
+    if (!links.length) {
+      lineMapStack.push(new Map())
       return [{ text, filename: '0.md' }]
+    }
 
-    // Generate a virtual JS file with navigateTo calls for each link
-    // This lets our rule's CallExpression visitor pick them up
     const virtualLines: string[] = []
     const lineMap: Map<number, ExtractedLink> = new Map()
 
@@ -50,19 +53,17 @@ export const markdownProcessor: Linter.Processor = {
       lineMap.set(i + 1, links[i])
     }
 
-    // Store the line map on the processor for postprocess
-    ;(markdownProcessor as any)._lineMap = lineMap
+    lineMapStack.push(lineMap)
 
     return [
       { text: virtualLines.join('\n'), filename: '0.js' },
     ]
   },
   postprocess(messages) {
-    const lineMap: Map<number, ExtractedLink> = (markdownProcessor as any)._lineMap
-    if (!lineMap)
+    const lineMap = lineMapStack.pop()
+    if (!lineMap || !lineMap.size)
       return messages.flat()
 
-    // Remap messages back to original MD positions
     return messages.flat().map((msg) => {
       const link = lineMap.get(msg.line)
       if (link) {
