@@ -14,7 +14,11 @@ body:
       required: true
     attributes:
       label: 🛠️ To reproduce
-      description: 'A reproduction of the bug. Please use submitting an issue guide https://nuxtseo.com/docs/link-checker/getting-started/troubleshooting#submitting-an-issue'
+      description: |
+        A reproduction of the bug. Please create a StackBlitz reproduction from one of the starters:
+        - [Basic](https://stackblitz.com/github/harlan-zw/nuxt-link-checker/tree/main/examples/basic)
+        - [Broken Links](https://stackblitz.com/github/harlan-zw/nuxt-link-checker/tree/main/examples/broken-links)
+        - [Skip Inspection](https://stackblitz.com/github/harlan-zw/nuxt-link-checker/tree/main/examples/skip-inspection)
       placeholder: https://stackblitz.com/[...]
   - type: textarea
     validations:
