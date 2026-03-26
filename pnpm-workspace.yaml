@@ -25,8 +25,8 @@ catalog:
   magic-string: ^0.30.21
   nuxt: ^4.4.2
   nuxt-site-config: ^4.0.6
-  nuxtseo-layer-devtools: ^0.5.0
-  nuxtseo-shared: ^0.8.2
+  nuxtseo-layer-devtools: ^0.5.1
+  nuxtseo-shared: ^0.9.0
   ofetch: ^1.5.1
   pathe: ^2.0.3
   pkg-types: ^2.3.0
