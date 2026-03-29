@@ -32,6 +32,9 @@ describe('valid-sitemap-link', () => {
         vueCase('<template><NuxtLink to="/blog/hello-world" /></template>'),
         vueCase('<template><a href="https://example.com" /></template>'),
         vueCase('<template><a href="#section" /></template>'),
+        // trailing slash normalization
+        vueCase('<template><NuxtLink to="/about/" /></template>'),
+        vueCase('<template><NuxtLink to="/blog/hello-world/" /></template>'),
       ],
       invalid: [
         // /blog/unknown-slug matches dynamic route /blog/:slug
