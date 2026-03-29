@@ -1,6 +1,6 @@
 import type { Rule } from 'eslint'
 import { createRouteMatcher, createSuggester, loadRoutes } from '../utils/routes'
-import { createCombinedVisitors, stripQueryAndHash } from '../utils/visitors'
+import { createCombinedVisitors, stripQueryAndHash, withoutTrailingSlash } from '../utils/visitors'
 
 const rule: Rule.RuleModule = {
   meta: {
@@ -27,7 +27,7 @@ const rule: Rule.RuleModule = {
     if (!routes.staticRoutes.length)
       return {}
 
-    const staticSet = new Set(routes.staticRoutes)
+    const staticSet = new Set(routes.staticRoutes.map(withoutTrailingSlash))
     const matchDynamic = createRouteMatcher(routes.dynamicRoutes)
     const suggest = createSuggester(routes.staticRoutes)
 
@@ -43,7 +43,7 @@ const rule: Rule.RuleModule = {
       if (!link.startsWith('/'))
         return
 
-      const pathname = stripQueryAndHash(link)
+      const pathname = withoutTrailingSlash(stripQueryAndHash(link))
 
       if (staticSet.has(pathname))
         return
