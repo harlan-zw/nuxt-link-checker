@@ -43,6 +43,12 @@ describe('valid-route', () => {
         // rel="nofollow" escape hatch
         vueCase('<template><a href="/nonexistent" rel="nofollow" /></template>'),
         vueCase('<template><NuxtLink to="/nonexistent" rel="nofollow" /></template>'),
+        // trailing slash normalization
+        vueCase('<template><NuxtLink to="/about/" /></template>'),
+        vueCase('<template><NuxtLink to="/blog/hello-world/" /></template>'),
+        vueCase('<template><NuxtLink to="/contact/" /></template>'),
+        vueCase('<template><NuxtLink to="/about/?ref=home" /></template>'),
+        vueCase('<template><NuxtLink to="/about/#section" /></template>'),
         // static file extensions (served from public/)
         vueCase('<template><a href="/document.pdf" /></template>'),
         vueCase('<template><a href="/image.png" /></template>'),

@@ -9,7 +9,7 @@ Nuxt Link Checker is a collection of SEO focused link inspections for your Nuxt 
 
 By keeping your links in check, you can ensure that your site is discoverable and accessible to [search engine crawlers](https://nuxtseo.com/learn/controlling-crawlers) and your users.
 
-New to SEO? Check out the [Controlling Web Crawlers](https://nuxtseo.com/learn/controlling-crawlers) guide to learn more about why you might
+New to SEO? Check out the [Controlling Web Crawlers](https://nuxtseo.com/learn-seo/nuxt/controlling-crawlers) guide to learn more about why you might
 need this module.
 
 <p align="center">
@@ -24,10 +24,11 @@ need this module.
 
 ## Features
 
-- ✅ 13 SEO focused link inspections
+- ✅ 15 SEO focused link inspections
 - ✨ See live inspections right in your Nuxt App
 - 🧙 Magically fix them in Nuxt Dev Tools
-- 🚩 Generate reports on build (HTML, markdown)
+- 🚩 Generate reports on build (HTML, Markdown, JSON)
+- 🪝 [ESLint plugin](https://nuxtseo.com/link-checker/guides/eslint) for instant feedback in your IDE
 
 ## Installation
 
@@ -46,10 +47,6 @@ npx nuxi@latest module add link-checker
 ## Documentation
 
 [📖 Read the full documentation](https://nuxtseo.com/link-checker/getting-started/installation) for more information.
-
-## Demos
-
-- [StackBlitz](https://stackblitz.com/edit/nuxt-starter-qtaq7x?file=pages%2Findex.vue)
 
 ## Sponsors
 

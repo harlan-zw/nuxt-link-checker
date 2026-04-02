@@ -51,6 +51,10 @@ export function shouldSkipLink(link: string): boolean {
   return false
 }
 
+export function withoutTrailingSlash(path: string): string {
+  return path.length > 1 && path.endsWith('/') ? path.slice(0, -1) : path
+}
+
 export function stripQueryAndHash(link: string): string {
   const hashIndex = link.indexOf('#')
   const queryIndex = link.indexOf('?')

@@ -1,0 +1,10 @@
+{
+  "name": "nuxt-link-checker-broken-links-example",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "nuxt": "^4.4.2",
+    "nuxt-link-checker": "latest",
+    "vue": "^3.5.31"
+  }
+}
