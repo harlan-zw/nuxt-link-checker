@@ -46,7 +46,7 @@ export const markdownProcessor: Linter.Processor = {
     const links = extractMarkdownLinks(text)
     if (!links.length) {
       lineMapStack.push(new Map())
-      return [{ text, filename: '0.md' }]
+      return []
     }
 
     const virtualLines: string[] = []
