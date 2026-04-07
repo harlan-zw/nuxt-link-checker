@@ -65,7 +65,6 @@
     "nuxt": "^3.9.0 || ^4.0.0"
   },
   "dependencies": {
-    "@nuxt/devtools-kit": "catalog:",
     "@nuxt/kit": "catalog:",
     "@vueuse/core": "catalog:",
     "consola": "catalog:",
@@ -78,8 +77,6 @@
     "pathe": "catalog:",
     "pkg-types": "catalog:",
     "radix3": "catalog:",
-    "sirv": "catalog:",
-    "std-env": "catalog:",
     "ufo": "catalog:",
     "ultrahtml": "catalog:",
     "unstorage": "catalog:"
@@ -88,6 +85,7 @@
     "@antfu/eslint-config": "catalog:",
     "@nuxt/content": "catalog:",
     "@nuxt/devtools": "catalog:",
+    "@nuxt/devtools-kit": "catalog:",
     "@nuxt/eslint": "catalog:",
     "@nuxt/module-builder": "catalog:",
     "@nuxt/test-utils": "catalog:",
@@ -99,6 +97,8 @@
     "execa": "catalog:",
     "nuxt": "catalog:",
     "nuxtseo-layer-devtools": "catalog:",
+    "sirv": "catalog:",
+    "std-env": "catalog:",
     "typescript": "catalog:",
     "unbuild": "catalog:",
     "vitest": "catalog:",
