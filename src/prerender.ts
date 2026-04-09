@@ -5,7 +5,7 @@ import type { ExtractedPayload, InspectionContext, PathReport } from './build/re
 import type { ModuleOptions } from './module'
 import type { LinkInspectionResult } from './runtime/types'
 import { existsSync } from 'node:fs'
-import { useNuxt } from '@nuxt/kit'
+import { useNuxt, useRuntimeConfig } from '@nuxt/kit'
 import { colors } from 'consola/utils'
 import Fuse from 'fuse.js'
 import { useSiteConfig } from 'nuxt-site-config/kit'
@@ -117,9 +117,18 @@ export function prerender(config: ModuleOptions, version?: string, routeFileMap:
       }
     })
   }
+  // Fix for #
+  // Ensure that an evenually configured "app.baseURL" (as declared
+  // in nuxt.config.ts) is excluded by default.
+  const excludedLinks = [...config.excludeLinks]
+  const rtConfig = useRuntimeConfig()
+  if (rtConfig.app.baseURL && rtConfig.app.baseURL.length > 2) { // app.baseUrl -> "/.../"
+    excludedLinks.push(rtConfig.app.baseURL)
+  }
   const urlFilter = createFilter({
-    exclude: config.excludeLinks,
+    exclude: excludedLinks,
   })
+
   const pageFilter = createFilter({
     exclude: config.excludePages,
   })

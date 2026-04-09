@@ -76,7 +76,7 @@ async function scrollToLink() {
       </div>
     </div>
     <template v-if="item.passes">
-      <div class="flex gap-2 items-center w-full">
+      <div class="flex gap-2 items-center">
         <div style="flex-basis: 4rem;">
           <span class="text-green-800 text-xs flex items-center font-medium dark:text-green-300">
             <UIcon name="carbon:checkmark-outline" class="mr-1 text-xs" />
