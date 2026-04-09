@@ -43,7 +43,7 @@ export default defineEventHandler(async (e) => {
   lruFsCache.clear()
   // @ts-expect-error excessive stack depth from $fetch type inference
   const links: { link: string, title: string, file?: string }[] = await $fetch('/__link-checker__/links')
-  const pageSearch = new Fuse<{ link: string, title: string }>(mergeOnKey(links, 'link'), {
+  const pageSearch = new Fuse<{ link: string, title?: string }>(mergeOnKey(links, 'link'), {
     keys: ['link', 'title'],
     threshold: 0.5,
   })
