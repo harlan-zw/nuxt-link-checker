@@ -22,12 +22,12 @@ catalog:
   consola: ^3.4.2
   diff: ^8.0.4
   eslint: ^10.2.0
-  eslint-plugin-harlanzw: ^0.12.0
+  eslint-plugin-harlanzw: ^0.12.1
   execa: ^9.6.1
   fuse.js: ^7.3.0
   magic-string: ^0.30.21
   nuxt: ^4.4.2
-  nuxt-site-config: ^4.0.7
+  nuxt-site-config: ^4.0.8
   nuxtseo-layer-devtools: ^5.1.2
   nuxtseo-shared: ^5.1.2
   ofetch: ^1.5.1
