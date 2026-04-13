@@ -141,6 +141,7 @@ export interface ModuleHooks {
 }
 
 const excludeUnderscorePathsRe = /^\/_/
+const excludeLlmsTxtRe = /^\/llms(-[\w-]+)?\.txt$/
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
@@ -175,6 +176,7 @@ export default defineNuxtModule<ModuleOptions>({
       failOnError: false,
       excludeLinks: [
         excludeUnderscorePathsRe,
+        excludeLlmsTxtRe,
       ],
       excludePages: [],
       skipInspections: [],
