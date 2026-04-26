@@ -37,6 +37,15 @@ function extractMarkdownLinks(text: string): ExtractedLink[] {
 // Stack of line maps to support sequential preprocess/postprocess pairs
 const lineMapStack: Map<number, ExtractedLink>[] = []
 
+const OWN_RULES = new Set(['valid-route', 'valid-sitemap-link'])
+
+function isOwnRule(ruleId: string | null | undefined): boolean {
+  if (!ruleId)
+    return false
+  const name = ruleId.includes('/') ? ruleId.slice(ruleId.lastIndexOf('/') + 1) : ruleId
+  return OWN_RULES.has(name)
+}
+
 export const markdownProcessor: Linter.Processor = {
   meta: {
     name: 'link-checker/markdown',
@@ -67,10 +76,11 @@ export const markdownProcessor: Linter.Processor = {
   },
   postprocess(messages) {
     const lineMap = lineMapStack.pop()
+    const filtered = messages.flat().filter(msg => isOwnRule(msg.ruleId))
     if (!lineMap || !lineMap.size)
-      return messages.flat()
+      return filtered
 
-    return messages.flat().map((msg) => {
+    return filtered.map((msg) => {
       const link = lineMap.get(msg.line)
       if (link) {
         return {
