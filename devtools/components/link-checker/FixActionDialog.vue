@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { FixDialog } from '../composables/dialog'
-import { devtoolsRpc } from '../composables/rpc'
+import { FixDialog } from '../../lib/link-checker/dialog'
+import { host } from '../../lib/link-checker/rpc'
 
 function openFilePath(filepath: string) {
-  devtoolsRpc.value?.openInEditor(filepath)
+  host.value?.openInEditor(filepath)
 }
 
 function handleClose(_a: any, resolve: (value: boolean) => void) {
