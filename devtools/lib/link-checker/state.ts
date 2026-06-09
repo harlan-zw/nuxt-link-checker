@@ -1,4 +1,4 @@
-import type { LinkInspectionResult } from '../../src/runtime/types'
+import type { LinkInspectionResult } from './types'
 
 export const linkDb = ref<LinkInspectionResult[]>([])
 export const showLiveInspections = useLocalStorage<boolean>('nuxt-link-checker:show-live-inspections', true)

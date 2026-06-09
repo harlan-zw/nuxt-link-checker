@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import FixActionDialog from './components/FixActionDialog.vue'
-import { linkCheckerRpc } from './composables/rpc'
+import FixActionDialog from '../components/link-checker/FixActionDialog.vue'
+import { linkCheckerRpc } from '../lib/link-checker/rpc'
 import {
   linkDb,
   linkFilter,
@@ -8,7 +8,7 @@ import {
   showLiveInspections,
   useDebugData,
   visibleLinks,
-} from './composables/state'
+} from '../lib/link-checker/state'
 
 await loadShiki({
   extraLangs: [

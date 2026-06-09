@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { FixDialog } from '../composables/dialog'
-import { devtoolsRpc, linkCheckerRpc } from '../composables/rpc'
+import { FixDialog } from '../../lib/link-checker/dialog'
+import { host, linkCheckerRpc } from '../../lib/link-checker/rpc'
 
 const { item } = defineProps<{
   item: any
 }>()
 
 function openFilePath(filepath: string) {
-  devtoolsRpc.value?.openInEditor(filepath)
+  host.value?.openInEditor(filepath)
 }
 
 async function fixDialog() {
