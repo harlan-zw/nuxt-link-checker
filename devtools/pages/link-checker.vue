@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { navigateTo, useRoute } from '#imports'
 import { loadShiki } from 'nuxtseo-layer-devtools/composables/shiki'
 import { isProductionMode, refreshSources } from 'nuxtseo-layer-devtools/composables/state'
 import { computed, ref, watch } from 'vue'
+import { navigateTo, useRoute } from '#imports'
 import { linkCheckerRpc } from '../lib/link-checker/rpc'
 import { linkDb, queueLength, showLiveInspections, useDebugData } from '../lib/link-checker/state'
 

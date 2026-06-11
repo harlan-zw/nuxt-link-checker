@@ -1,6 +1,10 @@
 minimumReleaseAgeExclude:
   - nuxtseo-layer-devtools
   - nuxtseo-shared
+  - '@nuxtjs/sitemap@8.2.0'
+  - nuxt-site-config-kit@4.1.0
+  - nuxt-site-config@4.1.0
+  - site-config-stack@4.1.0
 shellEmulator: true
 
 trustPolicy: no-downgrade
@@ -9,46 +13,54 @@ packages:
   - '!examples/**'
 
 catalog:
-  '@antfu/eslint-config': ^8.2.0
-  '@nuxt/content': ^3.13.0
-  '@nuxt/devtools': ^4.0.0-alpha.4
-  '@nuxt/devtools-kit': ^4.0.0-alpha.4
-  '@nuxt/eslint': ^1.15.2
-  '@nuxt/kit': ^4.4.2
+  '@antfu/eslint-config': ^9.0.0
+  '@nuxt/content': ^3.14.0
+  '@nuxt/devtools': ^4.0.0-alpha.7
+  '@nuxt/devtools-kit': ^4.0.0-alpha.7
+  '@nuxt/eslint': ^1.16.0
+  '@nuxt/kit': ^4.4.8
   '@nuxt/module-builder': ^1.0.2
-  '@nuxt/test-utils': ^4.0.2
-  '@nuxtjs/sitemap': ^8.0.14
-  '@vueuse/core': ^14.2.1
-  better-sqlite3: ^12.9.0
-  bumpp: ^11.0.1
+  '@nuxt/test-utils': ^4.0.3
+  '@nuxtjs/sitemap': ^8.2.0
+  '@vueuse/core': ^14.3.0
+  better-sqlite3: ^12.10.0
+  bumpp: ^11.1.0
   consola: ^3.4.2
   diff: ^9.0.0
-  eslint: ^10.2.1
-  eslint-plugin-harlanzw: ^0.12.1
+  eslint: ^10.4.1
+  eslint-plugin-harlanzw: ^0.17.0
   execa: ^9.6.1
-  fuse.js: ^7.3.0
+  fuse.js: ^7.4.2
   magic-string: ^0.30.21
-  nuxt: ^4.4.2
-  nuxt-site-config: ^4.0.8
+  nuxt: ^4.4.8
+  nuxt-site-config: ^4.1.0
   nuxtseo-layer-devtools: ^5.2.6
   nuxtseo-shared: ^5.2.6
   ofetch: ^1.5.1
   pathe: ^2.0.3
-  pkg-types: ^2.3.0
+  pkg-types: ^2.3.1
   radix3: ^1.1.2
   sirv: ^3.0.2
+  site-config-stack: ^4.1.0
   std-env: ^4.1.0
   typescript: 6.0.2
-  ufo: ^1.6.3
+  ufo: ^1.6.4
   ultrahtml: ^1.6.0
   unbuild: ^3.6.1
   unstorage: ^1.17.5
-  vitest: ^4.1.5
-  vue-eslint-parser: ^10.4.0
-  vue-tsc: ^3.2.7
+  vite: ^7.3.5
+  vitest: ^4.1.8
+  vue-eslint-parser: ^10.4.1
+  vue-tsc: ^3.3.4
 onlyBuiltDependencies:
   - '@parcel/watcher'
   - better-sqlite3
   - esbuild
   - vue-demi
 trustPolicyIgnoreAfter: 262800
+allowBuilds:
+  '@parcel/watcher': true
+  better-sqlite3: true
+  esbuild: true
+  unrs-resolver: true
+  vue-demi: true

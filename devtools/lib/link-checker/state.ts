@@ -1,9 +1,9 @@
 import type { LinkInspectionResult } from './types'
-import { useAsyncData } from '#imports'
 import { useLocalStorage } from '@vueuse/core'
 import { appFetch } from 'nuxtseo-layer-devtools/composables/rpc'
 import { refreshTime } from 'nuxtseo-layer-devtools/composables/state'
 import { computed, ref } from 'vue'
+import { useAsyncData } from '#imports'
 
 export const linkDb = ref<LinkInspectionResult[]>([])
 export const showLiveInspections = useLocalStorage<boolean>('nuxt-link-checker:show-live-inspections', true)
