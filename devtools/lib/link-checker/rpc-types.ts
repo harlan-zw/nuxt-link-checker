@@ -1,2 +1,1 @@
-export type ClientFunctions = any
-export type ServerFunctions = any
+export type { ClientFunctions, ServerFunctions } from '../../../src/rpc-types'

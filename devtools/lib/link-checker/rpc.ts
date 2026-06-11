@@ -1,7 +1,9 @@
 import type { BirpcReturn } from 'birpc'
 import type { ClientFunctions, ServerFunctions } from './rpc-types'
 import type { NuxtLinkCheckerClient } from './types'
+import { useDevtoolsConnection } from 'nuxtseo-layer-devtools/composables/rpc'
 import { getQuery } from 'ufo'
+import { ref, unref } from 'vue'
 import { linkDb, linkFilter, queueLength, visibleLinks } from './state'
 
 const RPC_NAMESPACE = 'nuxt-link-checker-rpc'
