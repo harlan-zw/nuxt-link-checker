@@ -1,2 +1,1 @@
-export type NuxtLinkCheckerClient = any
-export type LinkInspectionResult = any
+export type { LinkInspectionResult, NuxtLinkCheckerClient } from '../../../src/runtime/types'
