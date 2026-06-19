@@ -1,11 +1,23 @@
 import { createDefu } from 'defu'
 import Fuse from 'fuse.js'
-import { defineEventHandler, readBody } from 'h3'
+import { createError, defineEventHandler, readBody } from 'h3'
 import { fixSlashes } from 'nuxt-site-config/urls'
 import { resolve } from 'pathe'
 // @ts-expect-error auto-imported by nuxt-site-config at runtime
 import { getNitroOrigin, getSiteConfig, useRuntimeConfig } from '#imports'
 import { generateFileLinkDiff, generateFileLinkPreviews, getLinkResponse, inspect, isNonFetchableLink, lruFsCache } from '../../../shared'
+
+interface InspectTask {
+  link: string
+  textContent: string
+  paths: string[]
+}
+
+interface InspectRequestBody {
+  path?: string
+  tasks: InspectTask[]
+  ids: string[]
+}
 
 const merger = createDefu((obj, key, value) => {
   // merge arrays using a set
@@ -30,13 +42,57 @@ function isInternalRoute(path: string): boolean {
   return lastSegment.includes('.') || path.startsWith('/__') || path.startsWith('@')
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null
+}
+
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every(item => typeof item === 'string')
+}
+
+function parseInspectTasks(value: unknown): InspectTask[] | undefined {
+  if (!Array.isArray(value))
+    return
+
+  const tasks = value.filter((task): task is InspectTask => {
+    return isRecord(task)
+      && typeof task.link === 'string'
+      && typeof task.textContent === 'string'
+      && isStringArray(task.paths)
+  })
+
+  return tasks.length === value.length ? tasks : undefined
+}
+
+function parseInspectRequestBody(body: unknown): InspectRequestBody {
+  if (!isRecord(body)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Invalid link checker inspection payload.',
+    })
+  }
+
+  const tasks = parseInspectTasks(body.tasks)
+  const ids = isStringArray(body.ids) ? body.ids : undefined
+  const path = body.path
+
+  if (!tasks || !ids || (path !== undefined && typeof path !== 'string')) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Invalid link checker inspection payload.',
+    })
+  }
+
+  return { tasks, ids, path }
+}
+
 // verify a link
 export default defineEventHandler(async (e) => {
-  const { tasks, ids, path } = await readBody<{ path: string, tasks: { link: string, textContent: string, paths: string[] }[], ids: string[] }>(e)
+  const { tasks, ids, path } = parseInspectRequestBody(await readBody(e))
   const runtimeConfig = useRuntimeConfig().public['nuxt-link-checker'] || {} as any
   const partialCtx = {
     ids,
-    fromPath: fixSlashes(false, path),
+    fromPath: fixSlashes(false, path ?? '/'),
     siteConfig: getSiteConfig(e),
   } as const
   // allow editing files to trigger a cache clear
