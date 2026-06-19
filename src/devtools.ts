@@ -12,7 +12,7 @@ import { convertNuxtPagesToPaths, resolveViteWebSocket } from './util'
 
 const RPC_NAMESPACE = 'nuxt-link-checker-rpc'
 
-export function setupDevToolsUI(options: ModuleOptions, moduleResolve: Resolver['resolve'], nuxt: Nuxt = useNuxt()): void {
+export function setupDevToolsUI(options: ModuleOptions, moduleResolve: Resolver['resolve'], i18nLocales: string[] = [], nuxt: Nuxt = useNuxt()): void {
   _setupDevToolsUI({
     route: '/__nuxt-link-checker',
     name: 'nuxt-link-checker',
@@ -86,7 +86,7 @@ export function setupDevToolsUI(options: ModuleOptions, moduleResolve: Resolver[
 
     let lastRoutes: { title: string, link: string }[] = []
     extendPages(async (pages) => {
-      const routes = convertNuxtPagesToPaths(pages)
+      const routes = convertNuxtPagesToPaths(pages, { locales: i18nLocales })
       if (lastRoutes.length) {
         const routeDiff = diffArrays(lastRoutes, routes)
         if (routeDiff?.some(diff => diff.added || diff.removed))
