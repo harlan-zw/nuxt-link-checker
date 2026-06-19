@@ -79,8 +79,7 @@
     "site-config-stack": "catalog:",
     "ufo": "catalog:",
     "ultrahtml": "catalog:",
-    "unstorage": "catalog:",
-    "vite": "catalog:"
+    "unstorage": "catalog:"
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:",
@@ -102,6 +101,7 @@
     "std-env": "catalog:",
     "typescript": "catalog:",
     "unbuild": "catalog:",
+    "vite": "catalog:",
     "vitest": "catalog:",
     "vue-eslint-parser": "catalog:",
     "vue-tsc": "catalog:"
