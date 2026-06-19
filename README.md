@@ -44,7 +44,7 @@ npx nuxi@latest module add link-checker
 > npx skilld add nuxt-link-checker
 > ```
 
-💡 Link Checker catches broken links at build. To catch them on your live site — alongside indexing, Core Web Vitals and Search Console data in one place — see [Nuxt SEO Pro](https://nuxtseo.com/pro).
+💡 Link Checker catches broken links at build. For live site checks with indexing, Core Web Vitals and Search Console data in one place, see [Nuxt SEO Pro](https://nuxtseo.com/pro).
 
 ## Documentation
 

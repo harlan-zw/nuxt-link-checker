@@ -33,6 +33,9 @@ catalogs:
     '@nuxtjs/sitemap':
       specifier: ^8.2.1
       version: 8.2.1
+    '@types/node':
+      specifier: ^25.9.3
+      version: 25.9.3
     '@vueuse/core':
       specifier: ^14.3.0
       version: 14.3.0
@@ -211,7 +214,7 @@ importers:
         specifier: 'catalog:'
         version: 8.2.1(098f83dcff49ffac6900d31daeda1a3f)
       '@types/node':
-        specifier: ^25.9.3
+        specifier: 'catalog:'
         version: 25.9.3
       better-sqlite3:
         specifier: 'catalog:'

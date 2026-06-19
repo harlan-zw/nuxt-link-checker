@@ -91,7 +91,7 @@
     "@nuxt/module-builder": "catalog:",
     "@nuxt/test-utils": "catalog:",
     "@nuxtjs/sitemap": "catalog:",
-    "@types/node": "^25.9.3",
+    "@types/node": "catalog:",
     "better-sqlite3": "catalog:",
     "bumpp": "catalog:",
     "eslint": "catalog:",
