@@ -38,6 +38,9 @@ export function inspect(ctx: Pick<Required<RuleTestContext>, 'link'> & Omit<Part
   rules = rules || AllInspections
   const res: Partial<LinkInspectionResult> = { error: [], warning: [], fix: ctx.link, link: ctx.link }
   let link = ctx.link
+  // Fold www so a link to the site's other host variant (www↔apex) is treated as
+  // internal, not skipped as external by the internal-only rules below.
+  const foldWww = (host: string | false | undefined | null) => (host || '').replace(/^www\./i, '')
   const siteConfigHost = ctx.siteConfig?.url && parseURL(ctx.siteConfig.url).host
   const url = parseURL(link)
   const validInspections = rules
@@ -46,7 +49,7 @@ export function inspect(ctx: Pick<Required<RuleTestContext>, 'link'> & Omit<Part
   for (const rule of validInspections) {
     const isFakeAbsolute = link.startsWith('//') && !link.includes('.')
     const hasNonHttpProtocol = hasProtocol(link) && !link.startsWith('http')
-    const isExternalLink = hasNonHttpProtocol || (url.host && url.host !== siteConfigHost && !isFakeAbsolute)
+    const isExternalLink = hasNonHttpProtocol || (url.host && foldWww(url.host) !== foldWww(siteConfigHost) && !isFakeAbsolute)
     if (!rule.externalLinks && isExternalLink) {
       continue
     }
