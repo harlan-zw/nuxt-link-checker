@@ -40,7 +40,9 @@ export function inspect(ctx: Pick<Required<RuleTestContext>, 'link'> & Omit<Part
   let link = ctx.link
   // Fold www so a link to the site's other host variant (www↔apex) is treated as
   // internal, not skipped as external by the internal-only rules below.
-  const foldWww = (host: string | false | undefined | null) => (host || '').replace(/^www\./i, '')
+  const foldWww = (host: string | false | undefined | null): string => {
+    return (host || '').replace(/^www\./i, '')
+  }
   const siteConfigHost = ctx.siteConfig?.url && parseURL(ctx.siteConfig.url).host
   const url = parseURL(link)
   const validInspections = rules
