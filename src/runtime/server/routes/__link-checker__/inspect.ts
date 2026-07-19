@@ -3,7 +3,6 @@ import Fuse from 'fuse.js'
 import { createError, defineEventHandler, readBody } from 'h3'
 import { fixSlashes } from 'nuxt-site-config/urls'
 import { resolve } from 'pathe'
-// @ts-expect-error auto-imported by nuxt-site-config at runtime
 import { getNitroOrigin, getSiteConfig, useRuntimeConfig } from '#imports'
 import { generateFileLinkDiff, generateFileLinkPreviews, getLinkResponse, inspect, isNonFetchableLink, lruFsCache } from '../../../shared'
 
