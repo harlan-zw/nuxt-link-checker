@@ -23,49 +23,49 @@ packages:
   - '!examples/**'
 
 overrides:
-  vue: ^3.5.38
+  vue: ^3.5.40
 catalog:
   '@antfu/eslint-config': ^9.1.0
-  '@nuxt/content': ^3.14.0
+  '@nuxt/content': ^3.15.0
   '@nuxt/devtools': 4.0.0-alpha.7
   '@nuxt/devtools-kit': 4.0.0-alpha.7
   '@nuxt/eslint': ^1.16.0
   '@nuxt/kit': ^4.4.8
   '@nuxt/module-builder': ^1.0.2
   '@nuxt/test-utils': ^4.0.3
-  '@nuxtjs/sitemap': ^8.2.1
-  '@types/node': ^26.0.0
+  '@nuxtjs/sitemap': ^8.2.2
+  '@types/node': ^26.1.1
   '@vueuse/core': ^14.3.0
   better-sqlite3: ^12.11.1
   bumpp: ^11.1.0
   consola: ^3.4.2
   diff: ^9.0.0
-  eslint: ^10.5.0
+  eslint: ^10.7.0
   eslint-plugin-harlanzw: ^0.17.0
-  execa: ^9.6.1
-  fuse.js: ^7.4.2
+  execa: ^10.0.0
+  fuse.js: ^7.5.0
   h3: ^1.15.11
-  magic-string: ^0.30.21
+  magic-string: ^1.0.0
   nuxt: ^4.4.8
-  nuxt-site-config: ^4.1.0
-  nuxtseo-layer-devtools: ^5.3.1
-  nuxtseo-shared: ^5.3.1
+  nuxt-site-config: ^4.1.1
+  nuxtseo-layer-devtools: ^5.3.2
+  nuxtseo-shared: ^5.3.2
   ofetch: ^1.5.1
   pathe: ^2.0.3
   pkg-types: ^2.3.1
   radix3: ^1.1.2
   sirv: ^3.0.2
-  site-config-stack: ^4.1.0
-  std-env: ^4.1.0
+  site-config-stack: ^4.1.1
+  std-env: ^4.2.0
   typescript: 6.0.3
   ufo: ^1.6.4
-  ultrahtml: ^1.6.0
+  ultrahtml: ^1.7.0
   unbuild: ^3.6.1
   unstorage: ^1.17.5
-  vite: ^8.1.0
-  vitest: ^4.1.9
+  vite: ^8.1.5
+  vitest: ^4.1.10
   vue-eslint-parser: ^10.4.1
-  vue-tsc: ^3.3.5
+  vue-tsc: ^3.3.7
 onlyBuiltDependencies:
   - '@parcel/watcher'
   - better-sqlite3
