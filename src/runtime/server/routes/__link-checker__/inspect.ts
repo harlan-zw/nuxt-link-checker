@@ -3,7 +3,9 @@ import Fuse from 'fuse.js'
 import { createError, defineEventHandler, readBody } from 'h3'
 import { fixSlashes } from 'nuxt-site-config/urls'
 import { resolve } from 'pathe'
-import { getNitroOrigin, getSiteConfig, useRuntimeConfig } from '#imports'
+import { useRuntimeConfig } from '#imports'
+import { getNitroOrigin } from '#site-config/server/composables/getNitroOrigin'
+import { getSiteConfig } from '#site-config/server/composables/getSiteConfig'
 import { generateFileLinkDiff, generateFileLinkPreviews, getLinkResponse, inspect, isNonFetchableLink, lruFsCache } from '../../../shared'
 
 interface InspectTask {
@@ -96,7 +98,6 @@ export default defineEventHandler(async (e) => {
   } as const
   // allow editing files to trigger a cache clear
   lruFsCache.clear()
-  // @ts-expect-error excessive stack depth from $fetch type inference
   const links: { link: string, title: string, file?: string }[] = await $fetch('/__link-checker__/links')
   const pageSearch = new Fuse<{ link: string, title?: string }>(mergeOnKey(links, 'link'), {
     keys: ['link', 'title'],
