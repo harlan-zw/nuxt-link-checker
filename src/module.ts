@@ -4,6 +4,7 @@ import { mkdir, writeFile } from 'node:fs/promises'
 import {
   addPlugin,
   addServerHandler,
+  addServerTemplate,
   createResolver,
   defineNuxtModule,
   hasNuxtModule,
@@ -227,11 +228,9 @@ export default defineNuxtModule<ModuleOptions>({
       nuxt.hooks.hook('pages:resolved', (resolved) => {
         pages.unshift(...resolved)
       })
-      nuxt.hooks.hook('nitro:config', (nitroConfig) => {
-        // @ts-expect-error runtime types
-        nitroConfig.virtual['#nuxt-link-checker-sitemap/pages.mjs'] = async () => {
-          return `export default ${JSON.stringify(convertNuxtPagesToPaths(pages), null, 2)}`
-        }
+      addServerTemplate({
+        filename: '#nuxt-link-checker-sitemap/pages.mjs',
+        getContents: async () => `export default ${JSON.stringify(convertNuxtPagesToPaths(pages), null, 2)}`,
       })
       nuxt.options.nitro.alias = nuxt.options.nitro.alias || {}
       const contentVersion = await resolveNuxtContentVersion()
