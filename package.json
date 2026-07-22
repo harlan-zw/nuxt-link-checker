@@ -67,6 +67,7 @@
     "@nuxt/kit": "catalog:",
     "@vueuse/core": "catalog:",
     "consola": "catalog:",
+    "defu": "catalog:",
     "diff": "catalog:",
     "fuse.js": "catalog:",
     "h3": "catalog:",

@@ -9,6 +9,7 @@ import { colors } from 'consola/utils'
 import { useSiteConfig } from 'nuxt-site-config/kit'
 import { relative, resolve } from 'pathe'
 import { htmlTemplate } from './template'
+import { truncateString } from './util'
 
 export interface PathReport {
   route: string
@@ -405,13 +406,6 @@ function createAnchor(text: string): string {
     .replace(nonWordRe, '')
     .replace(whitespaceRe, '-')
     .replace(multiDashRe, '-')
-}
-
-// Helper function to truncate long strings
-function truncateString(str: string, maxLength: number): string {
-  if (str.length <= maxLength)
-    return str
-  return `${str.substring(0, maxLength - 3)}...`
 }
 
 async function generateJsonReport(reports: PathReport[], { storage, storageFilepath }: InspectionContext): Promise<string> {
