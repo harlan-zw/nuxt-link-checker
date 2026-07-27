@@ -5,7 +5,7 @@ import type { ExtractedPayload, InspectionContext, PathReport } from './build/re
 import type { ModuleOptions } from './module'
 import type { LinkInspectionResult } from './runtime/types'
 import { existsSync } from 'node:fs'
-import { useNuxt, useRuntimeConfig } from '@nuxt/kit'
+import { extendRouteRules, useNuxt, useRuntimeConfig } from '@nuxt/kit'
 import { colors } from 'consola/utils'
 import Fuse from 'fuse.js'
 import { useSiteConfig } from 'nuxt-site-config/kit'
@@ -16,7 +16,7 @@ import { ELEMENT_NODE, parse, walkSync } from 'ultrahtml'
 import { createStorage } from 'unstorage'
 import fsDriver from 'unstorage/drivers/fs'
 import { generateReports } from './build/report'
-import { runParallel } from './build/util'
+import { runParallel, truncateString } from './build/util'
 import { getLinkResponse, getResolvedLinkResponses, setLinkResponse } from './runtime/shared/crawl'
 import { inspect } from './runtime/shared/inspect'
 import { createFilter } from './runtime/shared/sharedUtils'
@@ -101,12 +101,11 @@ function getTextContent(node: any): string {
 export function prerender(config: ModuleOptions, version?: string, routeFileMap: Record<string, string> = {}, nuxt = useNuxt()): void {
   if (config.report?.publish) {
     // make paths non indexable using X-Robots-Tag
-    nuxt.options.nitro.routeRules = nuxt.options.nitro.routeRules || {}
-    nuxt.options.nitro.routeRules['/__link-checker__/*'] = {
+    extendRouteRules('/__link-checker__/*', {
       headers: {
         'X-Robots-Tag': 'noindex',
       },
-    }
+    })
     // Nuxt Robots integration
     // @ts-expect-error untyped
     nuxt.hooks.hook('robots:config', (config) => {
@@ -462,14 +461,4 @@ function groupReportsByLink(reports: any[]): Record<string, { textContent: strin
   })
 
   return result
-}
-
-/**
- * Helper function to truncate long strings
- */
-function truncateString(str: string, maxLength: number): string {
-  if (str.length <= maxLength) {
-    return str
-  }
-  return `${str.substring(0, maxLength - 3)}...`
 }

@@ -1,12 +1,12 @@
-import type { useRoute } from '#imports'
 import type { NuxtDevtoolsIframeClient } from '@nuxt/devtools-kit/types'
 import type { NuxtApp } from 'nuxt/app'
 import type { UnwrapRef } from 'vue'
+import type { useRoute } from '#imports'
 import type { LinkInspectionResult, NuxtLinkCheckerClient } from '../../../types'
-import { useRuntimeConfig } from '#imports'
 import { useLocalStorage } from '@vueuse/core'
 import { computed, createApp, h, ref, unref } from 'vue'
-import { createFilter, deserializeFilterEntries } from '../../../shared/sharedUtils'
+import { useRuntimeConfig } from '#imports'
+import { createFilter } from '../../../shared/sharedUtils'
 import Main from './Main.vue'
 import { linkDb } from './state'
 
@@ -48,10 +48,10 @@ export async function setupLinkCheckerClient({ nuxt, route }: { nuxt: NuxtApp, r
 
   const runtimeConfig = useRuntimeConfig().public['nuxt-link-checker'] || {} as any
   const filter = createFilter({
-    exclude: deserializeFilterEntries(runtimeConfig.excludeLinks || []),
+    exclude: runtimeConfig.excludeLinks || [],
   })
   const pageFilter = createFilter({
-    exclude: deserializeFilterEntries(runtimeConfig.excludePages || []),
+    exclude: runtimeConfig.excludePages || [],
   })
 
   const client: NuxtLinkCheckerClient = {
@@ -155,7 +155,9 @@ export async function setupLinkCheckerClient({ nuxt, route }: { nuxt: NuxtApp, r
       try {
         import.meta.hot.send(`nuxt-link-checker:${event}`, payload)
       }
-      catch {}
+      catch (error) {
+        console.warn(`[nuxt-link-checker] Failed to send HMR event "${event}".`, error)
+      }
     },
     openDevtoolsToLink(link: string) {
       if (isOpeningDevtools)

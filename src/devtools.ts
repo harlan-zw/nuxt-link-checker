@@ -60,23 +60,27 @@ export function setupDevToolsUI(options: ModuleOptions, moduleResolve: Resolver[
     },
   } as ServerFunctions, nuxt)
 
+  function reportBroadcastError(event: keyof ClientFunctions, error: unknown): void {
+    console.warn(`[nuxt-link-checker] Failed to broadcast devtools event "${event}".`, error)
+  }
+
   viteServerWs.then((ws) => {
-    ws.on('nuxt-link-checker:queueWorking', async (payload) => {
+    ws.on('nuxt-link-checker:queueWorking', async (payload: Parameters<ClientFunctions['queueWorking']>[0]) => {
       if (isConnected) {
         const _rpc = await rpc
-        _rpc.broadcast.queueWorking(payload).catch(() => {})
+        _rpc.broadcast.queueWorking(payload).catch(error => reportBroadcastError('queueWorking', error))
       }
     })
     ws.on('nuxt-link-checker:updated', async () => {
       if (isConnected) {
         const _rpc = await rpc
-        _rpc.broadcast.updated().catch(() => {})
+        _rpc.broadcast.updated().catch(error => reportBroadcastError('updated', error))
       }
     })
-    ws.on('nuxt-link-checker:filter', async (payload) => {
+    ws.on('nuxt-link-checker:filter', async (payload: Parameters<ClientFunctions['filter']>[0]) => {
       if (isConnected) {
         const _rpc = await rpc
-        _rpc.broadcast.filter(payload).catch(() => {})
+        _rpc.broadcast.filter(payload).catch(error => reportBroadcastError('filter', error))
       }
     })
 

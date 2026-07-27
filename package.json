@@ -1,8 +1,8 @@
 {
   "name": "nuxt-link-checker",
   "type": "module",
-  "version": "5.0.10",
-  "packageManager": "pnpm@10.33.2",
+  "version": "5.1.3",
+  "packageManager": "pnpm@11.15.0",
   "description": "Find and magically fix links that may be negatively effecting your Nuxt sites SEO.",
   "author": {
     "name": "Harlan Wilton",
@@ -47,11 +47,10 @@
     "dist"
   ],
   "scripts": {
-    "client:build": "nuxt generate devtools",
+    "client:build": "node -e \"require('fs').cpSync('devtools','dist/devtools',{recursive:true})\"",
     "build": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build && npm run client:build",
     "dev": "nuxi dev playground",
-    "devtools": "nuxt dev devtools --port 3030",
-    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
+    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground && pnpm run client:build",
     "prepack": "pnpm run build",
     "release": "pnpm build && bumpp --output=CHANGELOG.md",
     "lint": "eslint .",
@@ -68,8 +67,10 @@
     "@nuxt/kit": "catalog:",
     "@vueuse/core": "catalog:",
     "consola": "catalog:",
+    "defu": "catalog:",
     "diff": "catalog:",
     "fuse.js": "catalog:",
+    "h3": "catalog:",
     "magic-string": "catalog:",
     "nuxt-site-config": "catalog:",
     "nuxtseo-shared": "catalog:",
@@ -77,6 +78,7 @@
     "pathe": "catalog:",
     "pkg-types": "catalog:",
     "radix3": "catalog:",
+    "site-config-stack": "catalog:",
     "ufo": "catalog:",
     "ultrahtml": "catalog:",
     "unstorage": "catalog:"
@@ -90,6 +92,7 @@
     "@nuxt/module-builder": "catalog:",
     "@nuxt/test-utils": "catalog:",
     "@nuxtjs/sitemap": "catalog:",
+    "@types/node": "catalog:",
     "better-sqlite3": "catalog:",
     "bumpp": "catalog:",
     "eslint": "catalog:",
@@ -101,6 +104,7 @@
     "std-env": "catalog:",
     "typescript": "catalog:",
     "unbuild": "catalog:",
+    "vite": "catalog:",
     "vitest": "catalog:",
     "vue-eslint-parser": "catalog:",
     "vue-tsc": "catalog:"

@@ -1,5 +1,5 @@
 import type { Rule } from '../../types'
-import { fixSlashes } from 'nuxt-site-config/urls'
+import { fixSlashes, isPathFile } from 'nuxt-site-config/urls'
 import { parseURL } from 'ufo'
 import { defineRule } from './util'
 
@@ -14,9 +14,7 @@ export default function RuleTrailingSlash(): Rule {
         return
       }
 
-      // its a file when the last segment has a dot in it
-      const isFile = $url.pathname.split('/').pop()!.includes('.')
-      if ($url.pathname === '/' || isFile)
+      if ($url.pathname === '/' || isPathFile($url.pathname))
         return
 
       const fix = fixSlashes(siteConfig.trailingSlash, link)

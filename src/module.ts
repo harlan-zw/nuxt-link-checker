@@ -4,23 +4,23 @@ import { mkdir, writeFile } from 'node:fs/promises'
 import {
   addPlugin,
   addServerHandler,
+  addServerTemplate,
   createResolver,
   defineNuxtModule,
   hasNuxtModule,
   hasNuxtModuleCompatibility,
   resolveModule,
-  useLogger,
 } from '@nuxt/kit'
 import { installNuxtSiteConfig } from 'nuxt-site-config/kit'
 import { normalizeLocales, resolveI18nModule } from 'nuxtseo-shared/i18n'
-import { getNuxtModuleOptions, resolveNuxtContentVersion } from 'nuxtseo-shared/kit'
+import { getNuxtModuleOptions, resolveNuxtContentVersion, useModuleLogger } from 'nuxtseo-shared/kit'
 import { $fetch } from 'ofetch'
 import { dirname, join } from 'pathe'
 import { readPackageJSON } from 'pkg-types'
 import { setupDevToolsUI } from './devtools'
 import { prerender } from './prerender'
 import { crawlFetch } from './runtime/shared/crawl'
-import { serializeFilterEntries } from './runtime/shared/sharedUtils'
+import { serializeFilters } from './runtime/shared/sharedUtils'
 import { convertNuxtPagesToPaths } from './util'
 
 export interface ModuleOptions {
@@ -185,8 +185,7 @@ export default defineNuxtModule<ModuleOptions>({
   },
   async setup(config, nuxt) {
     const { resolve } = createResolver(import.meta.url)
-    const logger = useLogger('nuxt-link-checker')
-    logger.level = (config.debug || nuxt.options.debug) ? 4 : 3
+    const logger = useModuleLogger('nuxt-link-checker', config, nuxt)
     const { name, version } = await readPackageJSON(resolve('../package.json'))
     if (config.enabled === false) {
       logger.debug(`The ${name} module is disabled, skipping setup.`)
@@ -237,11 +236,9 @@ export default defineNuxtModule<ModuleOptions>({
       nuxt.hooks.hook('pages:resolved', (resolved) => {
         pages.unshift(...resolved)
       })
-      nuxt.hooks.hook('nitro:config', (nitroConfig) => {
-        // @ts-expect-error runtime types
-        nitroConfig.virtual['#nuxt-link-checker-sitemap/pages.mjs'] = async () => {
-          return `export default ${JSON.stringify(convertNuxtPagesToPaths(pages, { locales: i18nLocales }), null, 2)}`
-        }
+      addServerTemplate({
+        filename: '#nuxt-link-checker-sitemap/pages.mjs',
+        getContents: async () => `export default ${JSON.stringify(convertNuxtPagesToPaths(pages, { locales: i18nLocales }), null, 2)}`,
       })
       nuxt.options.nitro.alias = nuxt.options.nitro.alias || {}
       const contentVersion = await resolveNuxtContentVersion()
@@ -266,8 +263,8 @@ export default defineNuxtModule<ModuleOptions>({
         version,
         hasSitemapModule,
         rootDir: nuxt.options.rootDir,
-        excludeLinks: serializeFilterEntries(config.excludeLinks),
-        excludePages: serializeFilterEntries(config.excludePages),
+        excludeLinks: serializeFilters(config.excludeLinks, 'nuxt-link-checker'),
+        excludePages: serializeFilters(config.excludePages, 'nuxt-link-checker'),
         skipInspections: config.skipInspections,
         fetchTimeout: config.fetchTimeout,
         showLiveInspections: config.showLiveInspections,
