@@ -2,9 +2,10 @@ import type { NuxtPage } from '@nuxt/schema'
 import type { Nuxt } from 'nuxt/schema'
 import type { WebSocketServer } from 'vite'
 import { useNuxt } from '@nuxt/kit'
+import { expandCompactLocaleRoute } from 'nuxtseo-shared/i18n'
 import { joinURL } from 'ufo'
 
-export function convertNuxtPagesToPaths(pages: NuxtPage[], options?: { keepDynamic?: boolean }): { title: string, link: string, file?: string }[] {
+export function convertNuxtPagesToPaths(pages: NuxtPage[], options?: { keepDynamic?: boolean, locales?: string[] }): { title: string, link: string, file?: string }[] {
   return pages
     .map((page) => {
       return page.children?.length
@@ -17,6 +18,12 @@ export function convertNuxtPagesToPaths(pages: NuxtPage[], options?: { keepDynam
         : { page, path: page.path }
     })
     .flat()
+    // Expand compacted i18n routes (`/:locale(en|fr)/about`) into one path per locale so
+    // localized links validate exactly instead of being treated as dynamic routes.
+    .flatMap((p) => {
+      const expanded = expandCompactLocaleRoute(p.path, options?.locales)
+      return expanded ? expanded.map(e => ({ ...p, path: e.path })) : [p]
+    })
     .filter(p => options?.keepDynamic || !p.path.includes(':'))
     .map(p => ({
       title: p.page?.meta?.title || '',

@@ -12,7 +12,8 @@ import {
   resolveModule,
 } from '@nuxt/kit'
 import { installNuxtSiteConfig } from 'nuxt-site-config/kit'
-import { resolveNuxtContentVersion, useModuleLogger } from 'nuxtseo-shared/kit'
+import { normalizeLocales, resolveI18nModule } from 'nuxtseo-shared/i18n'
+import { getNuxtModuleOptions, resolveNuxtContentVersion, useModuleLogger } from 'nuxtseo-shared/kit'
 import { $fetch } from 'ofetch'
 import { dirname, join } from 'pathe'
 import { readPackageJSON } from 'pkg-types'
@@ -193,6 +194,15 @@ export default defineNuxtModule<ModuleOptions>({
 
     await installNuxtSiteConfig()
 
+    // Resolve i18n locale codes so we can expand compacted `/:locale(en|fr)/...` routes
+    // (nuxt-i18n-micro / @nuxtjs/i18n experimental compactRoutes) into per-locale paths.
+    let i18nLocales: string[] = []
+    const i18nModule = resolveI18nModule()
+    if (i18nModule) {
+      const i18nConfig = await getNuxtModuleOptions(i18nModule.module)
+      i18nLocales = normalizeLocales(i18nConfig as any).map(l => l.code)
+    }
+
     if (!nuxt.options._prepare && config.fetchRemoteUrls) {
       const { status } = (await crawlFetch('https://nuxtseo.com/robots.txt', { timeout: 400 }).catch(() => ({ status: 404 })))
       config.fetchRemoteUrls = status < 400
@@ -228,7 +238,7 @@ export default defineNuxtModule<ModuleOptions>({
       })
       addServerTemplate({
         filename: '#nuxt-link-checker-sitemap/pages.mjs',
-        getContents: async () => `export default ${JSON.stringify(convertNuxtPagesToPaths(pages), null, 2)}`,
+        getContents: async () => `export default ${JSON.stringify(convertNuxtPagesToPaths(pages, { locales: i18nLocales }), null, 2)}`,
       })
       nuxt.options.nitro.alias = nuxt.options.nitro.alias || {}
       const contentVersion = await resolveNuxtContentVersion()
@@ -260,13 +270,13 @@ export default defineNuxtModule<ModuleOptions>({
         showLiveInspections: config.showLiveInspections,
         fetchRemoteUrls: config.fetchRemoteUrls,
       }
-      setupDevToolsUI(config, resolve)
+      setupDevToolsUI(config, resolve, i18nLocales)
     }
 
     // Collect route-to-file mapping for console output (#43)
     const routeFileMap: Record<string, string> = {}
     nuxt.hooks.hook('pages:resolved', (resolved) => {
-      for (const entry of convertNuxtPagesToPaths(resolved)) {
+      for (const entry of convertNuxtPagesToPaths(resolved, { locales: i18nLocales })) {
         if (entry.file)
           routeFileMap[entry.link] = entry.file
       }
@@ -284,7 +294,7 @@ export default defineNuxtModule<ModuleOptions>({
     }
 
     nuxt.hooks.hook('pages:resolved', async (resolved) => {
-      const allPaths = convertNuxtPagesToPaths(resolved, { keepDynamic: true })
+      const allPaths = convertNuxtPagesToPaths(resolved, { keepDynamic: true, locales: i18nLocales })
       staticRoutes = allPaths.filter(p => !p.link.includes(':')).map(p => p.link)
       dynamicRoutes = allPaths.filter(p => p.link.includes(':')).map(p => p.link)
       await writeRoutesFile()
