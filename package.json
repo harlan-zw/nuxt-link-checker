@@ -58,10 +58,11 @@
     "typecheck": "nuxt typecheck",
     "prepare:fixtures": "nuxt prepare test/fixtures/basic",
     "test": "pnpm prepare:fixtures && vitest",
-    "test:run": "pnpm prepare:fixtures && vitest run"
+    "test:run": "pnpm prepare:fixtures && vitest run && pnpm test:nuxt5",
+    "test:nuxt5": "pnpm --dir test/fixtures/nuxt5 install --frozen-lockfile && pnpm --dir test/fixtures/nuxt5 test"
   },
   "peerDependencies": {
-    "nuxt": "^3.9.0 || ^4.0.0"
+    "nuxt": "^3.9.0 || ^4.0.0 || ^5.0.0"
   },
   "dependencies": {
     "@nuxt/kit": "catalog:",
