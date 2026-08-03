@@ -17,9 +17,6 @@ importers:
       nuxt-link-checker:
         specifier: link:../../..
         version: link:../../..
-      nuxtseo-shared:
-        specifier: https://pkg.pr.new/nuxtseo-shared@1e1aeb7
-        version: https://pkg.pr.new/nuxtseo-shared@1e1aeb7(@nuxt/schema@4.5.1)(magic-string@1.1.0)(magicast@0.5.4)(nuxt-nightly@5.0.0-29762711.192612c7)(oxc-parser@0.140.0)(rolldown@1.2.1)(unplugin@3.3.0(rolldown@1.2.1)(vite@8.2.0))(vite@8.2.0)(vue@3.5.40(typescript@6.0.3))(zod@4.4.3)
       vue:
         specifier: ^3.5.40
         version: 3.5.40(typescript@6.0.3)
@@ -248,11 +245,6 @@ packages:
       serve:
         optional: true
 
-  '@nuxt/devtools-kit@4.0.0-alpha.7':
-    resolution: {integrity: sha512-Tgh+tSejh1GnZjdjgWyc4qCxskeX08XuSQBYMn/4SIV5AubeqYeAOMBD2qSmHOXjMCUpgyzpEhODcP3sgdgGRA==}
-    peerDependencies:
-      vite: '>=6.0'
-
   '@nuxt/devtools-kit@4.0.0-alpha.9':
     resolution: {integrity: sha512-PVGBDlgnroo0B0LQMvlOqKjyrpoGiEJjXZB9GKAx7tfvB57tFHDdjaWCoa9EZjERnvIbr3HohHC1Tq0xmR6S+g==}
     peerDependencies:
@@ -309,10 +301,6 @@ packages:
 
   '@nuxt/schema-nightly@5.0.0-29762711.192612c7':
     resolution: {integrity: sha512-g1sGM55zGqjFc8PLE/L+MZSQ27lKX8D6mrAGoJJTjoT3rVQiJ9tMtZc+ArznZ7GU9VDoyFmD4HSZY7Dxz0Ecmw==}
-    engines: {node: ^14.18.0 || >=16.10.0}
-
-  '@nuxt/schema@4.5.1':
-    resolution: {integrity: sha512-RDdu0BBg9y+Eiyu95LUDJ57YrejJ5v1/VA2r5oBLYiiSiLrlVt33HN9ut4qSyUN8gRTOXnFADery8AyJpTjdWA==}
     engines: {node: ^14.18.0 || >=16.10.0}
 
   '@nuxt/telemetry@2.8.0':
@@ -1259,21 +1247,6 @@ packages:
       jiti:
         optional: true
 
-  nuxtseo-shared@https://pkg.pr.new/nuxtseo-shared@1e1aeb7:
-    resolution: {integrity: sha512-tiZu9+pS8QJOBA2RPvBuIYBHBPk87zs4R2KKfG+YjzDEas5VbqS2Smup+dZt9jZjB+v33a3hWIh7M3J1feBZqg==, tarball: https://pkg.pr.new/nuxtseo-shared@1e1aeb7}
-    version: 5.3.6
-    peerDependencies:
-      '@nuxt/schema': ^3.16.0 || ^4.0.0 || ^5.0.0
-      nuxt: ^3.16.0 || ^4.0.0 || ^5.0.0
-      nuxt-site-config: ^3.2.0 || ^4.0.0
-      vue: ^3.5.0
-      zod: ^3.23.0 || ^4.0.0
-    peerDependenciesMeta:
-      nuxt-site-config:
-        optional: true
-      zod:
-        optional: true
-
   nypm@0.6.9:
     resolution: {integrity: sha512-zxlE2yvSWZWmHcNdT3+5zV2lrCogeE9YOklHrR3dFjqutq5wO7GFDYLFDRXLsYnJzwvy/im9fYoxePvS0VTW0w==}
     engines: {node: '>=18'}
@@ -2177,18 +2150,6 @@ snapshots:
       - cac
       - commander
 
-  '@nuxt/devtools-kit@4.0.0-alpha.7(magic-string@1.1.0)(magicast@0.5.4)(oxc-parser@0.140.0)(rolldown@1.2.1)(unplugin@3.3.0(rolldown@1.2.1)(vite@8.2.0))(vite@8.2.0)':
-    dependencies:
-      '@nuxt/kit': 4.5.1(magic-string@1.1.0)(magicast@0.5.4)(oxc-parser@0.140.0)(rolldown@1.2.1)(unplugin@3.3.0(rolldown@1.2.1)(vite@8.2.0))
-      tinyexec: 1.3.0
-      vite: 8.2.0(@vitejs/devtools@0.4.10)(jiti@2.7.0)(yaml@2.9.0)
-    transitivePeerDependencies:
-      - magic-string
-      - magicast
-      - oxc-parser
-      - rolldown
-      - unplugin
-
   '@nuxt/devtools-kit@4.0.0-alpha.9(magic-string@1.1.0)(magicast@0.5.4)(oxc-parser@0.140.0)(rolldown@1.2.1)(unplugin@3.3.0(rolldown@1.2.1)(vite@8.2.0))(vite@8.2.0)':
     dependencies:
       '@nuxt/kit': 4.5.1(magic-string@1.1.0)(magicast@0.5.4)(oxc-parser@0.140.0)(rolldown@1.2.1)(unplugin@3.3.0(rolldown@1.2.1)(vite@8.2.0))
@@ -2429,15 +2390,6 @@ snapshots:
       - zephyr-agent
 
   '@nuxt/schema-nightly@5.0.0-29762711.192612c7':
-    dependencies:
-      '@vue/shared': 3.5.40
-      defu: 6.1.7
-      nostics: 1.2.0
-      pathe: 2.0.3
-      pkg-types: 2.3.1
-      std-env: 4.2.0
-
-  '@nuxt/schema@4.5.1':
     dependencies:
       '@vue/shared': 3.5.40
       defu: 6.1.7
@@ -3437,35 +3389,6 @@ snapshots:
       - xml2js
       - yaml
       - zephyr-agent
-
-  nuxtseo-shared@https://pkg.pr.new/nuxtseo-shared@1e1aeb7(@nuxt/schema@4.5.1)(magic-string@1.1.0)(magicast@0.5.4)(nuxt-nightly@5.0.0-29762711.192612c7)(oxc-parser@0.140.0)(rolldown@1.2.1)(unplugin@3.3.0(rolldown@1.2.1)(vite@8.2.0))(vite@8.2.0)(vue@3.5.40(typescript@6.0.3))(zod@4.4.3):
-    dependencies:
-      '@clack/prompts': 1.7.0
-      '@nuxt/devtools-kit': 4.0.0-alpha.7(magic-string@1.1.0)(magicast@0.5.4)(oxc-parser@0.140.0)(rolldown@1.2.1)(unplugin@3.3.0(rolldown@1.2.1)(vite@8.2.0))(vite@8.2.0)
-      '@nuxt/kit': 4.5.1(magic-string@1.1.0)(magicast@0.5.4)(oxc-parser@0.140.0)(rolldown@1.2.1)(unplugin@3.3.0(rolldown@1.2.1)(vite@8.2.0))
-      '@nuxt/schema': 4.5.1
-      birpc: 4.0.0
-      consola: 3.4.2
-      defu: 6.1.7
-      nuxt: nuxt-nightly@5.0.0-29762711.192612c7(@oxc-project/types@0.142.0)(@vitejs/devtools@0.4.10)(@vue/compiler-sfc@3.5.40)(cac@7.0.0)(crossws@0.4.10(srvx@0.11.22))(db0@0.3.4)(devframe@0.7.16(cac@7.0.0)(srvx@0.11.22)(typescript@6.0.3))(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(lightningcss@1.33.0)(magicast@0.5.4)(mlly@1.8.2)(nuxt-nightly@5.0.0-29762711.192612c7)(oxc-parser@0.140.0)(rolldown@1.2.1)(srvx@0.11.22)(typescript@6.0.3)(valibot@1.4.2(typescript@6.0.3))(vite@8.2.0)(vue-tsc@3.3.9(typescript@6.0.3))(yaml@2.9.0)
-      nypm: 0.6.9
-      ofetch: 1.5.1
-      pathe: 2.0.3
-      pkg-types: 2.3.1
-      radix3: 1.1.2
-      sirv: 3.0.2
-      std-env: 4.2.0
-      ufo: 1.6.4
-      vue: 3.5.40(typescript@6.0.3)
-    optionalDependencies:
-      zod: 4.4.3
-    transitivePeerDependencies:
-      - magic-string
-      - magicast
-      - oxc-parser
-      - rolldown
-      - unplugin
-      - vite
 
   nypm@0.6.9:
     dependencies:

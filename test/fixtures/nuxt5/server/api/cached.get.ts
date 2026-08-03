@@ -1,5 +1,5 @@
 import { eventHandler } from '#nuxtseo/h3'
-import { defineCachedEventHandler } from '#nuxt-link-checker/nitro'
+import { defineCachedEventHandler } from '#nuxtseo/nitro'
 
 export default defineCachedEventHandler(eventHandler(() => ({
   cached: true,

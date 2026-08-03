@@ -192,11 +192,7 @@ export default defineNuxtModule<ModuleOptions>({
       return
     }
     await installNuxtSiteConfig()
-    const nitroCompatibility = setupNitroRuntimeCompatibility(nuxt)
-    nuxt.options.nitro.virtual ||= {}
-    nuxt.options.nitro.virtual['#nuxt-link-checker/nitro'] = nitroCompatibility._tag === 'nitro-v3'
-      ? `export { defineCachedHandler as defineCachedEventHandler } from 'nitro/cache'`
-      : `export { defineCachedEventHandler } from 'nitropack/runtime'`
+    setupNitroRuntimeCompatibility(nuxt)
 
     // Resolve i18n locale codes so we can expand compacted `/:locale(en|fr)/...` routes
     // (nuxt-i18n-micro / @nuxtjs/i18n experimental compactRoutes) into per-locale paths.
