@@ -2,9 +2,9 @@ minimumReleaseAgeExclude:
   - nuxtseo-layer-devtools
   - nuxtseo-shared
   - '@nuxtjs/sitemap@8.2.0'
-  - nuxt-site-config-kit@4.1.0
-  - nuxt-site-config@4.1.0
-  - site-config-stack@4.1.0
+  - nuxt-site-config-kit@4.1.0 || 4.1.4
+  - nuxt-site-config@4.1.0 || 4.1.4
+  - site-config-stack@4.1.0 || 4.1.4
   - '@vue/compiler-core@3.5.38'
   - '@vue/compiler-dom@3.5.38'
   - '@vue/compiler-sfc@3.5.38'
@@ -53,9 +53,9 @@ catalog:
   h3: ^1.15.11
   magic-string: ^1.0.0
   nuxt: ^4.5.0
-  nuxt-site-config: ^4.1.1
+  nuxt-site-config: ^4.1.4
   nuxtseo-layer-devtools: ^5.3.2
-  nuxtseo-shared: ^5.3.4
+  nuxtseo-shared: ^5.3.7
   ofetch: ^1.5.1
   pathe: ^2.0.3
   pkg-types: ^2.3.1
