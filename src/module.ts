@@ -193,6 +193,7 @@ export default defineNuxtModule<ModuleOptions>({
     }
     await installNuxtSiteConfig()
     setupNitroRuntimeCompatibility(nuxt)
+    nuxt.options.nitro.alias!.ofetch ||= resolveModule('ofetch', { url: new URL(import.meta.url) })
 
     // Resolve i18n locale codes so we can expand compacted `/:locale(en|fr)/...` routes
     // (nuxt-i18n-micro / @nuxtjs/i18n experimental compactRoutes) into per-locale paths.
