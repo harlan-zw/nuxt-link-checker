@@ -1,5 +1,5 @@
-import { defineEventHandler } from 'h3'
-import { useRuntimeConfig } from '#imports'
+import { defineEventHandler } from '#nuxtseo/h3'
+import { useRuntimeConfig } from '#nuxtseo/nitro'
 
 // verify a link
 export default defineEventHandler(async (e) => {

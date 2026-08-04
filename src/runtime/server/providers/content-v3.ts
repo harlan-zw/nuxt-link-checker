@@ -1,4 +1,4 @@
-import type { H3Event } from 'h3'
+import type { H3Event } from '#nuxtseo/h3'
 import { queryCollection } from '@nuxt/content/server'
 // @ts-expect-error alias
 import manifest from '#content/manifest'

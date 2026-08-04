@@ -13,7 +13,7 @@ import {
 } from '@nuxt/kit'
 import { installNuxtSiteConfig } from 'nuxt-site-config/kit'
 import { normalizeLocales, resolveI18nModule } from 'nuxtseo-shared/i18n'
-import { getNuxtModuleOptions, resolveNuxtContentVersion, useModuleLogger } from 'nuxtseo-shared/kit'
+import { getNuxtModuleOptions, resolveNuxtContentVersion, setupNitroRuntimeCompatibility, useModuleLogger } from 'nuxtseo-shared/kit'
 import { $fetch } from 'ofetch'
 import { dirname, join } from 'pathe'
 import { readPackageJSON } from 'pkg-types'
@@ -191,8 +191,9 @@ export default defineNuxtModule<ModuleOptions>({
       logger.debug(`The ${name} module is disabled, skipping setup.`)
       return
     }
-
     await installNuxtSiteConfig()
+    setupNitroRuntimeCompatibility(nuxt)
+    nuxt.options.nitro.alias!.ofetch ||= resolveModule('ofetch', { url: new URL(import.meta.url) })
 
     // Resolve i18n locale codes so we can expand compacted `/:locale(en|fr)/...` routes
     // (nuxt-i18n-micro / @nuxtjs/i18n experimental compactRoutes) into per-locale paths.
