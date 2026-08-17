@@ -306,7 +306,12 @@ export default defineNuxtModule<ModuleOptions>({
       nuxt.hooks.hook('listen', (_server, listener) => {
         const baseURL = `http://localhost:${listener.port}`
         const enrichRoutes = async (): Promise<void> => {
-          const debug = await $fetch<{ globalSources: { urls: { loc: string }[] }[] }>(`${baseURL}/__sitemap__/debug.json`).catch(() => null)
+          const debug = await $fetch<{ globalSources: { urls: { loc: string }[] }[] }>(`${baseURL}/__sitemap__/debug.json`)
+            .catch(() => {
+              // sitemap enrichment is best effort: the debug endpoint is missing on older
+              // @nuxtjs/sitemap versions, and route checking works fine without it
+              return null
+            })
           if (!debug)
             return
           const baseOrigin = new URL(baseURL).origin
