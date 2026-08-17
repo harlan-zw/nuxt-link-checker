@@ -13,6 +13,33 @@ permissions:
 
 jobs:
   build:
-    uses: harlan-zw/nuxt-seo/.github/workflows/reusable-nightly.yml@main
-    with:
-      publish-packages: --pnpm
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/setup@v2
+        with:
+          runtime: node@lts
+          cache: true
+          install: false
+
+      - run: pnpm install --frozen-lockfile --trust-lockfile
+      - run: pnpm dev:prepare
+      - run: pnpm build
+
+      - name: Publish
+        run: |
+          attempt=0
+          while true; do
+            attempt=$((attempt + 1))
+            if pnpm dlx pkg-pr-new publish --pnpm; then
+              echo "pkg-pr-new publish succeeded on attempt ${attempt}"
+              exit 0
+            fi
+            echo "pkg-pr-new publish failed on attempt ${attempt}"
+            if [ "${attempt}" -ge 5 ]; then
+              echo "pkg-pr-new publish failed after ${attempt} attempts"
+              exit 1
+            fi
+            sleep 30
+          done
