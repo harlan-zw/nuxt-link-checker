@@ -147,8 +147,10 @@ export function prerender(config: ModuleOptions, version?: string, routeFileMap:
       }))
     })
     nitro.hooks.hook('prerender:done', async () => {
-      const payloads = Object.entries(linkMap)
-      if (!payloads?.length)
+      // sort by route: prerendering finishes in a different order on every build, and both the
+      // page search index and the report inherit whatever order we hand them
+      const payloads = Object.entries(linkMap).sort(([a], [b]) => a.localeCompare(b))
+      if (!payloads.length)
         return
 
       const { storage, storageFilepath } = createReportStorage(config, nuxt, nitro)
@@ -237,38 +239,39 @@ async function runInspections(
   let warningCount = 0
   let routeWithIssuesCount = 0
   const totalRoutes = payloads.length
-  const allReports: PathReport[] = []
-
-  // Create a set of inputs for parallel processing
-  const inputs = new Set<[route: string, payload: ExtractedPayload]>(payloads)
+  // keep a slot per route so the report order does not depend on which worker finishes first
+  const reportSlots: (PathReport | undefined)[] = Array.from({ length: totalRoutes })
 
   // Process routes in parallel
   await runParallel<[route: string, payload: ExtractedPayload]>(
-    inputs,
-    async ([route, payload]) => {
-      const reports = await processRouteLinks(route, payload, context)
-
-      // Update counts
-      const routeErrors = reports.filter(r => r.error?.length).length
-      const routeWarnings = reports.filter(r => r.warning?.length).length
-
-      if (routeErrors || routeWarnings) {
-        // Use atomic updates to avoid race conditions
-        errorCount += routeErrors
-        warningCount += routeWarnings
-        routeWithIssuesCount++
-
-        // Only log detailed results if reports are not enabled
-        if (!hasReportsEnabled(config)) {
-          logRouteIssues(route, reports, routeErrors, routeWarnings, nitro, context.routeFileMap)
-        }
-      }
-
-      // Add to reports collection
-      allReports.push({ route, reports } satisfies PathReport)
+    payloads,
+    async ([route, payload], index) => {
+      reportSlots[index] = {
+        route,
+        reports: await processRouteLinks(route, payload, context),
+      } satisfies PathReport
     },
-    { concurrency: 5, interval: 10 }, // Process 5 routes in parallel with small delay between starts
+    { concurrency: 5 }, // Process 5 routes in parallel
   )
+  // a route whose inspection threw leaves an empty slot
+  const allReports = reportSlots.filter(Boolean) as PathReport[]
+
+  // Count and log in route order, so the output is the same on every build
+  for (const { route, reports } of allReports) {
+    const routeErrors = reports.filter(r => r.error?.length).length
+    const routeWarnings = reports.filter(r => r.warning?.length).length
+    if (!routeErrors && !routeWarnings) {
+      continue
+    }
+    errorCount += routeErrors
+    warningCount += routeWarnings
+    routeWithIssuesCount++
+
+    // Only log detailed results if reports are not enabled
+    if (!hasReportsEnabled(config)) {
+      logRouteIssues(route, reports, routeErrors, routeWarnings, nitro, context.routeFileMap)
+    }
+  }
 
   // Show summary at the end
   logSummary(
@@ -294,16 +297,14 @@ async function processRouteLinks(
 
   // Process links in parallel but with controlled concurrency
   const links = payload.links || []
-  const allReports: Partial<LinkInspectionResult>[] = []
-
-  // Create a set of inputs for parallel processing
-  const inputs = new Set<ExtractedPayload['links'][number]>(links)
+  // keep a slot per link so the report order does not depend on which worker finishes first
+  const reportSlots: (Partial<LinkInspectionResult> | undefined)[] = Array.from({ length: links.length })
 
   await runParallel<ExtractedPayload['links'][number]>(
-    inputs,
-    async ({ link, textContent }) => {
+    links,
+    async ({ link, textContent }, index) => {
       if (!urlFilter(link) || !link) {
-        allReports.push({ error: [], warning: [], link })
+        reportSlots[index] = { error: [], warning: [], link }
         return
       }
 
@@ -328,12 +329,13 @@ async function processRouteLinks(
       })
 
       // Add to report collection
-      allReports.push(report)
+      reportSlots[index] = report
     },
-    { concurrency: 5, interval: 5 }, // Process 5 links in parallel with small delay
+    { concurrency: 5 }, // Process 5 links in parallel
   )
 
-  return allReports
+  // a link whose inspection threw leaves an empty slot
+  return reportSlots.filter(Boolean) as Partial<LinkInspectionResult>[]
 }
 
 /**
