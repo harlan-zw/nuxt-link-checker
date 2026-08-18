@@ -13,7 +13,7 @@ import {
 } from '@nuxt/kit'
 import { installNuxtSiteConfig } from 'nuxt-site-config/kit'
 import { normalizeLocales, resolveI18nModule } from 'nuxtseo-shared/i18n'
-import { getNuxtModuleOptions, resolveContentProvider, setupNitroRuntimeCompatibility, useModuleLogger } from 'nuxtseo-shared/kit'
+import { getNuxtModuleOptions, resolveContentProvider, setupContentRuntime, setupNitroRuntimeCompatibility, useModuleLogger } from 'nuxtseo-shared/kit'
 import { $fetch } from 'ofetch'
 import { dirname, join } from 'pathe'
 import { readPackageJSON } from 'pkg-types'
@@ -246,22 +246,20 @@ export default defineNuxtModule<ModuleOptions>({
       })
       nuxt.options.nitro.alias = nuxt.options.nitro.alias || {}
       const contentProvider = await resolveContentProvider(nuxt)
+      setupContentRuntime(contentProvider, nuxt)
       if (contentProvider._tag === 'NuxtContent' && contentProvider.version === 3) {
         if (await hasNuxtModuleCompatibility('@nuxt/content', '<3.6.0')) {
           nuxt.options.alias['@nuxt/content/nitro'] = resolve('./runtime/server/content-compat')
           nuxt.options.alias['#link-checker/content-v3-nitro-path'] = resolve(dirname(resolveModule('@nuxt/content')), 'runtime/nitro')
         }
-        nuxt.options.nitro.alias['#link-checker/content-provider'] = resolve('./runtime/server/providers/content-v3')
       }
-      else if (contentProvider._tag === 'NuxtContent') {
-        nuxt.options.nitro.alias['#link-checker/content-provider'] = resolve('./runtime/server/providers/content-v2')
-      }
-      else if (contentProvider._tag === 'Comark') {
-        nuxt.options.nitro.alias['#link-checker/content-provider'] = resolve('./runtime/server/providers/comark-content')
-      }
-      else {
-        nuxt.options.nitro.alias['#link-checker/content-provider'] = resolve('./runtime/server/providers/noop')
-      }
+      // Nuxt Content v2 predates collections, so `#nuxtseo/content` cannot serve it.
+      const contentProviderPath = contentProvider._tag === 'NuxtContent' && contentProvider.version === 2
+        ? './runtime/server/providers/content-v2'
+        : contentProvider._tag === 'None'
+          ? './runtime/server/providers/noop'
+          : './runtime/server/providers/content'
+      nuxt.options.nitro.alias['#link-checker/content-provider'] = resolve(contentProviderPath)
       nuxt.options.alias['#link-checker'] = resolve('./runtime')
       nuxt.options.runtimeConfig.public['nuxt-link-checker'] = {
         version,
