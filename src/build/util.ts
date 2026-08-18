@@ -5,43 +5,31 @@ export function truncateString(str: string, maxLength: number): string {
   return `${str.substring(0, maxLength - 3)}...`
 }
 
+/**
+ * Run `cb` over every input, with at most `concurrency` callbacks in flight.
+ *
+ * Errors from a callback are logged and do not stop the remaining work.
+ */
 export async function runParallel<T>(
-  inputs: Set<T>,
-  cb: (input: T) => unknown | Promise<unknown>,
-  opts: { concurrency: number, interval?: number },
+  inputs: Iterable<T>,
+  cb: (input: T, index: number) => unknown | Promise<unknown>,
+  opts: { concurrency: number },
 ): Promise<void> {
-  const tasks = new Set<Promise<unknown>>()
-
-  function queueNext(): undefined | Promise<unknown> {
-    const route = inputs.values().next().value
-    if (!route) {
-      return
-    }
-
-    inputs.delete(route)
-    const task = (
-      opts.interval
-        ? new Promise(resolve => setTimeout(resolve, opts.interval))
-        : Promise.resolve()
-    )
-      .then(() => cb(route))
-      .catch((error) => {
-        console.error(error)
-      })
-
-    tasks.add(task)
-    return task.then(() => {
-      tasks.delete(task)
-      if (inputs.size > 0) {
-        return refillQueue()
+  const queue = [...inputs]
+  if (!queue.length) {
+    return
+  }
+  const workerCount = Math.min(Math.max(opts.concurrency, 1), queue.length)
+  let cursor = 0
+  await Promise.all(Array.from({ length: workerCount }, async () => {
+    while (cursor < queue.length) {
+      const index = cursor++
+      try {
+        await cb(queue[index]!, index)
       }
-    })
-  }
-
-  function refillQueue(): Promise<unknown> {
-    const workers = Math.min(opts.concurrency - tasks.size, inputs.size)
-    return Promise.all(Array.from({ length: workers }).fill(queueNext()))
-  }
-
-  await refillQueue()
+      catch (error) {
+        console.error(error)
+      }
+    }
+  }))
 }

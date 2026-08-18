@@ -2,9 +2,9 @@ minimumReleaseAgeExclude:
   - nuxtseo-layer-devtools
   - nuxtseo-shared
   - '@nuxtjs/sitemap@8.2.0'
-  - nuxt-site-config-kit@4.1.0
-  - nuxt-site-config@4.1.0
-  - site-config-stack@4.1.0
+  - nuxt-site-config-kit@4.1.0 || 4.1.4
+  - nuxt-site-config@4.1.0 || 4.1.4
+  - site-config-stack@4.1.0 || 4.1.4
   - '@vue/compiler-core@3.5.38'
   - '@vue/compiler-dom@3.5.38'
   - '@vue/compiler-sfc@3.5.38'
@@ -20,6 +20,7 @@ minimumReleaseAgeExclude:
   - '@nuxt/schema@4.5.0'
   - '@nuxt/vite-builder@4.5.0'
   - nuxt@4.5.0
+  - eslint-plugin-harlanzw@0.19.2
 shellEmulator: true
 
 trustPolicy: no-downgrade
@@ -47,15 +48,15 @@ catalog:
   defu: ^6.1.7
   diff: ^9.0.0
   eslint: ^10.7.0
-  eslint-plugin-harlanzw: ^0.17.0
+  eslint-plugin-harlanzw: ^0.19.2
   execa: ^10.0.0
   fuse.js: ^7.5.0
   h3: ^1.15.11
   magic-string: ^1.0.0
   nuxt: ^4.5.0
-  nuxt-site-config: ^4.1.1
+  nuxt-site-config: ^4.1.4
   nuxtseo-layer-devtools: ^5.3.2
-  nuxtseo-shared: ^5.3.4
+  nuxtseo-shared: ^5.3.11
   ofetch: ^1.5.1
   pathe: ^2.0.3
   pkg-types: ^2.3.1
