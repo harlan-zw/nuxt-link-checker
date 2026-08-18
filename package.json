@@ -86,6 +86,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:",
+    "@harlan-zw/comark-content": "catalog:",
     "@nuxt/content": "catalog:",
     "@nuxt/devtools": "catalog:",
     "@nuxt/devtools-kit": "catalog:",
