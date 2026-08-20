@@ -1,7 +1,7 @@
 minimumReleaseAgeExclude:
   - nuxtseo-layer-devtools
   - nuxtseo-shared
-  - '@nuxtjs/sitemap@8.2.0'
+  - '@nuxtjs/sitemap@8.4.0'
   - nuxt-site-config-kit@4.1.0 || 4.1.4
   - nuxt-site-config@4.1.0 || 4.1.4
   - site-config-stack@4.1.0 || 4.1.4
@@ -41,7 +41,7 @@ catalog:
   '@nuxt/kit': ^4.5.0
   '@nuxt/module-builder': ^1.0.2
   '@nuxt/test-utils': ^4.0.3
-  '@nuxtjs/sitemap': ^8.2.2
+  '@nuxtjs/sitemap': ^8.4.0
   '@types/node': ^26.1.1
   '@vueuse/core': ^14.3.0
   better-sqlite3: ^12.11.1
