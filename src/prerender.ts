@@ -310,6 +310,7 @@ async function processRouteLinks(
 
       const response = await getLinkResponse({
         link,
+        baseURL: siteConfig.url,
         timeout: config.fetchTimeout,
         fetchRemoteUrls: config.fetchRemoteUrls,
         isInStorage() {
