@@ -13,7 +13,7 @@ import {
 } from '@nuxt/kit'
 import { installNuxtSiteConfig } from 'nuxt-site-config/kit'
 import { normalizeLocales, resolveI18nModule } from 'nuxtseo-shared/i18n'
-import { getNuxtModuleOptions, resolveNuxtContentVersion, setupNitroRuntimeCompatibility, useModuleLogger } from 'nuxtseo-shared/kit'
+import { getNuxtModuleOptions, resolveContentProvider, setupContentRuntime, setupNitroRuntimeCompatibility, useModuleLogger } from 'nuxtseo-shared/kit'
 import { $fetch } from 'ofetch'
 import { dirname, join } from 'pathe'
 import { readPackageJSON } from 'pkg-types'
@@ -156,6 +156,10 @@ export default defineNuxtModule<ModuleOptions>({
     'nuxt-site-config': {
       version: '>=3.2',
     },
+    '@harlan-zw/comark-content': {
+      version: '>=0.1.2',
+      optional: true,
+    },
     '@nuxt/content': {
       version: '>=2',
       optional: true,
@@ -241,23 +245,21 @@ export default defineNuxtModule<ModuleOptions>({
         getContents: async () => `export default ${JSON.stringify(convertNuxtPagesToPaths(pages, { locales: i18nLocales }), null, 2)}`,
       })
       nuxt.options.nitro.alias = nuxt.options.nitro.alias || {}
-      const contentVersion = await resolveNuxtContentVersion()
-      const isNuxtContentV3 = contentVersion && contentVersion.version === 3
-      if (contentVersion) {
-        if (isNuxtContentV3) {
-          if (await hasNuxtModuleCompatibility('@nuxt/content', '<3.6.0')) {
-            nuxt.options.alias['@nuxt/content/nitro'] = resolve('./runtime/server/content-compat')
-            nuxt.options.alias['#link-checker/content-v3-nitro-path'] = resolve(dirname(resolveModule('@nuxt/content')), 'runtime/nitro')
-          }
-          nuxt.options.nitro.alias['#link-checker/content-provider'] = resolve('./runtime/server/providers/content-v3')
-        }
-        else {
-          nuxt.options.nitro.alias['#link-checker/content-provider'] = resolve('./runtime/server/providers/content-v2')
+      const contentProvider = await resolveContentProvider(nuxt)
+      setupContentRuntime(contentProvider, nuxt)
+      if (contentProvider._tag === 'NuxtContent' && contentProvider.version === 3) {
+        if (await hasNuxtModuleCompatibility('@nuxt/content', '<3.6.0')) {
+          nuxt.options.alias['@nuxt/content/nitro'] = resolve('./runtime/server/content-compat')
+          nuxt.options.alias['#link-checker/content-v3-nitro-path'] = resolve(dirname(resolveModule('@nuxt/content')), 'runtime/nitro')
         }
       }
-      else {
-        nuxt.options.nitro.alias['#link-checker/content-provider'] = resolve('./runtime/server/providers/noop')
-      }
+      // Nuxt Content v2 predates collections, so `#nuxtseo/content` cannot serve it.
+      const contentProviderPath = contentProvider._tag === 'NuxtContent' && contentProvider.version === 2
+        ? './runtime/server/providers/content-v2'
+        : contentProvider._tag === 'None'
+          ? './runtime/server/providers/noop'
+          : './runtime/server/providers/content'
+      nuxt.options.nitro.alias['#link-checker/content-provider'] = resolve(contentProviderPath)
       nuxt.options.alias['#link-checker'] = resolve('./runtime')
       nuxt.options.runtimeConfig.public['nuxt-link-checker'] = {
         version,
