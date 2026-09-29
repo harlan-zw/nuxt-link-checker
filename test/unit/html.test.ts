@@ -5,7 +5,7 @@ describe('html', () => {
   it('detects aria-label', async () => {
     const payload = await extractPayload(`<div>
 <a href="/test" aria-label="test"></a>
-</div>`, '')
+</div>`)
     expect(payload).toMatchInlineSnapshot(`
       {
         "ids": [],
@@ -23,7 +23,7 @@ describe('html', () => {
   it('detects title', async () => {
     const payload = await extractPayload(`<div>
 <a href="/test" title="test"></a>
-</div>`, '')
+</div>`)
     expect(payload).toMatchInlineSnapshot(`
       {
         "ids": [],
@@ -41,7 +41,7 @@ describe('html', () => {
   it('detects inner text content', async () => {
     const payload = await extractPayload(`<div>
 <a href="/test"><div>inner text</div></a>
-</div>`, '')
+</div>`)
     expect(payload).toMatchInlineSnapshot(`
       {
         "ids": [],
@@ -59,7 +59,7 @@ describe('html', () => {
   it('detects inner text content nested', async () => {
     const payload = await extractPayload(`<div>
 <a href="/docs/og-image/getting-started/getting-familar-with-nuxt-og-image" class="group relative w-full px-2.5 py-1.5 before:inset-y-px before:inset-x-0 flex items-center gap-1.5 text-sm before:absolute before:z-[-1] before:rounded-[calc(var(--ui-radius)*1.5)] focus:outline-none focus-visible:outline-none dark:focus-visible:outline-none focus-visible:before:ring-inset focus-visible:before:ring-2 focus-visible:before:ring-[--ui-primary] text-[--ui-text-muted] hover:text-[--ui-text-highlighted] hover:before:bg-[--ui-bg-elevated]/50 transition-colors before:transition-colors"><!--[--><!--[--><!--[--><!----><!--]--><span class="truncate"><!--[-->Tutorial: Your first OG Image<!--]--><!----></span><!----><!--]--><!--]--></a>
-</div>`, '')
+</div>`)
     expect(payload).toMatchInlineSnapshot(`
       {
         "ids": [],

@@ -18,7 +18,7 @@ export interface PathReport {
 
 export interface ExtractedPayload {
   title?: string
-  links: { link: string, textContent: string }[]
+  links: { link: string, role?: string, textContent: string }[]
   ids: string[]
 }
 
@@ -257,7 +257,7 @@ async function generateHtmlReport(reports: PathReport[], {
   return resolve(storageFilepath, 'link-checker-report.html')
 }
 
-async function generateMarkdownReport(reports: PathReport[], { storage, storageFilepath }: InspectionContext): Promise<string> {
+async function generateMarkdownReport(reports: PathReport[], { storage, storageFilepath, totalRoutes }: InspectionContext): Promise<string> {
   // Sort reports like a file tree (parents before children, alphabetically at each level)
   const sortedReports = [...reports].sort((a, b) => {
     const segmentsA = a.route.split('/').filter(Boolean)
@@ -289,7 +289,8 @@ async function generateMarkdownReport(reports: PathReport[], { storage, storageF
     '',
     '## Summary',
     '',
-    `- **Pages checked:** ${sortedReports.length}`,
+    `- **Pages checked:** ${totalRoutes}`,
+    `- **Pages with issues:** ${sortedReports.length}`,
     `- **Total errors:** ${totalErrors}`,
     `- **Total warnings:** ${totalWarnings}`,
     '',

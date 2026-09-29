@@ -56,3 +56,15 @@ describe('valid-sitemap-link', () => {
     })
   })
 })
+
+describe('valid-sitemap-link without sitemap data', () => {
+  it('reports nothing, since valid-route already covers unknown routes', () => {
+    const tester = new RuleTester({ languageOptions: { ecmaVersion: 2020, sourceType: 'module' } })
+    tester.run('valid-sitemap-link', rule, {
+      valid: [
+        { code: 'navigateTo("/not-a-route")', options: [{ routesFile: join(__dirname, '../../fixtures/eslint/routes-no-sitemap.json') }] },
+      ],
+      invalid: [],
+    })
+  })
+})
