@@ -5,6 +5,14 @@
 [![License][license-src]][license-href]
 [![Nuxt][nuxt-src]][nuxt-href]
 
+<a href="https://skilld.dev/gh/harlan-zw/nuxt-link-checker">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://skilld.dev/b/harlan-zw/nuxt-link-checker?theme=dark">
+    <source media="(prefers-color-scheme: light)" srcset="https://skilld.dev/b/harlan-zw/nuxt-link-checker?theme=light">
+    <img alt="Skill repository on skilld.dev" src="https://skilld.dev/b/harlan-zw/nuxt-link-checker?theme=light">
+  </picture>
+</a>
+
 Nuxt Link Checker is a collection of SEO focused link inspections for your Nuxt app.
 
 By keeping your links in check, you can ensure that your site is discoverable and accessible to [search engine crawlers](https://nuxtseo.com/learn/controlling-crawlers) and your users.
@@ -39,10 +47,7 @@ npx nuxi@latest module add link-checker
 ```
 
 > [!TIP]
-> Generate an Agent Skill for this package using [skilld](https://github.com/harlan-zw/skilld):
-> ```bash
-> npx skilld add nuxt-link-checker
-> ```
+> Using an AI agent? Get the nuxt-link-checker Skill on [skilld.dev/gh/harlan-zw/nuxt-link-checker](https://skilld.dev/gh/harlan-zw/nuxt-link-checker).
 
 💡 Link Checker catches broken links at build. For live site checks with indexing, Core Web Vitals and Search Console data in one place, see [Nuxt SEO Pro](https://nuxtseo.com/pro).
 
