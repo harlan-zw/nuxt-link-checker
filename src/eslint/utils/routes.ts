@@ -6,7 +6,13 @@ import { createRouter } from 'radix3'
 export interface RoutesData {
   staticRoutes: string[]
   dynamicRoutes: string[]
+  /**
+   * True once `staticRoutes` includes the sitemap URLs. Without it, `valid-sitemap-link` has nothing to add over `valid-route`.
+   */
+  sitemap?: boolean
 }
+
+const warnedMissing = new Set<string>()
 
 let cachedRoutes: RoutesData | undefined
 let cachedMtime: number | undefined
@@ -21,6 +27,11 @@ export function loadRoutes(options?: { routesFile?: string, rootDir?: string }):
     mtime = statSync(routesFile).mtimeMs
   }
   catch {
+    // without routes the rules pass every link, so say so once per file instead of passing silently
+    if (!warnedMissing.has(routesFile)) {
+      warnedMissing.add(routesFile)
+      console.warn(`[nuxt-link-checker] ${routesFile} not found, so link-checker ESLint rules check no links. Run \`nuxt prepare\` first, or pass the \`rootDir\` or \`routesFile\` rule option.`)
+    }
     return { staticRoutes: [], dynamicRoutes: [] }
   }
 

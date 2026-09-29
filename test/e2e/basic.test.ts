@@ -58,7 +58,7 @@ describe('basic', async () => {
           ],
           "error": [
             {
-              "message": "Should not respond with status code 404 (Not Found).",
+              "message": "Should not respond with status code 404 (Page not found: /foo).",
               "name": "no-error-response",
               "scope": "error",
             },
@@ -156,7 +156,7 @@ describe('basic', async () => {
           ],
           "error": [
             {
-              "message": "Should not respond with status code 404 (Not Found).",
+              "message": "Should not respond with status code 404 (Page not found: /foo).",
               "name": "no-error-response",
               "scope": "error",
             },

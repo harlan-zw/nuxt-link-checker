@@ -21,7 +21,7 @@ import { setupDevToolsUI } from './devtools'
 import { prerender } from './prerender'
 import { crawlFetch } from './runtime/shared/crawl'
 import { serializeFilters } from './runtime/shared/sharedUtils'
-import { convertNuxtPagesToPaths } from './util'
+import { convertNuxtPagesToPaths, findRemovedOptions } from './util'
 
 export interface ModuleOptions {
   /**
@@ -35,7 +35,7 @@ export interface ModuleOptions {
   /**
    * The timeout for fetching a URL.
    *
-   * @default 5000
+   * @default 10000
    */
   fetchTimeout: number
   /**
@@ -60,7 +60,7 @@ export interface ModuleOptions {
    */
   excludeLinks: (string | RegExp)[]
   /**
-   * Generate a report when using nuxt build` or `nuxt generate`.
+   * Generate a report after the build scan of prerendered pages.
    */
   report?: {
     /**
@@ -68,7 +68,7 @@ export interface ModuleOptions {
      */
     html?: boolean
     /**
-     * Whether to output a JSON report.
+     * Whether to output a Markdown report.
      */
     markdown?: boolean
     /**
@@ -195,6 +195,8 @@ export default defineNuxtModule<ModuleOptions>({
       logger.debug(`The ${name} module is disabled, skipping setup.`)
       return
     }
+    for (const message of findRemovedOptions(config as unknown as Record<string, unknown>))
+      logger.warn(message)
     await installNuxtSiteConfig()
     setupNitroRuntimeCompatibility(nuxt)
 
@@ -208,8 +210,10 @@ export default defineNuxtModule<ModuleOptions>({
     }
 
     if (!nuxt.options._prepare && config.fetchRemoteUrls) {
-      const { status } = (await crawlFetch('https://nuxtseo.com/robots.txt', { timeout: 400 }).catch(() => ({ status: 404 })))
-      config.fetchRemoteUrls = status < 400
+      // crawlFetch turns request failures into a status; this catch covers a missing global $fetch,
+      // and the warning below tells the user that remote checks are off
+      const { status } = await crawlFetch('https://nuxtseo.com/robots.txt', { timeout: 400 }).catch(() => ({ status: 0 }))
+      config.fetchRemoteUrls = status >= 200 && status < 400
       if (!config.fetchRemoteUrls)
         logger.warn('Remote URL fetching is disabled because you appear to be offline. Set `fetchRemoteUrls: false` to avoid this warning.')
     }
@@ -289,10 +293,11 @@ export default defineNuxtModule<ModuleOptions>({
     const routesPath = join(routesDir, 'routes.json')
     let staticRoutes: string[] = []
     let dynamicRoutes: string[] = []
+    let sitemap = false
 
     const writeRoutesFile = async (): Promise<void> => {
       await mkdir(routesDir, { recursive: true })
-      await writeFile(routesPath, JSON.stringify({ staticRoutes, dynamicRoutes }))
+      await writeFile(routesPath, JSON.stringify({ staticRoutes, dynamicRoutes, sitemap }))
     }
 
     nuxt.hooks.hook('pages:resolved', async (resolved) => {
@@ -327,6 +332,7 @@ export default defineNuxtModule<ModuleOptions>({
             })
             .filter((p): p is string => !!p && p.startsWith('/'))
           staticRoutes = [...new Set([...staticRoutes, ...sitemapPaths])]
+          sitemap = true
           await writeRoutesFile()
         }
         enrichRoutes()

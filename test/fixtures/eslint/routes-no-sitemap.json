@@ -1,0 +1,4 @@
+{
+  "staticRoutes": ["/", "/about"],
+  "dynamicRoutes": ["/blog/:slug"]
+}

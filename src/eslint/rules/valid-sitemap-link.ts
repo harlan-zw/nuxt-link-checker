@@ -24,7 +24,7 @@ const rule: Rule.RuleModule = {
     const options = context.options[0] as { routesFile?: string, rootDir?: string } | undefined
     const routes = loadRoutes({ routesFile: options?.routesFile, rootDir: options?.rootDir })
 
-    if (!routes.staticRoutes.length)
+    if (!routes.sitemap || !routes.staticRoutes.length)
       return {}
 
     const staticSet = new Set(routes.staticRoutes.map(withoutTrailingSlash))

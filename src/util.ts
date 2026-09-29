@@ -39,3 +39,20 @@ export function resolveViteWebSocket(nuxt: Nuxt = useNuxt()): Promise<WebSocketS
     })
   })
 }
+
+// v1 options that v2 removed or moved to site config, mapped to their replacement
+const removedOptions: [key: string, replacement: string][] = [
+  ['failOn404', 'linkChecker.failOnError'],
+  ['exclude', 'linkChecker.excludeLinks'],
+  ['siteUrl', 'site.url'],
+  ['trailingSlash', 'site.trailingSlash'],
+]
+
+/**
+ * Warnings for removed options in the user's `linkChecker` config, which the module would otherwise ignore silently.
+ */
+export function findRemovedOptions(config: Record<string, unknown>): string[] {
+  return removedOptions
+    .filter(([key]) => config[key] !== undefined)
+    .map(([key, replacement]) => `\`linkChecker.${key}\` was removed. Use \`${replacement}\`.`)
+}
