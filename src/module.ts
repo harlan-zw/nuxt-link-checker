@@ -208,8 +208,10 @@ export default defineNuxtModule<ModuleOptions>({
     }
 
     if (!nuxt.options._prepare && config.fetchRemoteUrls) {
-      const { status } = (await crawlFetch('https://nuxtseo.com/robots.txt', { timeout: 400 }).catch(() => ({ status: 404 })))
-      config.fetchRemoteUrls = status < 400
+      // crawlFetch turns request failures into a status; this catch covers a missing global $fetch,
+      // and the warning below tells the user that remote checks are off
+      const { status } = await crawlFetch('https://nuxtseo.com/robots.txt', { timeout: 400 }).catch(() => ({ status: 0 }))
+      config.fetchRemoteUrls = status >= 200 && status < 400
       if (!config.fetchRemoteUrls)
         logger.warn('Remote URL fetching is disabled because you appear to be offline. Set `fetchRemoteUrls: false` to avoid this warning.')
     }

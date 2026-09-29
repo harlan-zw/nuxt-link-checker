@@ -32,7 +32,7 @@ describe('nuxt/content v3', () => {
           "diff": [],
           "error": [
             {
-              "message": "Should not respond with status code 404 (Not Found).",
+              "message": "Should not respond with status code 404 (Page not found).",
               "name": "no-error-response",
               "scope": "error",
             },
@@ -69,7 +69,7 @@ describe('nuxt/content v3', () => {
           "diff": [],
           "error": [
             {
-              "message": "Should not respond with status code 404 (Not Found).",
+              "message": "Should not respond with status code 404 (Page not found).",
               "name": "no-error-response",
               "scope": "error",
             },
