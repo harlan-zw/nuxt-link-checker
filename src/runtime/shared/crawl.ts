@@ -65,13 +65,17 @@ function toHeaders(headers: unknown): Record<string, string> {
   return {}
 }
 
-// ofetch wraps undici's TypeError('fetch failed'), which wraps the system error that carries the code
+// ofetch wraps undici's TypeError('fetch failed'), which wraps the cause: a system error with a code
+// such as ECONNREFUSED, or a plain Error such as 'bad port'. Report the code, else the deepest message.
 function describeNetworkError(error: any): string {
-  for (let e = error; e; e = e.cause) {
+  let deepest: string | undefined
+  for (let e = error?.cause; e; e = e.cause) {
     if (typeof e.code === 'string')
       return e.code
+    if (typeof e.message === 'string' && e.message)
+      deepest = e.message
   }
-  return error?.message || 'Network Error'
+  return deepest || error?.message || 'Network Error'
 }
 
 export async function crawlFetch(link: string, options: { timeout?: number, baseURL?: string } = {}): Promise<LinkResponse & { time: number }> {

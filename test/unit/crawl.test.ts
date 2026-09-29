@@ -71,6 +71,14 @@ describe('crawlFetch', () => {
   })
 })
 
+describe('crawlFetch on a port fetch refuses to use', () => {
+  it('names the cause', async () => {
+    // port 9 is on the fetch spec's blocked port list, so undici fails before connecting
+    const res = await crawlFetch('/ok', { baseURL: 'http://127.0.0.1:9' })
+    expect(res).toMatchObject({ status: 0, statusText: 'bad port' })
+  })
+})
+
 describe('no-error-response on a network failure', () => {
   it('reports an error that names the failure', async () => {
     const response = await crawlFetch('/ok', { baseURL: refusedURL })
