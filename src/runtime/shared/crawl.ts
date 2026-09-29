@@ -47,41 +47,74 @@ export async function getResolvedLinkResponses(): Promise<Record<string, LinkRes
   return data
 }
 
-export async function crawlFetch(link: string, options: { timeout?: number, baseURL?: string } = {}): Promise<LinkResponse> {
-  const timeout = options.timeout || 5000
-  const timeoutController = new AbortController()
-  const abortRequestTimeout = setTimeout(() => timeoutController.abort(), timeout)
-  const start = Date.now()
-  return await globalThis.$fetch.raw(encodeURI(link), {
-    baseURL: options.baseURL,
-    method: 'HEAD',
-    signal: timeoutController.signal,
-    retry: 3,
-    retryDelay: 250,
-    headers: {
-      'user-agent': 'Nuxt Link Checker',
-    },
-  })
-    .catch((error) => {
-      if (error.name === 'AbortError')
-        return { status: 408, statusText: 'Request Timeout', headers: {} }
-      // make sure we have a 404 and not a timeout
-      return { status: 404, statusText: 'Not Found', headers: {} }
-    })
-    .finally(() => clearTimeout(abortRequestTimeout))
-    .then((res: any) => {
-      let headersObj: Record<string, string> = {}
+/**
+ * Status for a link the checker could not reach at all: DNS failure, refused connection, TLS error.
+ */
+export const UNREACHABLE_STATUS = 0
 
-      if (res.headers) {
-        // If headers is a Headers object with entries method
-        if (typeof res.headers.entries === 'function') {
-          headersObj = Object.fromEntries(Array.from(res.headers.entries())) as Record<string, string>
-        }
-        // If headers is already a plain object
-        else if (typeof res.headers === 'object') {
-          headersObj = { ...res.headers } as any as Record<string, string>
-        }
-      }
-      return { status: res.status, statusText: res.statusText, headers: headersObj, time: Date.now() - start }
+// servers that do not implement HEAD answer with one of these
+const HEAD_NOT_SUPPORTED = new Set([405, 501])
+
+function toHeaders(headers: unknown): Record<string, string> {
+  if (!headers)
+    return {}
+  if (typeof (headers as Headers).entries === 'function')
+    return Object.fromEntries(Array.from((headers as Headers).entries()))
+  if (typeof headers === 'object')
+    return { ...headers } as Record<string, string>
+  return {}
+}
+
+// ofetch wraps undici's TypeError('fetch failed'), which wraps the cause: a system error with a code
+// such as ECONNREFUSED, or a plain Error such as 'bad port'. Report the code, else the deepest message.
+function describeNetworkError(error: any): string {
+  let deepest: string | undefined
+  for (let e = error?.cause; e; e = e.cause) {
+    if (typeof e.code === 'string')
+      return e.code
+    if (typeof e.message === 'string' && e.message)
+      deepest = e.message
+  }
+  return deepest || error?.message || 'Network Error'
+}
+
+export async function crawlFetch(link: string, options: { timeout?: number, baseURL?: string } = {}): Promise<LinkResponse & { time: number }> {
+  const timeout = options.timeout || 5000
+  const start = Date.now()
+  const request = async (method: 'HEAD' | 'GET'): Promise<LinkResponse> => {
+    const timeoutController = new AbortController()
+    const abortRequestTimeout = setTimeout(() => timeoutController.abort(), timeout)
+    return await globalThis.$fetch.raw(encodeURI(link), {
+      baseURL: options.baseURL,
+      method,
+      signal: timeoutController.signal,
+      retry: 3,
+      retryDelay: 250,
+      // the GET fallback only needs the status: stream the body and cancel it unread
+      ...(method === 'GET' ? { responseType: 'stream' as const } : {}),
+      headers: {
+        'user-agent': 'Nuxt Link Checker',
+      },
     })
+      .then((res: any) => {
+        res._data?.cancel?.().catch(() => {
+          // safe to ignore: the status is already known, and a failed cancel only delays socket reuse
+        })
+        return { status: res.status, statusText: res.statusText, headers: toHeaders(res.headers) }
+      })
+      .catch((error: any): LinkResponse => {
+        if (error?.name === 'AbortError' || timeoutController.signal.aborted)
+          return { status: 408, statusText: 'Request Timeout', headers: {} }
+        // an HTTP error response: report the status the server sent
+        if (error?.response)
+          return { status: error.response.status, statusText: error.response.statusText || '', headers: toHeaders(error.response.headers) }
+        // no response at all: the link could not be reached
+        return { status: UNREACHABLE_STATUS, statusText: describeNetworkError(error), headers: {} }
+      })
+      .finally(() => clearTimeout(abortRequestTimeout))
+  }
+  let res = await request('HEAD')
+  if (HEAD_NOT_SUPPORTED.has(res.status))
+    res = await request('GET')
+  return { ...res, time: Date.now() - start }
 }
