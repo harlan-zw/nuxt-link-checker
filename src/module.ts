@@ -35,7 +35,7 @@ export interface ModuleOptions {
   /**
    * The timeout for fetching a URL.
    *
-   * @default 5000
+   * @default 10000
    */
   fetchTimeout: number
   /**
@@ -60,7 +60,7 @@ export interface ModuleOptions {
    */
   excludeLinks: (string | RegExp)[]
   /**
-   * Generate a report when using nuxt build` or `nuxt generate`.
+   * Generate a report after the build scan of prerendered pages.
    */
   report?: {
     /**
@@ -68,7 +68,7 @@ export interface ModuleOptions {
      */
     html?: boolean
     /**
-     * Whether to output a JSON report.
+     * Whether to output a Markdown report.
      */
     markdown?: boolean
     /**
