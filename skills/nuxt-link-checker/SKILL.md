@@ -5,7 +5,7 @@ description: Find and fix broken or SEO unfriendly links in a Nuxt app with the 
 
 # nuxt-link-checker
 
-Tested against `nuxt-link-checker` 5.3.0 on Nuxt 4.5 (peer range Nuxt 3.9 to 5).
+Tested against the `nuxt-link-checker` release after 5.3.0 on Nuxt 4.5 (peer range Nuxt 3.9 to 5).
 The module inspects every `<a href>` in rendered HTML with 15 rules, at build time and in dev.
 It also ships two ESLint rules. Docs: https://nuxtseo.com/docs/link-checker
 
@@ -20,7 +20,8 @@ The `trailing-slash` rule reads `site.trailingSlash`, not a `linkChecker` option
 ## Automatic behaviour
 
 - **Build scan.** After prerendering, the module inspects the links on each prerendered HTML page. It prints a tree per page, then a summary.
-- **Only prerendered pages are scanned.** A plain `nuxt build` with no prerendered routes runs no inspections and prints nothing. Use `nuxt generate`, or add routes to `nitro.prerender.routes`.
+- **Only prerendered pages are scanned.** A plain `nuxt build` with no prerendered routes runs no inspections and logs `Nuxt Link Checker scanned no pages`. Use `nuxt generate`, or add routes to `nitro.prerender.routes`.
+- **The whole page is scanned**, including `<Teleport to="body">` links. An `<a>` without `href` gets a `no-missing-href` warning unless it has `role="button"`.
 - **Default exclusions.** `excludeLinks` starts with `/^\/_/` and `/^\/llms(-[\w-]+)?\.txt$/`. Your entries are added to these; they do not replace them. With a non root `app.baseURL`, the base URL is also excluded.
 - **External links are not fetched.** `fetchRemoteUrls` is `false`, so every absolute external link counts as a 200.
 - **Links to files in `public/` pass** without a request.
@@ -94,22 +95,21 @@ export default [
 ```
 
 The rules read `.nuxt/link-checker/routes.json`. Run `nuxt prepare` or `nuxt dev` before `eslint` in CI.
+`valid-sitemap-link` checks nothing until `nuxt dev` merges the `@nuxtjs/sitemap` URLs into that file.
 Pass `{ rootDir }` or `{ routesFile }` as the rule option when ESLint runs from another directory.
 Only literal links that start with `/` are checked. Skip one link with `rel="nofollow"` or an `eslint-disable-next-line` comment.
 
 ## Traps
 
-- **No `routes.json`, no ESLint errors.** Without `nuxt prepare`, both ESLint rules pass every link and print nothing.
+- **No `routes.json`, no ESLint errors.** Without `nuxt prepare`, both ESLint rules pass every link. ESLint prints one `[nuxt-link-checker] ... not found` warning, and still exits 0.
 - **Links to pages that are not prerendered are checked against the live site.** The module sends a `HEAD` request to `site.url` + path. A new SSR only page that is not deployed yet reports a 404. A page that exists only in production passes. Add such pages to `excludeLinks`, or prerender them.
-- **A failed request counts as a 404.** A DNS error, a refused connection, or a server that rejects `HEAD` all report `Should not respond with status code 404`. A timeout reports 408.
-- **Links outside the app root are not scanned.** The build scan reads only elements inside `#__nuxt`. A `<Teleport to="body">` link is skipped.
-- **`<a>` without `href` is not reported at build.** The build scan skips empty links before the rules run, so `no-missing-href` does not fire there.
+- **Read the failure message, not only the rule id.** An HTTP error reports the status the server sent. A server that rejects `HEAD` with 405 or 501 gets a `GET` retry. A DNS error or a refused connection reports `Could not reach the link (ENOTFOUND)` with the cause code. A timeout reports 408.
 - **Rules chain on the fix.** When one rule proposes a fix, later rules test the fixed link. `/about/` that 404s reports only the 404, not the trailing slash.
 - **Different results per mode.** Build scans read prerender status codes. Dev scans fetch the dev server. ESLint reads route patterns only and ignores `excludeLinks`.
 
 ## Version limits
 
-These v1 options are gone. The module ignores them with no warning:
+These v1 options are gone. The module logs a warning that names the replacement, then ignores them:
 
 - `exclude`: use `excludeLinks`.
 - `failOn404`: use `failOnError`.
