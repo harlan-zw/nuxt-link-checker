@@ -1,5 +1,5 @@
 import { join } from 'pathe'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, onTestFinished, vi } from 'vitest'
 import { createRouteMatcher, createSuggester, loadRoutes } from '../../../src/eslint/utils/routes'
 
 const routesFile = join(__dirname, '../../fixtures/eslint/routes.json')
@@ -51,5 +51,18 @@ describe('createRouteMatcher', () => {
     const match = createRouteMatcher(['/blog/:slug', '/users/:id'])
     expect(match('/about')).toBeNull()
     expect(match('/blog/slug/extra')).toBeNull()
+  })
+})
+
+describe('loadRoutes without a routes file', () => {
+  it('warns once that link checks are off', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    onTestFinished(() => warn.mockRestore())
+    const routesFile = '/nonexistent/warn-once/routes.json'
+    loadRoutes({ routesFile })
+    loadRoutes({ routesFile })
+    expect(warn).toHaveBeenCalledTimes(1)
+    expect(warn.mock.calls[0]![0]).toContain(routesFile)
+    expect(warn.mock.calls[0]![0]).toContain('nuxt prepare')
   })
 })

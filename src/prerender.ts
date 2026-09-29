@@ -25,11 +25,13 @@ const { gray, yellow, dim, red, white } = colors
 
 const linkMap: Record<string, ExtractedPayload> = {}
 
-export async function extractPayload(html: string, rootNodeId = '#__nuxt'): Promise<ExtractedPayload> {
-  if (String(rootNodeId).length) {
-    rootNodeId = rootNodeId[0] === '#' ? rootNodeId : `#${rootNodeId}`
-  }
-
+/**
+ * Extract the title, element ids, and links from a rendered page.
+ *
+ * Reads the whole document: `<Teleport to="body">` renders before the app root and `#teleports` after it,
+ * and both hold links the user sees.
+ */
+export async function extractPayload(html: string): Promise<ExtractedPayload> {
   const ast = parse(html
     // vue template comments that cause issues
     .replaceAll('<!--]-->', '')
@@ -42,14 +44,7 @@ export async function extractPayload(html: string, rootNodeId = '#__nuxt'): Prom
   const ids: string[] = []
   const links: { role: string, link: string, textContent: string }[] = []
 
-  let enteredRoot = !rootNodeId
   walkSync(ast, (node) => {
-    if (node.attributes?.id === rootNodeId.substring(1)) {
-      enteredRoot = true
-    }
-    if (!enteredRoot) {
-      return
-    }
     // Extract title
     if (node.type === ELEMENT_NODE && node.name === 'title') {
       if (node.children && node.children.length > 0) {
@@ -57,12 +52,12 @@ export async function extractPayload(html: string, rootNodeId = '#__nuxt'): Prom
       }
     }
 
-    // Extract IDs from elements inside rootNodeId
+    // Extract IDs
     if (node.type === ELEMENT_NODE && node.attributes?.id) {
       ids.push(node.attributes.id)
     }
 
-    // Extract links from elements inside rootNodeId
+    // Extract links, including anchors without an href, so no-missing-href can report them
     if (node.type === ELEMENT_NODE && node.name === 'a') {
       links.push({
         role: node.attributes?.role || '',
@@ -133,10 +128,17 @@ export function prerender(config: ModuleOptions, version?: string, routeFileMap:
   })
   nuxt.hooks.hook('nitro:init', async (nitro) => {
     const siteConfig = useSiteConfig()
+    // Nitro skips prerendering, and so prerender:done, when a build has no routes to prerender
+    let scanned = false
+    nitro.hooks.hook('compiled', () => {
+      if (scanned || nuxt.options.dev || nuxt.options._prepare)
+        return
+      nitro.logger.info('Nuxt Link Checker scanned no pages: the build prerendered no HTML pages. Use `nuxt generate` or add routes to `nitro.prerender.routes`. To hide this message, set `linkChecker.runOnBuild: false`.')
+    })
     nitro.hooks.hook('prerender:generate', async (ctx) => {
       const route = decodeURI(ctx.route)
       if (ctx.contents && !ctx.error && ctx.fileName?.endsWith('.html') && !route.endsWith('.html') && pageFilter(route))
-        linkMap[route] = await extractPayload(ctx.contents, nuxt.options.app.rootAttrs?.id || '')
+        linkMap[route] = await extractPayload(ctx.contents)
 
       setLinkResponse(route, Promise.resolve({
         status: Number(ctx.error?.statusCode) || 200,
@@ -152,6 +154,7 @@ export function prerender(config: ModuleOptions, version?: string, routeFileMap:
       const payloads = Object.entries(linkMap).sort(([a], [b]) => a.localeCompare(b))
       if (!payloads.length)
         return
+      scanned = true
 
       const { storage, storageFilepath } = createReportStorage(config, nuxt, nitro)
       const pageSearcher = createPageSearcher(payloads)
@@ -302,24 +305,28 @@ async function processRouteLinks(
 
   await runParallel<ExtractedPayload['links'][number]>(
     links,
-    async ({ link, textContent }, index) => {
-      if (!urlFilter(link) || !link) {
+    async ({ link, role, textContent }, index) => {
+      if (link && !urlFilter(link)) {
         reportSlots[index] = { error: [], warning: [], link }
         return
       }
 
-      const response = await getLinkResponse({
-        link,
-        baseURL: siteConfig.url,
-        timeout: config.fetchTimeout,
-        fetchRemoteUrls: config.fetchRemoteUrls,
-        isInStorage() {
-          return existsSync(resolve(nuxt.options.rootDir, nuxt.options.dir.public, withoutLeadingSlash(link)))
-        },
-      })
+      // an anchor without an href has nothing to fetch; the rules still run so no-missing-href can report it
+      const response = !link
+        ? null
+        : await getLinkResponse({
+            link,
+            baseURL: siteConfig.url,
+            timeout: config.fetchTimeout,
+            fetchRemoteUrls: config.fetchRemoteUrls,
+            isInStorage() {
+              return existsSync(resolve(nuxt.options.rootDir, nuxt.options.dir.public, withoutLeadingSlash(link)))
+            },
+          })
 
       const report = inspect({
         ids: linkMap[route]!.ids,
+        role,
         fromPath: route,
         pageSearch: pageSearcher,
         siteConfig,

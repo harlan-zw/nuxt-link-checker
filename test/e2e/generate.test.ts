@@ -49,6 +49,21 @@ describe('generate', () => {
               "error": [],
               "warning": [
                 {
+                  "name": "no-missing-href",
+                  "scope": "warning",
+                  "message": "For accessibility and UX anchor tags require a href attribute.",
+                  "tip": "Use a button element with type=\\"button\\" instead if the link is not navigational."
+                }
+              ],
+              "fix": "",
+              "link": "",
+              "passes": false,
+              "textContent": "missing href"
+            },
+            {
+              "error": [],
+              "warning": [
+                {
                   "name": "no-double-slashes",
                   "scope": "warning",
                   "message": "Links should not contain double slashes.",
@@ -368,9 +383,10 @@ describe('generate', () => {
 
       ## Summary
 
-      - **Pages checked:** 2
+      - **Pages checked:** 14
+      - **Pages with issues:** 2
       - **Total errors:** 13
-      - **Total warnings:** 10
+      - **Total warnings:** 11
 
       ---
 
@@ -381,13 +397,17 @@ describe('generate', () => {
 
       ---
 
-      ## ❌ [/](/) (9 errors, 8 warnings)
+      ## ❌ [/](/) (9 errors, 9 warnings)
 
       ### Link: [/about/Billy%20Bob](/about/Billy%20Bob)
       > Link text: "Dynamic Encoded Path"
       #### Warnings
       - **no-uppercase-chars:** Links should not contain uppercase characters.
         - *Suggestion:* Convert to lowercase.
+      ### Link: []()
+      > Link text: "missing href"
+      #### Warnings
+      - **no-missing-href:** For accessibility and UX anchor tags require a href attribute.
       ### Link: [//oops](//oops)
       > Link text: "double slash"
       #### Warnings

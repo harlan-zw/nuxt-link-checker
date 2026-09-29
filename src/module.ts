@@ -21,7 +21,7 @@ import { setupDevToolsUI } from './devtools'
 import { prerender } from './prerender'
 import { crawlFetch } from './runtime/shared/crawl'
 import { serializeFilters } from './runtime/shared/sharedUtils'
-import { convertNuxtPagesToPaths } from './util'
+import { convertNuxtPagesToPaths, findRemovedOptions } from './util'
 
 export interface ModuleOptions {
   /**
@@ -195,6 +195,8 @@ export default defineNuxtModule<ModuleOptions>({
       logger.debug(`The ${name} module is disabled, skipping setup.`)
       return
     }
+    for (const message of findRemovedOptions(config as unknown as Record<string, unknown>))
+      logger.warn(message)
     await installNuxtSiteConfig()
     setupNitroRuntimeCompatibility(nuxt)
 
@@ -291,10 +293,11 @@ export default defineNuxtModule<ModuleOptions>({
     const routesPath = join(routesDir, 'routes.json')
     let staticRoutes: string[] = []
     let dynamicRoutes: string[] = []
+    let sitemap = false
 
     const writeRoutesFile = async (): Promise<void> => {
       await mkdir(routesDir, { recursive: true })
-      await writeFile(routesPath, JSON.stringify({ staticRoutes, dynamicRoutes }))
+      await writeFile(routesPath, JSON.stringify({ staticRoutes, dynamicRoutes, sitemap }))
     }
 
     nuxt.hooks.hook('pages:resolved', async (resolved) => {
@@ -329,6 +332,7 @@ export default defineNuxtModule<ModuleOptions>({
             })
             .filter((p): p is string => !!p && p.startsWith('/'))
           staticRoutes = [...new Set([...staticRoutes, ...sitemapPaths])]
+          sitemap = true
           await writeRoutesFile()
         }
         enrichRoutes()
