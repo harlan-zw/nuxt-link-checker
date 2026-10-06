@@ -151,7 +151,7 @@ export default defineNuxtModule<ModuleOptions>({
   },
   moduleDependencies: {
     'nuxt-site-config': {
-      version: '^5.0.0',
+      version: '>=5.0.0',
     },
     '@harlan-zw/comark-content': {
       version: '>=0.1.2',
@@ -162,7 +162,7 @@ export default defineNuxtModule<ModuleOptions>({
       optional: true,
     },
     '@nuxtjs/sitemap': {
-      version: '^9.0.0',
+      version: '>=9.0.0',
       optional: true,
     },
   },

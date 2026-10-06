@@ -1,6 +1,6 @@
 import { RuleTester } from 'eslint'
 import { join } from 'pathe'
-import { describe, it } from 'vitest'
+import { describe } from 'vitest'
 import * as vueParser from 'vue-eslint-parser'
 import rule from '../../../src/eslint/rules/valid-route'
 
@@ -25,7 +25,7 @@ describe('valid-route', () => {
     },
   })
 
-  it('vue templates', () => {
+  describe('vue templates', () => {
     vueTester.run('valid-route', rule, {
       valid: [
         vueCase('<template><NuxtLink to="/about" /></template>'),
@@ -64,7 +64,7 @@ describe('valid-route', () => {
     })
   })
 
-  it('ts/js navigateTo and router calls', () => {
+  describe('ts/js navigateTo and router calls', () => {
     tsTester.run('valid-route', rule, {
       valid: [
         { code: 'navigateTo("/about")', options: [vueOpts] },

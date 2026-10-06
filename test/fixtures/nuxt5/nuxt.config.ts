@@ -12,7 +12,7 @@ import NuxtSeoShared from 'nuxtseo-shared'
     if (!meta)
       throw new Error('The packed module must expose compatibility metadata.')
     meta.compatibility ||= {}
-    meta.compatibility.nuxt = '^4.6.0 || ^5.0.0 || 5.0.0-2610052343-36eafab'
+    meta.compatibility.nuxt = '^4.6.0 || ^5.0.0 || 5.0.0-2610061032-c7ad8cd'
   }
 }
 
