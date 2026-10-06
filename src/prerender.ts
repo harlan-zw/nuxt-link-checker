@@ -5,11 +5,12 @@ import type { ExtractedPayload, InspectionContext, PathReport } from './build/re
 import type { ModuleOptions } from './module'
 import type { LinkInspectionResult } from './runtime/types'
 import { existsSync } from 'node:fs'
-import { extendRouteRules, useNuxt, useRuntimeConfig } from '@nuxt/kit'
+import { extendRouteRules, getNitroVersion, useNuxt, useRuntimeConfig } from '@nuxt/kit'
 import { colors } from 'consola/utils'
 import Fuse from 'fuse.js'
 import { useSiteConfig } from 'nuxt-site-config/kit'
 import { isNuxtGenerate } from 'nuxtseo-shared/kit'
+import { createPrerenderFetch } from 'nuxtseo-shared/prerender'
 import { resolve } from 'pathe'
 import { withoutLeadingSlash } from 'ufo'
 import { ELEMENT_NODE, parse, walkSync } from 'ultrahtml'
@@ -127,6 +128,13 @@ export function prerender(config: ModuleOptions, version?: string, routeFileMap:
     exclude: config.excludePages,
   })
   nuxt.hooks.hook('nitro:init', async (nitro) => {
+    let prerenderClient: ReturnType<typeof createPrerenderFetch> | undefined
+    nitro.hooks.hook('prerender:init', (renderer) => {
+      const major = getNitroVersion(nuxt)
+      if (major !== 2 && major !== 3)
+        throw new Error(`Unsupported Nitro prerender builder: ${major}`)
+      prerenderClient = createPrerenderFetch(renderer, major)
+    })
     const siteConfig = useSiteConfig()
     // Nitro skips prerendering, and so prerender:done, when a build has no routes to prerender
     let scanned = false
@@ -167,6 +175,7 @@ export function prerender(config: ModuleOptions, version?: string, routeFileMap:
         nuxt,
         pageSearcher,
         siteConfig,
+        fetch: prerenderClient?.fetch,
         nitro,
         version,
         storage,
@@ -175,7 +184,7 @@ export function prerender(config: ModuleOptions, version?: string, routeFileMap:
         totalRoutes: payloads.length,
         routeFileMap,
       } satisfies InspectionContext
-      const { allReports, errorCount } = await runInspections(payloads, inspectionCtx)
+      const { allReports, errorCount } = await runInspections(payloads, inspectionCtx).finally(() => prerenderClient?.close())
 
       const reportsWithContent = allReports.filter(
         ({ reports }) => reports.some(r => r.error?.length || r.warning?.length),
@@ -317,6 +326,7 @@ async function processRouteLinks(
         : await getLinkResponse({
             link,
             baseURL: siteConfig.url,
+            fetch: context.fetch,
             timeout: config.fetchTimeout,
             fetchRemoteUrls: config.fetchRemoteUrls,
             isInStorage() {

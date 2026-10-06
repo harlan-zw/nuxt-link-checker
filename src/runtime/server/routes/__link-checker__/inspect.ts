@@ -1,10 +1,10 @@
 import { createDefu } from 'defu'
 import Fuse from 'fuse.js'
 import { fixSlashes } from 'nuxt-site-config/urls'
+import { createError, defineEventHandler, readBody, serverFetch, useRuntimeConfig } from 'nuxt/server'
+import { createFetch } from 'ofetch'
 import { resolve } from 'pathe'
-import { createError, defineEventHandler, readBody } from '#nuxtseo/h3'
-import { useRuntimeConfig } from '#nuxtseo/nitro'
-import { getNitroOrigin } from '#site-config/server/composables/getNitroOrigin'
+import { withoutBase } from 'ufo'
 import { getSiteConfig } from '#site-config/server/composables/getSiteConfig'
 import { generateFileLinkDiff, generateFileLinkPreviews, getLinkResponse, inspect, isNonFetchableLink, lruFsCache } from '../../../shared'
 
@@ -68,8 +68,8 @@ function parseInspectTasks(value: unknown): InspectTask[] | undefined {
 function parseInspectRequestBody(body: unknown): InspectRequestBody {
   if (!isRecord(body)) {
     throw createError({
-      statusCode: 400,
-      statusMessage: 'Invalid link checker inspection payload.',
+      status: 400,
+      statusText: 'Invalid link checker inspection payload.',
     })
   }
 
@@ -79,8 +79,8 @@ function parseInspectRequestBody(body: unknown): InspectRequestBody {
 
   if (!tasks || !ids || (path !== undefined && typeof path !== 'string')) {
     throw createError({
-      statusCode: 400,
-      statusMessage: 'Invalid link checker inspection payload.',
+      status: 400,
+      statusText: 'Invalid link checker inspection payload.',
     })
   }
 
@@ -89,6 +89,12 @@ function parseInspectRequestBody(body: unknown): InspectRequestBody {
 
 // verify a link
 export default defineEventHandler(async (e) => {
+  const appBaseURL = useRuntimeConfig().app.baseURL
+  const localFetch = createFetch({
+    fetch: (input, init) => typeof input === 'string' && input.startsWith('/')
+      ? serverFetch(e, withoutBase(input, appBaseURL), init)
+      : globalThis.fetch(input, init),
+  })
   const { tasks, ids, path } = parseInspectRequestBody(await readBody(e))
   const runtimeConfig = useRuntimeConfig().public['nuxt-link-checker'] || {} as any
   const partialCtx = {
@@ -98,7 +104,7 @@ export default defineEventHandler(async (e) => {
   } as const
   // allow editing files to trigger a cache clear
   lruFsCache.clear()
-  const links: { link: string, title: string, file?: string }[] = await $fetch('/__link-checker__/links')
+  const links: { link: string, title: string, file?: string }[] = await (await serverFetch(e, '/__link-checker__/links')).json()
   const pageSearch = new Fuse<{ link: string, title?: string }>(mergeOnKey(links, 'link'), {
     keys: ['link', 'title'],
     threshold: 0.5,
@@ -113,7 +119,7 @@ export default defineEventHandler(async (e) => {
         link,
         timeout: runtimeConfig.fetchTimeout,
         fetchRemoteUrls: runtimeConfig.fetchRemoteUrls,
-        baseURL: getNitroOrigin(e),
+        fetch: localFetch,
         isInStorage() {
           return false
         },

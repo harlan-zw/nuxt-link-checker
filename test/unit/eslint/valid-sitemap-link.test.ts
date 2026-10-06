@@ -1,6 +1,6 @@
 import { RuleTester } from 'eslint'
 import { join } from 'pathe'
-import { describe, it } from 'vitest'
+import { describe } from 'vitest'
 import * as vueParser from 'vue-eslint-parser'
 import rule from '../../../src/eslint/rules/valid-sitemap-link'
 
@@ -25,7 +25,7 @@ describe('valid-sitemap-link', () => {
     },
   })
 
-  it('vue templates', () => {
+  describe('vue templates', () => {
     vueTester.run('valid-sitemap-link', rule, {
       valid: [
         vueCase('<template><NuxtLink to="/about" /></template>'),
@@ -44,7 +44,7 @@ describe('valid-sitemap-link', () => {
     })
   })
 
-  it('ts/js navigateTo calls', () => {
+  describe('ts/js navigateTo calls', () => {
     tsTester.run('valid-sitemap-link', rule, {
       valid: [
         { code: 'navigateTo("/about")', options: [opts] },
@@ -58,7 +58,7 @@ describe('valid-sitemap-link', () => {
 })
 
 describe('valid-sitemap-link without sitemap data', () => {
-  it('reports nothing, since valid-route already covers unknown routes', () => {
+  describe('reports nothing, since valid-route already covers unknown routes', () => {
     const tester = new RuleTester({ languageOptions: { ecmaVersion: 2020, sourceType: 'module' } })
     tester.run('valid-sitemap-link', rule, {
       valid: [

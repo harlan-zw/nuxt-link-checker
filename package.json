@@ -1,8 +1,8 @@
 {
   "name": "nuxt-link-checker",
   "type": "module",
-  "version": "5.3.0",
-  "packageManager": "pnpm@11.22.0",
+  "version": "6.0.0",
+  "packageManager": "pnpm@12.8.1",
   "description": "Find and magically fix links that may be negatively effecting your Nuxt sites SEO.",
   "author": {
     "name": "Harlan Wilton",
@@ -22,7 +22,8 @@
   "exports": {
     ".": {
       "types": "./dist/types.d.mts",
-      "import": "./dist/module.mjs"
+      "import": "./dist/module.mjs",
+      "default": "./dist/module.mjs"
     },
     "./eslint": {
       "types": "./dist/eslint.d.mts",
@@ -31,7 +32,8 @@
   },
   "build": {
     "externals": [
-      "unstorage/drivers/fs"
+      "unstorage/drivers/fs",
+      "nuxt/server"
     ]
   },
   "main": "./dist/module.mjs",
@@ -47,6 +49,9 @@
     "dist",
     "skills"
   ],
+  "engines": {
+    "node": "^22.22.3 || ^24.15.0 || >=26.0.0"
+  },
   "scripts": {
     "client:build": "node -e \"require('fs').cpSync('devtools','dist/devtools',{recursive:true})\"",
     "build": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build && npm run client:build",
@@ -58,12 +63,12 @@
     "lint:fix": "eslint . --fix",
     "typecheck": "nuxt typecheck",
     "prepare:fixtures": "nuxt prepare test/fixtures/basic",
-    "test": "pnpm prepare:fixtures && vitest",
+    "test": "pnpm prepare:fixtures && vitest run && pnpm test:nuxt5",
     "test:run": "pnpm prepare:fixtures && vitest run && pnpm test:nuxt5",
-    "test:nuxt5": "pnpm --dir test/fixtures/nuxt5 install --frozen-lockfile && pnpm --dir test/fixtures/nuxt5 test"
+    "test:nuxt5": "pnpm build && pnpm --dir test/fixtures/nuxt5 install --frozen-lockfile && pnpm --dir test/fixtures/nuxt5 test"
   },
   "peerDependencies": {
-    "nuxt": "^3.9.0 || ^4.0.0 || ^5.0.0"
+    "nuxt": "^4.6.0 || ^5.0.0"
   },
   "dependencies": {
     "@nuxt/kit": "catalog:",
@@ -72,13 +77,11 @@
     "defu": "catalog:",
     "diff": "catalog:",
     "fuse.js": "catalog:",
-    "h3": "catalog:",
     "magic-string": "catalog:",
     "nuxt-site-config": "catalog:",
     "nuxtseo-shared": "catalog:",
     "ofetch": "catalog:",
     "pathe": "catalog:",
-    "pkg-types": "catalog:",
     "radix3": "catalog:",
     "site-config-stack": "catalog:",
     "ufo": "catalog:",

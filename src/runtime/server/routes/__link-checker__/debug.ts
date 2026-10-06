@@ -1,9 +1,8 @@
-import { defineEventHandler } from '#nuxtseo/h3'
-import { useRuntimeConfig } from '#nuxtseo/nitro'
+import { defineEventHandler, useRuntimeConfig } from 'nuxt/server'
 
 // verify a link
-export default defineEventHandler(async (e) => {
+export default defineEventHandler(async () => {
   return {
-    runtimeConfig: useRuntimeConfig(e).public['nuxt-link-checker'],
+    runtimeConfig: useRuntimeConfig().public['nuxt-link-checker'],
   }
 })

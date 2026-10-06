@@ -1,4 +1,4 @@
-import type { NuxtDevtoolsIframeClient } from '@nuxt/devtools-kit/types'
+import type { NuxtDevtoolsHostClient } from '@nuxt/devtools-kit/types'
 import type { NuxtApp } from 'nuxt/app'
 import type { UnwrapRef } from 'vue'
 import type { useRoute } from '#imports'
@@ -9,13 +9,6 @@ import { useRuntimeConfig } from '#imports'
 import { createFilter } from '../../../shared/sharedUtils'
 import Main from './Main.vue'
 import { linkDb } from './state'
-
-function resolveDevtoolsIframe(): NuxtDevtoolsIframeClient | undefined {
-  const iframe = document.querySelector('#nuxt-devtools-iframe') as Element & { contentWindow: { __NUXT_DEVTOOLS__: NuxtDevtoolsIframeClient } }
-  if (!iframe)
-    return
-  return iframe?.contentWindow?.__NUXT_DEVTOOLS__
-}
 
 function resolvePathsForEl(el: Element): string[] {
   const parents = []
@@ -40,8 +33,6 @@ export async function setupLinkCheckerClient({ nuxt, route }: { nuxt: NuxtApp, r
   const visibleLinks = new Set<string>()
   let lastIds: string[] = []
   let elMap: Record<string, Element[]> = {}
-  let devtoolsClient: NuxtDevtoolsIframeClient | undefined
-  let isOpeningDevtools = false
   let startQueueIdleId: number
   let startQueueTimeoutId: number | false
   const showInspections = useLocalStorage('nuxt-link-checker:show-inspections', true)
@@ -160,41 +151,11 @@ export async function setupLinkCheckerClient({ nuxt, route }: { nuxt: NuxtApp, r
       }
     },
     openDevtoolsToLink(link: string) {
-      if (isOpeningDevtools)
+      const host = (window as Window & { __NUXT_DEVTOOLS_HOST__?: NuxtDevtoolsHostClient }).__NUXT_DEVTOOLS_HOST__
+      if (!host)
         return
-      devtoolsClient = resolveDevtoolsIframe()
-      isOpeningDevtools = true
-      if (!devtoolsClient) {
-        const devtoolsButton = document.querySelector('.nuxt-devtools-nuxt-button')
-        // trigger a click
-        if (devtoolsButton) {
-          devtoolsButton.dispatchEvent(new MouseEvent('click', { bubbles: true }))
-
-          // wait for the iframe
-          const interval = setInterval(() => {
-            devtoolsClient = resolveDevtoolsIframe()
-            if (devtoolsClient && devtoolsClient.host?.getIframe()) {
-              devtoolsClient.host.getIframe()!.src = `/__nuxt_devtools__/client/modules/custom-nuxt-link-checker?link=${encodeURIComponent(link)}`
-              isOpeningDevtools = false
-              clearInterval(interval)
-            }
-          }, 250)
-        }
-      }
-      else {
-        devtoolsClient.host.devtools.open()
-
-        const srcPath = new URL(devtoolsClient.host.getIframe()!.src).pathname
-        // switch to the tab
-        if (!srcPath.startsWith('/__nuxt_devtools__/client/modules/custom-nuxt-link-checker')) {
-          devtoolsClient.host.getIframe()!.src = `/__nuxt_devtools__/client/modules/custom-nuxt-link-checker?link=${encodeURIComponent(link)}`
-        }
-        else {
-          // set the filter via hook
-          client.broadcast('filter', { link })
-        }
-        isOpeningDevtools = false
-      }
+      host.devtools.navigate(`/modules/custom-nuxt-link-checker?link=${encodeURIComponent(link)}`)
+      client.broadcast('filter', { link })
     },
     reset(hard: boolean) {
       // clear db
