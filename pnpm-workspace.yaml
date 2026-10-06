@@ -114,8 +114,12 @@ onlyBuiltDependencies:
   - vue-demi
 trustPolicyIgnoreAfter: 262800
 allowBuilds:
+  '@firebase/util': false
   '@parcel/watcher': true
   better-sqlite3: true
   esbuild: true
+  protobufjs: false
+  simple-git-hooks: false
   unrs-resolver: true
   vue-demi: true
+  workerd: false

@@ -14,11 +14,116 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  NPM_CONFIG_FETCH_RETRIES: '5'
+  NPM_CONFIG_FETCH_RETRY_MINTIMEOUT: '20000'
+  NPM_CONFIG_FETCH_RETRY_MAXTIMEOUT: '120000'
+
 jobs:
-  ci:
+  lint:
+    name: ci (${{ matrix.node-version }}) / lint
+    runs-on: ubuntu-24.04-arm
     strategy:
       matrix:
         node-version: [22.22.3, 24.18.0]
-    uses: harlan-zw/nuxt-seo/.github/workflows/reusable-ci.yml@main
-    with:
-      node-version: ${{ matrix.node-version }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/setup@v2
+        with:
+          runtime: node@${{ matrix.node-version }}
+          cache: true
+          install: false
+      - name: Prepare pinned migration sources
+        id: migration
+        uses: harlan-zw/nuxt-seo/.github/actions/migration-ci@226c091a0744b7286ef721ac035eed53856bfaa5
+      - run: pnpm lint
+        working-directory: ${{ steps.migration.outputs.workspace }}
+
+  typecheck:
+    name: ci (${{ matrix.node-version }}) / typecheck
+    runs-on: ubuntu-24.04-arm
+    strategy:
+      matrix:
+        node-version: [22.22.3, 24.18.0]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/setup@v2
+        with:
+          runtime: node@${{ matrix.node-version }}
+          cache: true
+          install: false
+      - name: Prepare pinned migration sources
+        id: migration
+        uses: harlan-zw/nuxt-seo/.github/actions/migration-ci@226c091a0744b7286ef721ac035eed53856bfaa5
+      - run: pnpm dev:prepare
+        working-directory: ${{ steps.migration.outputs.workspace }}
+      - run: pnpm typecheck
+        working-directory: ${{ steps.migration.outputs.workspace }}
+      - run: pnpm run --if-present test:attw
+        working-directory: ${{ steps.migration.outputs.workspace }}
+
+  build:
+    name: ci (${{ matrix.node-version }}) / build
+    runs-on: ubuntu-24.04-arm
+    strategy:
+      matrix:
+        node-version: [22.22.3, 24.18.0]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/setup@v2
+        with:
+          runtime: node@${{ matrix.node-version }}
+          cache: true
+          install: false
+      - name: Prepare pinned migration sources
+        id: migration
+        uses: harlan-zw/nuxt-seo/.github/actions/migration-ci@226c091a0744b7286ef721ac035eed53856bfaa5
+      - run: pnpm dev:prepare
+        working-directory: ${{ steps.migration.outputs.workspace }}
+      - run: pnpm build
+        working-directory: ${{ steps.migration.outputs.workspace }}
+
+  test:
+    name: ci (${{ matrix.node-version }}) / test
+    runs-on: ubuntu-24.04-arm
+    strategy:
+      matrix:
+        node-version: [22.22.3, 24.18.0]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/setup@v2
+        with:
+          runtime: node@${{ matrix.node-version }}
+          cache: true
+          install: false
+      - name: Prepare pinned migration sources
+        id: migration
+        uses: harlan-zw/nuxt-seo/.github/actions/migration-ci@226c091a0744b7286ef721ac035eed53856bfaa5
+      - run: pnpm dev:prepare
+        working-directory: ${{ steps.migration.outputs.workspace }}
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-ubuntu-24.04-arm-${{ hashFiles('scripts/migration-lock.yaml') }}
+      - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        working-directory: ${{ steps.migration.outputs.workspace }}
+        run: |
+          for attempt in 1 2 3; do
+            echo "::group::Playwright install attempt $attempt"
+            if timeout 300 pnpm exec playwright-core install chromium; then
+              echo "::endgroup::"
+              exit 0
+            fi
+            echo "attempt $attempt stalled or failed, retrying" && echo "::endgroup::"
+          done
+          echo "Playwright install failed after 3 attempts"
+          exit 1
+        timeout-minutes: 18
+        continue-on-error: true
+      - run: pnpm run --if-present prepare:fixtures
+        working-directory: ${{ steps.migration.outputs.workspace }}
+      - run: pnpm test
+        working-directory: ${{ steps.migration.outputs.workspace }}
