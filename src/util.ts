@@ -26,7 +26,7 @@ export function convertNuxtPagesToPaths(pages: NuxtPage[], options?: { keepDynam
     })
     .filter(p => options?.keepDynamic || !p.path.includes(':'))
     .map(p => ({
-      title: p.page?.meta?.title || '',
+      title: typeof p.page.meta?.title === 'string' ? p.page.meta.title : '',
       link: p.path,
       file: p.page?.file,
     }))

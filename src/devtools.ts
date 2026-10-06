@@ -68,18 +68,24 @@ export function setupDevToolsUI(options: ModuleOptions, moduleResolve: Resolver[
     ws.on('nuxt-link-checker:queueWorking', async (payload: Parameters<ClientFunctions['queueWorking']>[0]) => {
       if (isConnected) {
         const _rpc = await rpc
+        if (!_rpc)
+          return
         _rpc.broadcast.queueWorking(payload).catch(error => reportBroadcastError('queueWorking', error))
       }
     })
     ws.on('nuxt-link-checker:updated', async () => {
       if (isConnected) {
         const _rpc = await rpc
+        if (!_rpc)
+          return
         _rpc.broadcast.updated().catch(error => reportBroadcastError('updated', error))
       }
     })
     ws.on('nuxt-link-checker:filter', async (payload: Parameters<ClientFunctions['filter']>[0]) => {
       if (isConnected) {
         const _rpc = await rpc
+        if (!_rpc)
+          return
         _rpc.broadcast.filter(payload).catch(error => reportBroadcastError('filter', error))
       }
     })

@@ -1,3 +1,5 @@
+import type { $Fetch } from 'ofetch'
+import { $fetch } from 'ofetch'
 import { isNonFetchableLink } from './inspections/util'
 
 type MaybePromise<T> = T | Promise<T>
@@ -8,7 +10,7 @@ const responses: Record<string, MaybePromise<LinkResponse>> = {}
 
 const MockSuccessResponse = Promise.resolve({ status: 200, statusText: 'OK', headers: {} })
 
-export async function getLinkResponse({ link, timeout, fetchRemoteUrls, baseURL, isInStorage }: { link: string, baseURL?: string, timeout?: number, fetchRemoteUrls?: boolean, isInStorage: () => boolean }): Promise<LinkResponse | null> {
+export async function getLinkResponse({ link, timeout, fetchRemoteUrls, baseURL, fetch, isInStorage }: { link: string, baseURL?: string, timeout?: number, fetchRemoteUrls?: boolean, fetch?: $Fetch, isInStorage: () => boolean }): Promise<LinkResponse | null> {
   // if the link has an anchor on it, do the request without the anchor
   if (link.includes('#') && !link.startsWith('#'))
     link = link.split('#')[0]!
@@ -26,11 +28,11 @@ export async function getLinkResponse({ link, timeout, fetchRemoteUrls, baseURL,
   // handle absolute links
   if (link.startsWith('http') || link.startsWith('//')) {
     // TODO check they don't include the site URL
-    responses[link] = fetchRemoteUrls ? crawlFetch(link, { timeout, baseURL }) : MockSuccessResponse
+    responses[link] = fetchRemoteUrls ? crawlFetch(link, { timeout, baseURL, fetch }) : MockSuccessResponse
     return responses[link]!
   }
   // relative link in dev?
-  responses[link] = crawlFetch(link, { timeout, baseURL })
+  responses[link] = crawlFetch(link, { timeout, baseURL, fetch })
   return responses[link]!
 }
 
@@ -78,13 +80,13 @@ function describeNetworkError(error: any): string {
   return deepest || error?.message || 'Network Error'
 }
 
-export async function crawlFetch(link: string, options: { timeout?: number, baseURL?: string } = {}): Promise<LinkResponse & { time: number }> {
+export async function crawlFetch(link: string, options: { timeout?: number, baseURL?: string, fetch?: $Fetch } = {}): Promise<LinkResponse & { time: number }> {
   const timeout = options.timeout || 5000
   const start = Date.now()
   const request = async (method: 'HEAD' | 'GET'): Promise<LinkResponse> => {
     const timeoutController = new AbortController()
     const abortRequestTimeout = setTimeout(() => timeoutController.abort(), timeout)
-    return await globalThis.$fetch.raw(encodeURI(link), {
+    return await (options.fetch || $fetch).raw(encodeURI(link), {
       baseURL: options.baseURL,
       method,
       signal: timeoutController.signal,
@@ -95,23 +97,20 @@ export async function crawlFetch(link: string, options: { timeout?: number, base
       headers: {
         'user-agent': 'Nuxt Link Checker',
       },
-    })
-      .then((res: any) => {
-        res._data?.cancel?.().catch(() => {
-          // safe to ignore: the status is already known, and a failed cancel only delays socket reuse
-        })
-        return { status: res.status, statusText: res.statusText, headers: toHeaders(res.headers) }
+    }).then((res: any) => {
+      res._data?.cancel?.().catch(() => {
+        // safe to ignore: the status is already known, and a failed cancel only delays socket reuse
       })
-      .catch((error: any): LinkResponse => {
-        if (error?.name === 'AbortError' || timeoutController.signal.aborted)
-          return { status: 408, statusText: 'Request Timeout', headers: {} }
+      return { status: res.status, statusText: res.statusText, headers: toHeaders(res.headers) }
+    }).catch((error: any): LinkResponse => {
+      if (error?.name === 'AbortError' || timeoutController.signal.aborted)
+        return { status: 408, statusText: 'Request Timeout', headers: {} }
         // an HTTP error response: report the status the server sent
-        if (error?.response)
-          return { status: error.response.status, statusText: error.response.statusText || '', headers: toHeaders(error.response.headers) }
+      if (error?.response)
+        return { status: error.response.status, statusText: error.response.statusText || '', headers: toHeaders(error.response.headers) }
         // no response at all: the link could not be reached
-        return { status: UNREACHABLE_STATUS, statusText: describeNetworkError(error), headers: {} }
-      })
-      .finally(() => clearTimeout(abortRequestTimeout))
+      return { status: UNREACHABLE_STATUS, statusText: describeNetworkError(error), headers: {} }
+    }).finally(() => clearTimeout(abortRequestTimeout))
   }
   let res = await request('HEAD')
   if (HEAD_NOT_SUPPORTED.has(res.status))

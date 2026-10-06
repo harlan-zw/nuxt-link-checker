@@ -1,6 +1,6 @@
 import type { NuxtPage } from '@nuxt/schema'
 import type { CreateStorageOptions } from 'unstorage'
-import { mkdir, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import {
   addPlugin,
   addServerHandler,
@@ -8,15 +8,12 @@ import {
   createResolver,
   defineNuxtModule,
   hasNuxtModule,
-  hasNuxtModuleCompatibility,
-  resolveModule,
 } from '@nuxt/kit'
 import { installNuxtSiteConfig } from 'nuxt-site-config/kit'
 import { normalizeLocales, resolveI18nModule } from 'nuxtseo-shared/i18n'
-import { getNuxtModuleOptions, resolveContentProvider, setupContentRuntime, setupNitroRuntimeCompatibility, useModuleLogger } from 'nuxtseo-shared/kit'
+import { getNuxtModuleOptions, resolveContentProvider, setupContentRuntime, setupNitroRuntimeCompatibility, setupRuntimeAliases, useModuleLogger } from 'nuxtseo-shared/kit'
 import { $fetch } from 'ofetch'
-import { dirname, join } from 'pathe'
-import { readPackageJSON } from 'pkg-types'
+import { join } from 'pathe'
 import { setupDevToolsUI } from './devtools'
 import { prerender } from './prerender'
 import { crawlFetch } from './runtime/shared/crawl'
@@ -148,24 +145,24 @@ export default defineNuxtModule<ModuleOptions>({
   meta: {
     name: 'nuxt-link-checker',
     compatibility: {
-      nuxt: '>=3.9.0',
+      nuxt: '^4.6.0 || ^5.0.0',
     },
     configKey: 'linkChecker',
   },
   moduleDependencies: {
     'nuxt-site-config': {
-      version: '>=3.2',
+      version: '^5.0.0',
     },
     '@harlan-zw/comark-content': {
       version: '>=0.1.2',
       optional: true,
     },
     '@nuxt/content': {
-      version: '>=2',
+      version: '>=3.6.0',
       optional: true,
     },
     '@nuxtjs/sitemap': {
-      version: '>=7',
+      version: '^9.0.0',
       optional: true,
     },
   },
@@ -190,7 +187,7 @@ export default defineNuxtModule<ModuleOptions>({
   async setup(config, nuxt) {
     const { resolve } = createResolver(import.meta.url)
     const logger = useModuleLogger('nuxt-link-checker', config, nuxt)
-    const { name, version } = await readPackageJSON(resolve('../package.json'))
+    const { name, version } = JSON.parse(await readFile(resolve('../package.json'), 'utf8')) as { name: string, version: string }
     if (config.enabled === false) {
       logger.debug(`The ${name} module is disabled, skipping setup.`)
       return
@@ -199,6 +196,7 @@ export default defineNuxtModule<ModuleOptions>({
       logger.warn(message)
     await installNuxtSiteConfig()
     setupNitroRuntimeCompatibility(nuxt)
+    setupRuntimeAliases({ namespace: '#link-checker', app: resolve('./runtime/app'), server: resolve('./runtime/server') }, nuxt)
 
     // Resolve i18n locale codes so we can expand compacted `/:locale(en|fr)/...` routes
     // (nuxt-i18n-micro / @nuxtjs/i18n experimental compactRoutes) into per-locale paths.
@@ -218,7 +216,7 @@ export default defineNuxtModule<ModuleOptions>({
         logger.warn('Remote URL fetching is disabled because you appear to be offline. Set `fetchRemoteUrls: false` to avoid this warning.')
     }
 
-    const hasSitemapModule = (hasNuxtModule('@nuxtjs/sitemap') || (hasNuxtModule('nuxt-simple-sitemap') && await hasNuxtModuleCompatibility('nuxt-simple-sitemap', '>=4')))
+    const hasSitemapModule = hasNuxtModule('@nuxtjs/sitemap')
       //  @ts-expect-error runtime
       && nuxt.options.sitemap?.enabled !== false
 
@@ -251,18 +249,9 @@ export default defineNuxtModule<ModuleOptions>({
       nuxt.options.nitro.alias = nuxt.options.nitro.alias || {}
       const contentProvider = await resolveContentProvider(nuxt)
       setupContentRuntime(contentProvider, nuxt)
-      if (contentProvider._tag === 'NuxtContent' && contentProvider.version === 3) {
-        if (await hasNuxtModuleCompatibility('@nuxt/content', '<3.6.0')) {
-          nuxt.options.alias['@nuxt/content/nitro'] = resolve('./runtime/server/content-compat')
-          nuxt.options.alias['#link-checker/content-v3-nitro-path'] = resolve(dirname(resolveModule('@nuxt/content')), 'runtime/nitro')
-        }
-      }
-      // Nuxt Content v2 predates collections, so `#nuxtseo/content` cannot serve it.
-      const contentProviderPath = contentProvider._tag === 'NuxtContent' && contentProvider.version === 2
-        ? './runtime/server/providers/content-v2'
-        : contentProvider._tag === 'None'
-          ? './runtime/server/providers/noop'
-          : './runtime/server/providers/content'
+      const contentProviderPath = contentProvider._tag === 'None'
+        ? './runtime/server/providers/noop'
+        : './runtime/server/providers/content'
       nuxt.options.nitro.alias['#link-checker/content-provider'] = resolve(contentProviderPath)
       nuxt.options.alias['#link-checker'] = resolve('./runtime')
       nuxt.options.runtimeConfig.public['nuxt-link-checker'] = {

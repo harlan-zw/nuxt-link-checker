@@ -1,6 +1,7 @@
 import type Fuse from 'fuse.js'
 import type { Nitro } from 'nitropack'
 import type { Nuxt } from 'nuxt/schema'
+import type { $Fetch } from 'ofetch'
 import type { SiteConfigResolved } from 'site-config-stack'
 import type { Storage } from 'unstorage'
 import type { ModuleOptions } from '../module'
@@ -23,6 +24,7 @@ export interface ExtractedPayload {
 }
 
 export interface InspectionContext {
+  fetch?: $Fetch
   urlFilter: (url: string) => boolean
   pageFilter: (url: string) => boolean
   config: ModuleOptions
