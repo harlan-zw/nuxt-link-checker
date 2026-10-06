@@ -62,8 +62,13 @@ packages:
   - playground
   - '!examples/**'
 
+# Use immutable previews until the coordinated majors publish.
 overrides:
-  nuxtseo-shared: ^6.0.0
+  '@nuxtjs/sitemap': https://pkg.pr.new/nuxt-modules/sitemap/@nuxtjs/sitemap@7879681b68064274eea0be819003669b9422b60d
+  nuxt-site-config: https://pkg.pr.new/harlan-zw/nuxt-site-config/nuxt-site-config@59e27b8dc55b21407ce19dfdbb7be0c6571e9490
+  nuxt-site-config-kit: https://pkg.pr.new/harlan-zw/nuxt-site-config/nuxt-site-config-kit@59e27b8dc55b21407ce19dfdbb7be0c6571e9490
+  nuxtseo-shared: https://pkg.pr.new/harlan-zw/nuxt-seo/nuxtseo-shared@226c091a0744b7286ef721ac035eed53856bfaa5
+  site-config-stack: https://pkg.pr.new/harlan-zw/nuxt-site-config/site-config-stack@59e27b8dc55b21407ce19dfdbb7be0c6571e9490
   vue: ^3.5.41
 catalog:
   '@antfu/eslint-config': ^9.3.0
@@ -123,3 +128,7 @@ allowBuilds:
   unrs-resolver: true
   vue-demi: true
   workerd: false
+
+# Preview packages use pinned tarball URLs in transitive dependencies.
+# Restore the default when replacing previews with registry releases.
+blockExoticSubdeps: false

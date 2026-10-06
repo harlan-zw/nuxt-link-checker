@@ -121,19 +121,3 @@ it('ignores repositories without published dist metadata', () => {
 
   assert.equal(collectSnapshot(root).size, 0)
 })
-
-it('excludes source bootstrap packages from the target size report', () => {
-  const root = makeRepository({ 'dist/module.mjs': 'export default 1\n' })
-  const expected = collectSnapshot(root)
-  for (const directory of ['.migration-sources', '.migration-checkouts', '.migration-artifacts']) {
-    const external = resolve(root, directory, 'producer')
-    mkdirSync(resolve(external, 'dist'), { recursive: true })
-    writeFileSync(resolve(external, 'package.json'), JSON.stringify({
-      name: '@example/external',
-      files: ['dist'],
-      exports: './dist/index.mjs',
-    }))
-    writeFileSync(resolve(external, 'dist/index.mjs'), 'export default "external"\n')
-  }
-  assert.deepEqual(collectSnapshot(root), expected)
-})

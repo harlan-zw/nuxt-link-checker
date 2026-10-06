@@ -11,42 +11,9 @@ on:
 permissions:
   contents: read
 
-env:
-  NPM_CONFIG_FETCH_RETRIES: '5'
-  NPM_CONFIG_FETCH_RETRY_MINTIMEOUT: '20000'
-  NPM_CONFIG_FETCH_RETRY_MAXTIMEOUT: '120000'
-
 jobs:
   build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: pnpm/setup@v2
-        with:
-          runtime: node@lts
-          cache: true
-          install: false
-      - name: Prepare pinned migration sources
-        id: migration
-        uses: harlan-zw/nuxt-seo/.github/actions/migration-ci@226c091a0744b7286ef721ac035eed53856bfaa5
-      - run: pnpm dev:prepare
-        working-directory: ${{ steps.migration.outputs.workspace }}
-      - run: pnpm build
-        working-directory: ${{ steps.migration.outputs.workspace }}
-      - name: Publish immutable preview
-        working-directory: ${{ steps.migration.outputs.workspace }}
-        run: |
-          for attempt in 1 2 3 4 5; do
-            echo "::group::pkg-pr-new publish attempt $attempt"
-            if pnpm dlx pkg-pr-new publish --pnpm .; then
-              echo "::endgroup::"
-              exit 0
-            fi
-            echo "::endgroup::"
-            echo "::warning::pkg-pr-new publish failed on attempt $attempt"
-            if [ "$attempt" -lt 5 ]; then
-              sleep 30
-            fi
-          done
-          echo "::error::pkg-pr-new publish failed after 5 attempts"
-          exit 1
+    uses: harlan-zw/nuxt-seo/.github/workflows/reusable-nightly.yml@main
+    with:
+      publish-packages: --pnpm
+      node-version: 22.22.3

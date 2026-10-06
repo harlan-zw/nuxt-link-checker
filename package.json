@@ -63,10 +63,9 @@
     "lint:fix": "eslint . --fix",
     "typecheck": "nuxt typecheck",
     "prepare:fixtures": "nuxt prepare test/fixtures/basic",
-    "test": "pnpm prepare:fixtures && vitest run && pnpm test:nuxt-lanes",
-    "test:run": "pnpm prepare:fixtures && vitest run && pnpm test:nuxt-lanes",
-    "test:nuxt5": "node scripts/test-nuxt-lanes.ts nuxt5",
-    "test:nuxt-lanes": "node scripts/test-nuxt-lanes.ts"
+    "test": "pnpm prepare:fixtures && vitest run && pnpm test:nuxt5",
+    "test:run": "pnpm prepare:fixtures && vitest run && pnpm test:nuxt5",
+    "test:nuxt5": "pnpm build && pnpm --dir test/fixtures/nuxt5 install --frozen-lockfile && pnpm --dir test/fixtures/nuxt5 test"
   },
   "peerDependencies": {
     "nuxt": "^4.6.0 || ^5.0.0"

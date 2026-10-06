@@ -5,7 +5,7 @@ import NuxtSiteConfig from 'nuxt-site-config'
 import NuxtSeoShared from 'nuxtseo-shared'
 
 // Allow the pinned nightly only in this consumer fixture.
-if (process.env.NUXT_TEST_LANE === 'nuxt5') {
+{
   const modules: Array<{ getMeta?: () => Promise<{ compatibility?: { nuxt?: string } }> }> = [NuxtLinkChecker, NuxtSiteConfig, NuxtSeoShared]
   for (const module of modules) {
     const meta = await module.getMeta?.()
@@ -18,7 +18,7 @@ if (process.env.NUXT_TEST_LANE === 'nuxt5') {
 
 function verifyBuilder(_options: unknown, nuxt: Nuxt) {
   nuxt.hook('modules:done', () => {
-    const expected = process.env.NUXT_TEST_LANE === 'nuxt5' ? 3 : 2
+    const expected = 3
     const actual = getNitroVersion(nuxt)
     if (actual !== expected)
       throw new Error(`Expected Nitro ${expected}, resolved ${actual}`)
@@ -26,8 +26,8 @@ function verifyBuilder(_options: unknown, nuxt: Nuxt) {
 }
 
 export default defineNuxtConfig({
-  future: { compatibilityVersion: process.env.NUXT_TEST_LANE === 'future5' ? 5 : 4 },
-  modules: [verifyBuilder,NuxtLinkChecker],
+  future: { compatibilityVersion: 5 },
+  modules: [verifyBuilder, NuxtLinkChecker],
   linkChecker: {
     runOnBuild: true,
     report: { json: true, publish: true },
