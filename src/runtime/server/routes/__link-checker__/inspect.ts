@@ -4,6 +4,7 @@ import { fixSlashes } from 'nuxt-site-config/urls'
 import { createError, defineEventHandler, readBody, serverFetch, useRuntimeConfig } from 'nuxt/server'
 import { createFetch } from 'ofetch'
 import { resolve } from 'pathe'
+import { withoutBase } from 'ufo'
 import { getSiteConfig } from '#site-config/server/composables/getSiteConfig'
 import { generateFileLinkDiff, generateFileLinkPreviews, getLinkResponse, inspect, isNonFetchableLink, lruFsCache } from '../../../shared'
 
@@ -88,9 +89,10 @@ function parseInspectRequestBody(body: unknown): InspectRequestBody {
 
 // verify a link
 export default defineEventHandler(async (e) => {
+  const appBaseURL = useRuntimeConfig().app.baseURL
   const localFetch = createFetch({
     fetch: (input, init) => typeof input === 'string' && input.startsWith('/')
-      ? serverFetch(e, input, init)
+      ? serverFetch(e, withoutBase(input, appBaseURL), init)
       : globalThis.fetch(input, init),
   })
   const { tasks, ids, path } = parseInspectRequestBody(await readBody(e))
