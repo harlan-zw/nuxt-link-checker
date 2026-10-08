@@ -1,23 +1,44 @@
-import fs from 'node:fs/promises'
 import { describe, expect, it } from 'vitest'
 import { generateLinkSourcePreviews, generateLinkSources } from '../../src/runtime/shared/diff'
-import { VueTemplateMulti, VueTemplateSingle } from '../const'
 
-async function linkSources(file: string) {
-  // get the column number
-  const source = await fs.readFile(file, 'utf8')
-  return generateLinkSources(source.trim().split('\n').map(l => l.trim()).join('\n'), '/foo')
+const VueTemplateSingle = `<template>
+  <NuxtLink to="/foo">
+    Foo
+  </NuxtLink>
+</template>`
+
+const VueTemplateMulti = `<script setup>
+</script>
+
+<template>
+  <div>
+    <NuxtLink to="/foo" data-first>
+      Foo
+    </NuxtLink>
+    <div>
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci alias amet at commodi consectetur cum dolores, earum, eveniet id illum molestias mollitia nesciunt nisi nulla quaerat quia similique temporibus unde.
+    </div>
+    <NuxtLink to="/foo" data-second>
+      Test
+    </NuxtLink>
+  </div>
+</template>`
+
+function normalizeSource(source: string) {
+  return source.trim().split('\n').map(l => l.trim()).join('\n')
 }
 
-async function linkSourcesPreview(file: string) {
-  // get the column number
-  const source = await fs.readFile(file, 'utf8')
-  return generateLinkSourcePreviews(source.trim().split('\n').map(l => l.trim()).join('\n'), '/foo')
+function linkSources(source: string) {
+  return generateLinkSources(normalizeSource(source), '/foo')
+}
+
+function linkSourcesPreview(source: string) {
+  return generateLinkSourcePreviews(normalizeSource(source), '/foo')
 }
 
 describe('snippets', () => {
-  it('sources single', async () => {
-    const sources = await linkSources(VueTemplateSingle)
+  it('sources single', () => {
+    const sources = linkSources(VueTemplateSingle)
     expect(sources).toMatchInlineSnapshot(`
       [
         {
@@ -29,8 +50,8 @@ describe('snippets', () => {
       ]
     `)
   })
-  it('sources multiple', async () => {
-    const sources = await linkSources(VueTemplateMulti)
+  it('sources multiple', () => {
+    const sources = linkSources(VueTemplateMulti)
     expect(sources).toMatchInlineSnapshot(`
       [
         {
@@ -48,8 +69,8 @@ describe('snippets', () => {
       ]
     `)
   })
-  it ('preview single', async () => {
-    const preview = await linkSourcesPreview(VueTemplateSingle)
+  it('preview single', () => {
+    const preview = linkSourcesPreview(VueTemplateSingle)
     expect(preview).toMatchInlineSnapshot(`
       [
         {
@@ -60,8 +81,8 @@ describe('snippets', () => {
       ]
     `)
   })
-  it ('preview multi', async () => {
-    const preview = await linkSourcesPreview(VueTemplateMulti)
+  it('preview multi', () => {
+    const preview = linkSourcesPreview(VueTemplateMulti)
     expect(preview).toMatchInlineSnapshot(`
       [
         {
