@@ -28,6 +28,7 @@ function verifyBuilder(_options: unknown, nuxt: Nuxt) {
 export default defineNuxtConfig({
   future: { compatibilityVersion: 5 },
   modules: [verifyBuilder, NuxtLinkChecker],
+  site: { url: process.env.NUXT_SITE_URL || 'https://nuxt-link-checker.com' },
   linkChecker: {
     runOnBuild: true,
     report: { json: true, publish: true },
