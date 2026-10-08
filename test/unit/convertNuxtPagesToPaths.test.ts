@@ -3,6 +3,24 @@ import { describe, expect, it } from 'vitest'
 import { convertNuxtPagesToPaths } from '../../src/util'
 
 describe('convertNuxtPagesToPaths', () => {
+  it('discovers grandchildren and preserves absolute child paths', () => {
+    const pages: NuxtPage[] = [{ path: '/parent', file: 'parent.vue', children: [
+      { path: 'child', file: 'child.vue', children: [{ path: 'leaf', file: 'leaf.vue' }] },
+      { path: '/absolute', file: 'absolute.vue' },
+    ] }]
+    expect(convertNuxtPagesToPaths(pages).map(p => p.link)).toEqual(['/parent/child/leaf', '/absolute'])
+  })
+
+  it('resolves empty child paths and absolute grandchildren', () => {
+    const pages: NuxtPage[] = [{ path: '/parent', children: [{ path: 'child', children: [
+      { path: '', file: 'index.vue' },
+      { path: '/elsewhere', file: 'elsewhere.vue' },
+      { path: ':slug', file: '[slug].vue' },
+    ] }] }]
+    expect(convertNuxtPagesToPaths(pages).map(p => p.link)).toEqual(['/parent/child', '/elsewhere'])
+    expect(convertNuxtPagesToPaths(pages, { keepDynamic: true }).map(p => p.link)).toEqual(['/parent/child', '/elsewhere', '/parent/child/:slug'])
+  })
+
   it('keeps static routes and drops dynamic ones', () => {
     const pages: NuxtPage[] = [
       { name: 'about', path: '/about', file: 'pages/about.vue' },
