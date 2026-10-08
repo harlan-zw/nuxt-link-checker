@@ -6,18 +6,11 @@ import { expandCompactLocaleRoute } from 'nuxtseo-shared/i18n'
 import { joinURL } from 'ufo'
 
 export function convertNuxtPagesToPaths(pages: NuxtPage[], options?: { keepDynamic?: boolean, locales?: string[] }): { title: string, link: string, file?: string }[] {
-  return pages
-    .map((page) => {
-      return page.children?.length
-        ? page.children.map((child) => {
-            return {
-              path: joinURL(page.path, child.path),
-              page: child,
-            }
-          })
-        : { page, path: page.path }
-    })
-    .flat()
+  const collectLeaves = (entries: NuxtPage[], parentPath = ''): { page: NuxtPage, path: string }[] => entries.flatMap((page) => {
+    const path = page.path.startsWith('/') ? page.path : joinURL(parentPath, page.path)
+    return page.children?.length ? collectLeaves(page.children, path) : [{ page, path }]
+  })
+  return collectLeaves(pages)
     // Expand compacted i18n routes (`/:locale(en|fr)/about`) into one path per locale so
     // localized links validate exactly instead of being treated as dynamic routes.
     .flatMap((p) => {
