@@ -2,12 +2,12 @@
 name: nuxt-link-checker
 description: Find and fix broken or SEO unfriendly links in a Nuxt app with the nuxt-link-checker module. Use when a task mentions broken links, 404 links, link checking on build, failOnError, excludeLinks, excludePages, skipInspections, link checker reports, live inspections, the linkChecker config key, or the link-checker/valid-route ESLint rule. Gives the build scan scope, verified config, and the traps that make the checker pass silently or flag valid links.
 license: MIT
-compatibility: "Requires a project using nuxt-link-checker. Requires Node.js ^22.22.3 || ^24.15.0 || >=26.0.0. Requires Nuxt ^4.6.0 || ^5.0.0."
+compatibility: "Requires Node.js ^22.22.3 || ^24.15.0 || >=26.0.0. Requires Nuxt ^4.6.0 || ^5.0.0."
 ---
 
 # nuxt-link-checker
 
-Tested against the `nuxt-link-checker` release after 5.3.0 on Nuxt 4.5 (peer range Nuxt 3.9 to 5).
+Tested against the `nuxt-link-checker` release after 5.3.0 on Nuxt 4.5.
 The module inspects every `<a href>` in rendered HTML with 15 rules, at build time and in dev.
 It also ships two ESLint rules. Docs: https://nuxtseo.com/docs/link-checker
 
