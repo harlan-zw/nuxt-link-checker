@@ -102,10 +102,7 @@ export interface ModuleOptions {
    */
   fetchRemoteUrls: boolean
   /**
-   * Enable when your nuxt/content files match your pages. This will automatically detect link sources
-   * for the current page.
-   *
-   * This is the same behavior to using `nuxt/content` with `documentDriven: true`.
+   * Has no effect. Link Checker reads link sources from Nuxt Content page collections without it.
    */
   strictNuxtContentPaths: boolean
   /**

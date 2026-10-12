@@ -1,20 +1,21 @@
 ---
 name: nuxt-link-checker
-description: Find and fix broken or SEO unfriendly links in a Nuxt app with the nuxt-link-checker module. Use when a task mentions broken links, 404 links, link checking on build, failOnError, excludeLinks, excludePages, skipInspections, link checker reports, live inspections, the linkChecker config key, or the link-checker/valid-route ESLint rule. Gives the build scan scope, verified config, and the traps that make the checker pass silently or flag valid links.
+description: Find and fix broken or SEO unfriendly links in a Nuxt app with the nuxt-link-checker module, with the build scan scope, verified config, and the traps that make the checker pass silently or flag valid links. Use when a task mentions broken links, 404 links, link checking on build, failOnError, excludeLinks, excludePages, skipInspections, link checker reports, live inspections, the linkChecker config key, or the link-checker/valid-route ESLint rule.
 license: MIT
 compatibility: "Requires Node.js ^22.22.3 || ^24.15.0 || >=26.0.0. Requires Nuxt ^4.6.0 || ^5.0.0."
 ---
 
 # nuxt-link-checker
 
-Tested against the `nuxt-link-checker` release after 5.3.0 on Nuxt 4.5.
+Written for `nuxt-link-checker` v6 on Nuxt 4.6 or Nuxt 5.
 The module inspects every `<a href>` in rendered HTML with 15 rules, at build time and in dev.
 It also ships two ESLint rules. Docs: https://nuxtseo.com/docs/link-checker
 
 ## Setup
 
-Config key: `linkChecker`. The module installs `nuxt-site-config` for you.
-`@nuxtjs/seo` already includes this module. Do not add it twice.
+Install with `npx nuxt module add link-checker`. Config key: `linkChecker`.
+The module installs `nuxt-site-config` for you.
+Included in `@nuxtjs/seo` v6. If the app uses `@nuxtjs/seo`, configure the `linkChecker` key and do not add the module again.
 
 Set `site.url` to the production origin. The checker resolves internal links against it (see Traps).
 The `trailing-slash` rule reads `site.trailingSlash`, not a `linkChecker` option.
@@ -28,6 +29,7 @@ The `trailing-slash` rule reads `site.trailingSlash`, not a `linkChecker` option
 - **External links are not fetched.** `fetchRemoteUrls` is `false`, so every absolute external link counts as a 200.
 - **Links to files in `public/` pass** without a request.
 - **Dev.** With Nuxt DevTools on, the module adds a Link Checker DevTools tab and `/__link-checker__/*` server routes. On page squiggles need `showLiveInspections: true`.
+- **DevTools host.** The DevTools tab needs `nuxtseo-devtools-host` as a dev dependency. Without it, the tab shows an install button.
 - **ESLint.** With `@nuxt/eslint`, the module registers `link-checker/valid-route` (error) and `link-checker/valid-sitemap-link` (warn) for `.vue`, `.ts`, and `.md` files.
 
 ## Fail CI on broken links
@@ -110,6 +112,15 @@ Only literal links that start with `/` are checked. Skip one link with `rel="nof
 - **Different results per mode.** Build scans read prerender status codes. Dev scans fetch the dev server. ESLint reads route patterns only and ignores `excludeLinks`.
 
 ## Version limits
+
+v6 breaking changes and their fixes:
+
+- Nuxt `^4.6.0 || ^5.0.0` and Node `^22.22.3 || ^24.15.0 || >=26.0.0` are required. Upgrade Nuxt and Node first.
+- The content integration needs `@nuxt/content` 3.6.0 or later. Migrate the app to Content v3 before you upgrade.
+- `nuxt-site-config` 5 is required. Change a pinned `nuxt-site-config` to `^5.0.0`.
+- The sitemap integration needs `@nuxtjs/sitemap` 9 or later. Replace `nuxt-simple-sitemap` with `@nuxtjs/sitemap`.
+- `no-error-response` messages show the status the server sent. Unreachable links show status `0`. Update report parsers that expect `404 (Not Found)`.
+- Import app functions from `#link-checker/app` and server functions from `#link-checker/server`.
 
 These v1 options are gone. The module logs a warning that names the replacement, then ignores them:
 

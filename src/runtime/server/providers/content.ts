@@ -10,8 +10,7 @@ const { listPageCollections, queryPages } = contentRuntime as unknown as Content
  *
  * One provider for @nuxt/content v3 and comark-content both. `#nuxtseo/content`
  * normalizes the manifest shape, so the `path` field check that @nuxt/content needs
- * reads the same as comark answering it trivially. Nuxt Content v2 has no
- * collection model and keeps its own provider.
+ * reads the same as comark answering it trivially.
  */
 export default async (e: H3Event): Promise<{ link: string, title: string, file: string }[]> => {
   const collections = (await listPageCollections(e))
