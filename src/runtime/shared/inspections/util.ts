@@ -10,3 +10,10 @@ export function isNonFetchableLink(link: string): boolean {
     || trimmedLink.startsWith('tel:') || trimmedLink.startsWith('vbscript:')
     || trimmedLink.startsWith('#')
 }
+
+// 300 and 304 are 3xx statuses, but they do not redirect the client
+const REDIRECT_STATUSES = new Set([301, 302, 303, 307, 308])
+
+export function isRedirectStatus(status: unknown): boolean {
+  return typeof status === 'number' && REDIRECT_STATUSES.has(status)
+}
