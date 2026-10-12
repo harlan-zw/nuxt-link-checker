@@ -1,11 +1,11 @@
 import type { Rule, RuleReport } from '../types'
-import { defineRule } from './inspections/util'
+import { defineRule, isRedirectStatus } from './inspections/util'
 
 export default function RuleRedirects(): Rule {
   return defineRule({
     id: 'redirects',
     test({ report, response }) {
-      if (response?.status !== 301 && response?.status !== 302)
+      if (!isRedirectStatus(response?.status))
         return
 
       const payload: RuleReport = {
