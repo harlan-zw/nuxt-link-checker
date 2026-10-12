@@ -1,6 +1,7 @@
 import type { NuxtPage } from '@nuxt/schema'
 import type { CreateStorageOptions } from 'unstorage'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { fileURLToPath } from 'node:url'
 import {
   addPlugin,
   addServerHandler,
@@ -9,7 +10,6 @@ import {
   defineNuxtModule,
   hasNuxtModule,
 } from '@nuxt/kit'
-import { installNuxtSiteConfig } from 'nuxt-site-config/kit'
 import { normalizeLocales, resolveI18nModule } from 'nuxtseo-shared/i18n'
 import { getNuxtModuleOptions, resolveContentProvider, setupContentRuntime, setupNitroRuntimeCompatibility, setupRuntimeAliases, useModuleLogger } from 'nuxtseo-shared/kit'
 import { $fetch } from 'ofetch'
@@ -150,7 +150,9 @@ export default defineNuxtModule<ModuleOptions>({
     configKey: 'linkChecker',
   },
   moduleDependencies: {
-    'nuxt-site-config': {
+    // Keep package-relative resolution until the minimum Nuxt version includes this fix:
+    // https://github.com/nuxt/nuxt/pull/36542
+    [fileURLToPath(import.meta.resolve('nuxt-site-config'))]: {
       version: '>=5.0.0',
     },
     '@harlan-zw/comark-content': {
@@ -194,7 +196,6 @@ export default defineNuxtModule<ModuleOptions>({
     }
     for (const message of findRemovedOptions(config as unknown as Record<string, unknown>))
       logger.warn(message)
-    await installNuxtSiteConfig()
     setupNitroRuntimeCompatibility(nuxt)
     setupRuntimeAliases({ namespace: '#link-checker', app: resolve('./runtime/app'), server: resolve('./runtime/server') }, nuxt)
 
