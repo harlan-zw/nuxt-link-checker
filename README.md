@@ -36,7 +36,7 @@ need this module.
 Install `nuxt-link-checker` dependency to your project:
 
 ```bash
-npx nuxi@latest module add link-checker
+npx nuxt module add link-checker
 ```
 
 > [!TIP]
