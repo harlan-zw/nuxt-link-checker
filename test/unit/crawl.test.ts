@@ -5,6 +5,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { crawlFetch } from '../../src/runtime/shared/crawl'
 import { inspect } from '../../src/runtime/shared/inspect'
 import RuleNoErrorResponse from '../../src/runtime/shared/inspections/no-error-response'
+import RuleRedirects from '../../src/runtime/shared/redirects'
 
 // the server answers by path, so each case asks for the failure it needs
 const server = createServer((req, res) => {
@@ -16,6 +17,12 @@ const server = createServer((req, res) => {
   }
   else if (req.url === '/gone') {
     res.writeHead(410).end()
+  }
+  else if (req.url === '/moved') {
+    res.writeHead(301, { location: '/ok' }).end()
+  }
+  else if (req.url === '/moved-to-missing') {
+    res.writeHead(308, { location: '/missing' }).end()
   }
   else if (req.url === '/no-head') {
     res.writeHead(req.method === 'HEAD' ? 405 : 200).end()
@@ -85,5 +92,19 @@ describe('no-error-response on a network failure', () => {
     const result = inspect({ link: '/ok', response }, [RuleNoErrorResponse()])
     expect(result.error).toHaveLength(1)
     expect(result.error![0]!.message).toBe(`Could not reach the link (${response.statusText}).`)
+  })
+})
+
+describe('crawlFetch on a redirect', () => {
+  it('records the first hop and returns the final response', async () => {
+    const res = await crawlFetch('/moved', { baseURL })
+    expect(res).toMatchObject({ status: 200, redirect: { status: 301, location: '/ok' } })
+  })
+
+  it('reports the redirect and the broken target', async () => {
+    const response = await crawlFetch('/moved-to-missing', { baseURL })
+    const result = inspect({ link: '/moved-to-missing', response }, [RuleNoErrorResponse(), RuleRedirects()])
+    expect(result.error!.map(e => e.message)).toEqual(['Should not respond with status code 404 (Not Found).'])
+    expect(result.warning!.map(w => w.fix)).toEqual(['/missing'])
   })
 })

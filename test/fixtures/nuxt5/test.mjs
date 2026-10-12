@@ -13,6 +13,11 @@ portServer.close()
 await once(portServer, 'close')
 
 const originServer = createHttpServer((request, response) => {
+  if (request.url === '/moved') {
+    response.writeHead(301, { location: '/Target' })
+    response.end()
+    return
+  }
   response.statusCode = request.url === '/missing' ? 404 : 200
   response.end()
 })
@@ -92,6 +97,10 @@ try {
       throw new Error('The packed module did not report the missing page')
     if (!inspections.some(link => link.link === '/Target' && link.warning.some(issue => issue.name === 'no-uppercase-chars')))
       throw new Error('The packed module did not report the uppercase URL')
+    for (const link of ['/old', '/moved']) {
+      if (!inspections.some(inspection => inspection.link === link && inspection.warning.some(issue => issue.name === 'redirects' && issue.fix === '/Target')))
+        throw new Error(`The packed module did not report the redirect from ${link}`)
+    }
     if (inspections.find(link => link.link === '/Target')?.error.length)
       throw new Error('The packed module rejected a valid page')
   }

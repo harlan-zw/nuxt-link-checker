@@ -3,6 +3,7 @@ import type { Nuxt } from 'nuxt/schema'
 import type { Storage } from 'unstorage'
 import type { ExtractedPayload, InspectionContext, PathReport } from './build/report'
 import type { ModuleOptions } from './module'
+import type { LinkResponse } from './runtime/shared/crawl'
 import type { LinkInspectionResult } from './runtime/types'
 import { existsSync } from 'node:fs'
 import { extendRouteRules, getNitroVersion, useNuxt, useRuntimeConfig } from '@nuxt/kit'
@@ -12,19 +13,22 @@ import { useSiteConfig } from 'nuxt-site-config/kit'
 import { isNuxtGenerate } from 'nuxtseo-shared/kit'
 import { createPrerenderFetch } from 'nuxtseo-shared/prerender'
 import { resolve } from 'pathe'
-import { withoutLeadingSlash } from 'ufo'
+import { withBase, withoutLeadingSlash } from 'ufo'
 import { ELEMENT_NODE, parse, walkSync } from 'ultrahtml'
 import { createStorage } from 'unstorage'
 import fsDriver from 'unstorage/drivers/fs'
 import { generateReports } from './build/report'
 import { runParallel, truncateString } from './build/util'
-import { getLinkResponse, getResolvedLinkResponses, setLinkResponse } from './runtime/shared/crawl'
+import { crawlFetch, getLinkResponse, getResolvedLinkResponses, setLinkResponse } from './runtime/shared/crawl'
 import { inspect } from './runtime/shared/inspect'
 import { createFilter } from './runtime/shared/sharedUtils'
 
 const { gray, yellow, dim, red, white } = colors
 
 const linkMap: Record<string, ExtractedPayload> = {}
+
+// h3 and Nuxt answer a redirect with a body that holds this tag, and Nitro prerenders that body as the page
+const META_REFRESH_RE = /<meta[^>]+http-equiv=["']?refresh/i
 
 /**
  * Extract the title, element ids, and links from a rendered page.
@@ -129,6 +133,8 @@ export function prerender(config: ModuleOptions, version?: string, routeFileMap:
   })
   nuxt.hooks.hook('nitro:init', async (nitro) => {
     let prerenderClient: ReturnType<typeof createPrerenderFetch> | undefined
+    // prerendered routes that rendered a meta refresh, keyed without app.baseURL, so each may be a redirect
+    const refreshRoutes = new Map<string, LinkResponse>()
     nitro.hooks.hook('prerender:init', (renderer) => {
       const major = getNitroVersion(nuxt)
       if (major !== 2 && major !== 3)
@@ -148,13 +154,17 @@ export function prerender(config: ModuleOptions, version?: string, routeFileMap:
       if (ctx.contents && !ctx.error && ctx.fileName?.endsWith('.html') && !route.endsWith('.html') && pageFilter(route))
         linkMap[route] = await extractPayload(ctx.contents)
 
-      setLinkResponse(route, Promise.resolve({
+      const response: LinkResponse = {
         status: Number(ctx.error?.statusCode) || 200,
         statusText: ctx.error?.statusMessage || '',
         headers: {
           'Content-Type': ctx.contentType,
         },
-      }))
+      }
+      setLinkResponse(route, Promise.resolve(response))
+      // Nitro passes no response status to prerender hooks, so a prerendered redirect reads as a 200 page
+      if (ctx.contents && !ctx.error && META_REFRESH_RE.test(ctx.contents))
+        refreshRoutes.set(route, response)
     })
     nitro.hooks.hook('prerender:done', async () => {
       // sort by route: prerendering finishes in a different order on every build, and both the
@@ -163,6 +173,16 @@ export function prerender(config: ModuleOptions, version?: string, routeFileMap:
       if (!payloads.length)
         return
       scanned = true
+
+      // ask the prerender app for the first hop of each meta refresh route; the other rules keep the prerendered response
+      const client = prerenderClient
+      if (client) {
+        await Promise.all([...refreshRoutes].map(async ([route, response]) => {
+          const { redirect } = await crawlFetch(withBase(route, nitro.options.baseURL), { fetch: client.fetch, timeout: config.fetchTimeout })
+          if (redirect)
+            setLinkResponse(route, Promise.resolve({ ...response, redirect }))
+        }))
+      }
 
       const { storage, storageFilepath } = createReportStorage(config, nuxt, nitro)
       const pageSearcher = createPageSearcher(payloads)
