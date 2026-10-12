@@ -33,6 +33,23 @@ describe('generate', () => {
               "error": [],
               "warning": [
                 {
+                  "name": "redirects",
+                  "scope": "warning",
+                  "message": "Should not redirect.",
+                  "tip": "Redirects use up your crawl budget and increase loading times, it's recommended to avoid them when possible.",
+                  "fix": "/redirected",
+                  "fixDescription": "Set to redirect URL /redirected."
+                }
+              ],
+              "fix": "/redirected",
+              "link": "/redirect",
+              "passes": false,
+              "textContent": "valid link to redirect"
+            },
+            {
+              "error": [],
+              "warning": [
+                {
                   "name": "no-uppercase-chars",
                   "scope": "warning",
                   "message": "Links should not contain uppercase characters.",
@@ -287,6 +304,23 @@ describe('generate', () => {
               "link": "/trailingslash/",
               "passes": false,
               "textContent": "trailing slash"
+            },
+            {
+              "error": [],
+              "warning": [
+                {
+                  "name": "redirects",
+                  "scope": "warning",
+                  "message": "Should not redirect.",
+                  "tip": "Redirects use up your crawl budget and increase loading times, it's recommended to avoid them when possible.",
+                  "fix": "/redirected",
+                  "fixDescription": "Set to redirect URL /redirected."
+                }
+              ],
+              "fix": "/redirected",
+              "link": "/redirect",
+              "passes": false,
+              "textContent": "redirect link"
             }
           ]
         },
@@ -386,7 +420,7 @@ describe('generate', () => {
       - **Pages checked:** 14
       - **Pages with issues:** 2
       - **Total errors:** 13
-      - **Total warnings:** 11
+      - **Total warnings:** 13
 
       ---
 
@@ -397,8 +431,15 @@ describe('generate', () => {
 
       ---
 
-      ## ❌ [/](/) (9 errors, 9 warnings)
+      ## ❌ [/](/) (9 errors, 11 warnings)
 
+      ### Link: [/redirect](/redirect)
+      > Link text: "valid link to redirect"
+      #### Warnings
+      - **redirects:** Should not redirect.
+        - *Suggestion:* Set to redirect URL /redirected.
+      - **redirects:** Should not redirect.
+        - *Suggestion:* Set to redirect URL /redirected.
       ### Link: [/about/Billy%20Bob](/about/Billy%20Bob)
       > Link text: "Dynamic Encoded Path"
       #### Warnings

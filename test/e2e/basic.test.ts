@@ -86,6 +86,23 @@ describe('basic', async () => {
     `)
   })
 
+  it('endpoint inspect redirect', async () => {
+    const [result] = await $fetch('/__link-checker__/inspect', {
+      method: 'POST',
+      body: {
+        tasks: [
+          {
+            paths: [VueTemplateSingle],
+            link: '/moved-permanently',
+            textContent: 'Moved page',
+          },
+        ],
+        ids: [],
+      },
+    })
+    expect(result.warning.map((w: any) => ({ name: w.name, fix: w.fix }))).toEqual([{ name: 'redirects', fix: '/' }])
+  })
+
   it('endpoint inspect multi', async () => {
     const singleInspect = await $fetch('/__link-checker__/inspect', {
       method: 'POST',

@@ -1,10 +1,14 @@
 import type { $Fetch } from 'ofetch'
 import { $fetch } from 'ofetch'
-import { isNonFetchableLink } from './inspections/util'
+import { isNonFetchableLink, isRedirectStatus } from './inspections/util'
 
 type MaybePromise<T> = T | Promise<T>
 
-interface LinkResponse { status: number, statusText: string, headers: Record<string, any> }
+/** The first hop of a link that redirects. */
+export interface LinkRedirect { status: number, location: string }
+
+/** The final response of a link, after any redirects. `redirect` is the first hop when the link redirects. */
+export interface LinkResponse { status: number, statusText: string, headers: Record<string, any>, redirect?: LinkRedirect }
 
 const responses: Record<string, MaybePromise<LinkResponse>> = {}
 
@@ -36,7 +40,7 @@ export async function getLinkResponse({ link, timeout, fetchRemoteUrls, baseURL,
   return responses[link]!
 }
 
-export function setLinkResponse(link: string, response: Promise<{ status: number, statusText: string, headers: Record<string, any> }>): void {
+export function setLinkResponse(link: string, response: Promise<LinkResponse>): void {
   responses[link] = response
 }
 
@@ -83,12 +87,13 @@ function describeNetworkError(error: any): string {
 export async function crawlFetch(link: string, options: { timeout?: number, baseURL?: string, fetch?: $Fetch } = {}): Promise<LinkResponse & { time: number }> {
   const timeout = options.timeout || 5000
   const start = Date.now()
-  const request = async (method: 'HEAD' | 'GET'): Promise<LinkResponse> => {
+  const request = async (method: 'HEAD' | 'GET', redirect: RequestRedirect): Promise<LinkResponse> => {
     const timeoutController = new AbortController()
     const abortRequestTimeout = setTimeout(() => timeoutController.abort(), timeout)
     return await (options.fetch || $fetch).raw(encodeURI(link), {
       baseURL: options.baseURL,
       method,
+      redirect,
       signal: timeoutController.signal,
       retry: 3,
       retryDelay: 250,
@@ -112,8 +117,16 @@ export async function crawlFetch(link: string, options: { timeout?: number, base
       return { status: UNREACHABLE_STATUS, statusText: describeNetworkError(error), headers: {} }
     }).finally(() => clearTimeout(abortRequestTimeout))
   }
-  let res = await request('HEAD')
-  if (HEAD_NOT_SUPPORTED.has(res.status))
-    res = await request('GET')
-  return { ...res, time: Date.now() - start }
+  const probe = async (redirect: RequestRedirect): Promise<LinkResponse> => {
+    const res = await request('HEAD', redirect)
+    return HEAD_NOT_SUPPORTED.has(res.status) ? await request('GET', redirect) : res
+  }
+  // stop at the first hop, so the redirects rule sees the status and Location the link answers with
+  const first = await probe('manual')
+  const location = first.headers.location
+  if (!isRedirectStatus(first.status) || typeof location !== 'string' || !location)
+    return { ...first, time: Date.now() - start }
+  // the other rules judge where the link ends up, so follow the redirect for the final response
+  const final = await probe('follow')
+  return { ...final, redirect: { status: first.status, location }, time: Date.now() - start }
 }

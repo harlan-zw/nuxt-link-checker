@@ -33,7 +33,9 @@ export default defineNuxtConfig({
     runOnBuild: true,
     report: { json: true, publish: true },
   },
-  nitro: { prerender: { routes: ['/'], crawlLinks: false } },
+  // Nitro prerenders /old as a redirect page; the build fetches /moved from the site URL
+  routeRules: { '/old': { redirect: '/Target' } },
+  nitro: { prerender: { routes: ['/', '/old'], crawlLinks: false } },
   runtimeConfig: {
     linkCheckerCompatMarker: 'nuxt-5',
   },
