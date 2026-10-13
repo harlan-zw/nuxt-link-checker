@@ -6,7 +6,7 @@ import { createFetch } from 'ofetch'
 import { resolve } from 'pathe'
 import { withoutBase } from 'ufo'
 import { getSiteConfig } from '#site-config/server/composables/getSiteConfig'
-import { generateFileLinkDiff, generateFileLinkPreviews, getLinkResponse, inspect, isNonFetchableLink, lruFsCache } from '../../../shared'
+import { createPublicDirectoryIndexLookup, generateFileLinkDiff, generateFileLinkPreviews, getLinkResponse, inspect, isNonFetchableLink, lruFsCache } from '../../../shared'
 
 interface InspectTask {
   link: string
@@ -101,6 +101,7 @@ export default defineEventHandler(async (e) => {
     ids,
     fromPath: fixSlashes(false, path ?? '/'),
     siteConfig: getSiteConfig(e),
+    isPublicDirectoryIndex: createPublicDirectoryIndexLookup(runtimeConfig.publicDir),
   } as const
   // allow editing files to trigger a cache clear
   lruFsCache.clear()

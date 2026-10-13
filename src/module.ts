@@ -13,7 +13,7 @@ import {
 import { normalizeLocales, resolveI18nModule } from 'nuxtseo-shared/i18n'
 import { getNuxtModuleOptions, resolveContentProvider, setupContentRuntime, setupNitroRuntimeCompatibility, setupRuntimeAliases, useModuleLogger } from 'nuxtseo-shared/kit'
 import { $fetch } from 'ofetch'
-import { join } from 'pathe'
+import { join, resolve as resolvePath } from 'pathe'
 import { setupDevToolsUI } from './devtools'
 import { prerender } from './prerender'
 import { crawlFetch } from './runtime/shared/crawl'
@@ -256,6 +256,7 @@ export default defineNuxtModule<ModuleOptions>({
         version,
         hasSitemapModule,
         rootDir: nuxt.options.rootDir,
+        publicDir: resolvePath(nuxt.options.rootDir, nuxt.options.dir.public),
         excludeLinks: serializeFilters(config.excludeLinks, 'nuxt-link-checker'),
         excludePages: serializeFilters(config.excludePages, 'nuxt-link-checker'),
         skipInspections: config.skipInspections,

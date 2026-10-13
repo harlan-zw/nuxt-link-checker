@@ -9,6 +9,11 @@ export default defineNuxtConfig({
     url: 'https://nuxt-link-checker.com',
   },
 
+  routeRules: {
+    // public/demo/index.html is a static file: the Nitro crawler would render /demo/ as a Nuxt page and 404
+    '/demo/**': { prerender: false },
+  },
+
   linkChecker: {
     report: {
       json: true,
