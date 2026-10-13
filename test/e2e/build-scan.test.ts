@@ -26,6 +26,11 @@ describe('build scan', () => {
     // a link teleported to <body> renders outside #__nuxt and is still inspected
     expect(links.find((l: any) => l.link === '/About')?.issues).toContain('no-uppercase-chars')
 
+    // public/demo/index.html loads style.css relatively, so only /demo/ renders it correctly
+    // the report lists only links with issues
+    expect(links.find((l: any) => l.link === '/demo/')).toBeUndefined()
+    expect(links).toContainEqual({ link: '/demo', issues: ['trailing-slash'] })
+
     const markdown = await readFile(resolve(rootDir, '.output/link-checker-report.md'), 'utf8')
     expect(markdown).toContain('**Pages checked:** 3')
   })

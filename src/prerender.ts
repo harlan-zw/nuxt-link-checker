@@ -21,6 +21,7 @@ import { generateReports } from './build/report'
 import { runParallel, truncateString } from './build/util'
 import { crawlFetch, getLinkResponse, getResolvedLinkResponses, setLinkResponse } from './runtime/shared/crawl'
 import { inspect } from './runtime/shared/inspect'
+import { createPublicDirectoryIndexLookup } from './runtime/shared/public-dir'
 import { createFilter } from './runtime/shared/sharedUtils'
 
 const { gray, yellow, dim, red, white } = colors
@@ -326,6 +327,8 @@ async function processRouteLinks(
   context: InspectionContext,
 ): Promise<Partial<LinkInspectionResult>[]> {
   const { urlFilter, config, nuxt, siteConfig, pageSearcher } = context
+  const publicDir = resolve(nuxt.options.rootDir, nuxt.options.dir.public)
+  const isPublicDirectoryIndex = createPublicDirectoryIndexLookup(publicDir)
 
   // Process links in parallel but with controlled concurrency
   const links = payload.links || []
@@ -350,7 +353,7 @@ async function processRouteLinks(
             timeout: config.fetchTimeout,
             fetchRemoteUrls: config.fetchRemoteUrls,
             isInStorage() {
-              return existsSync(resolve(nuxt.options.rootDir, nuxt.options.dir.public, withoutLeadingSlash(link)))
+              return existsSync(resolve(publicDir, withoutLeadingSlash(link)))
             },
           })
 
@@ -364,6 +367,7 @@ async function processRouteLinks(
         textContent,
         response,
         skipInspections: config.skipInspections,
+        isPublicDirectoryIndex,
       })
 
       // Add to report collection

@@ -103,6 +103,21 @@ describe('basic', async () => {
     expect(result.warning.map((w: any) => ({ name: w.name, fix: w.fix }))).toEqual([{ name: 'redirects', fix: '/' }])
   })
 
+  it('endpoint inspect public directory index', async () => {
+    // public/demo/index.html loads style.css relatively, so only /demo/ renders it correctly
+    const results = await $fetch('/__link-checker__/inspect', {
+      method: 'POST',
+      body: {
+        tasks: ['/demo/', '/demo'].map(link => ({ paths: [], link, textContent: 'Demo' })),
+        ids: [],
+      },
+    })
+    expect(results.map((r: any) => ({ link: r.link, warnings: r.warning.map((w: any) => w.name), fix: r.fix }))).toEqual([
+      { link: '/demo/', warnings: [], fix: '/demo/' },
+      { link: '/demo', warnings: expect.arrayContaining(['trailing-slash']), fix: '/demo/' },
+    ])
+  })
+
   it('endpoint inspect multi', async () => {
     const singleInspect = await $fetch('/__link-checker__/inspect', {
       method: 'POST',

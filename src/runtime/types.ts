@@ -21,6 +21,10 @@ export interface RuleTestContext {
   pageSearch?: Fuse<{ link: string, title?: string }>
   report: (report: RuleReport, stop?: boolean) => void
   skipInspections?: string[]
+  /**
+   * Whether a link path resolves to a public directory index, such as `/demo/` for `public/demo/index.html`.
+   */
+  isPublicDirectoryIndex?: (path: string) => boolean
 }
 
 export interface RuleReport {

@@ -6,7 +6,7 @@ import { defineRule } from './util'
 export default function RuleTrailingSlash(): Rule {
   return defineRule({
     id: 'trailing-slash',
-    test({ report, link, siteConfig }) {
+    test({ report, link, siteConfig, isPublicDirectoryIndex }) {
       const $url = parseURL(link)
 
       // Ignore fragment-only links
@@ -17,9 +17,11 @@ export default function RuleTrailingSlash(): Rule {
       if ($url.pathname === '/' || isPathFile($url.pathname))
         return
 
-      const fix = fixSlashes(siteConfig.trailingSlash, link)
+      // a directory index loads its relative assets against the trailing slash, so it keeps one whatever the site config says
+      const trailingSlash = isPublicDirectoryIndex?.($url.pathname) || siteConfig.trailingSlash
+      const fix = fixSlashes(trailingSlash, link)
 
-      if (!$url.pathname.endsWith('/') && siteConfig.trailingSlash) {
+      if (!$url.pathname.endsWith('/') && trailingSlash) {
         report({
           name: 'trailing-slash',
           scope: 'warning',
@@ -29,7 +31,7 @@ export default function RuleTrailingSlash(): Rule {
           fixDescription: 'Add trailing slash.',
         })
       }
-      else if ($url.pathname.endsWith('/') && !siteConfig.trailingSlash) {
+      else if ($url.pathname.endsWith('/') && !trailingSlash) {
         report({
           name: 'trailing-slash',
           scope: 'warning',
