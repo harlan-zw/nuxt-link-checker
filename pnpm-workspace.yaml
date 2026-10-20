@@ -6,17 +6,17 @@ minimumReleaseAgeExcludePrune: true
 minimumReleaseAgeExclude:
   - nuxtseo-layer-devtools
   - nuxtseo-shared
-  - '@nuxt/kit@4.6.0'
-  - '@nuxt/nitro-server@4.6.0'
-  - '@nuxt/schema@4.6.0'
-  - '@nuxt/vite-builder@4.6.0'
-  - nuxt@4.6.0
-  - '@harlan-zw/comark-content@0.2.0'
-  - '@nuxt/cli@4.0.0'
-  - '@nuxt/vite-server@4.6.0'
-  - '@nuxt/devtools-kit@4.0.0-beta.4'
-  - '@nuxt/devtools@4.0.0-beta.4'
-  - vite@8.3.3
+  - '@nuxt/kit@4.6.2'
+  - '@nuxt/nitro-server@4.6.2'
+  - '@nuxt/schema@4.6.2'
+  - '@nuxt/vite-builder@4.6.2'
+  - nuxt@4.6.2
+  - '@harlan-zw/comark-content@0.2.2'
+  - '@nuxt/vite-server@4.6.2'
+  - '@nuxt/devtools-kit@4.0.0-beta.7'
+  - '@nuxt/devtools@4.0.0-beta.7'
+  - vite@8.3.4
+  - '@nuxt/devtools-assets@4.0.0-beta.7'
 
 trustPolicy: no-downgrade
 trustPolicyIgnoreAfter: 262800
@@ -87,30 +87,30 @@ onlyBuiltDependencies:
 
 catalog:
   '@antfu/eslint-config': ^9.5.1
-  '@harlan-zw/comark-content': ^0.2.0
-  '@nuxt/content': ^3.16.1
-  '@nuxt/devtools': 4.0.0-beta.4
-  '@nuxt/devtools-kit': 4.0.0-beta.4
+  '@harlan-zw/comark-content': ^0.2.2
+  '@nuxt/content': ^3.16.2
+  '@nuxt/devtools': 4.0.0-beta.7
+  '@nuxt/devtools-kit': 4.0.0-beta.7
   '@nuxt/eslint': ^1.17.0
-  '@nuxt/kit': ^4.6.0
+  '@nuxt/kit': ^4.6.2
   '@nuxt/module-builder': ^1.0.3
-  '@nuxt/test-utils': ^4.3.3
+  '@nuxt/test-utils': ^4.3.4
   '@nuxtjs/sitemap': ^9.0.0
-  '@types/node': ^26.6.4
+  '@types/node': ^26.6.5
   '@vueuse/core': ^15.0.0
   better-sqlite3: ^13.0.3
   bumpp: ^12.3.0
   consola: ^3.4.2
   defu: ^6.1.7
   diff: ^9.0.0
-  eslint: ^10.12.0
+  eslint: ^10.13.0
   eslint-plugin-harlanzw: ^0.23.0
-  execa: ^10.0.1
+  execa: ^10.2.0
   fuse.js: ^7.5.0
   magic-string: ^1.4.3
-  nuxt: 4.6.0
+  nuxt: 4.6.2
   nuxt-site-config: ^5.0.0
-  nuxtseo-layer-devtools: ^5.3.16
+  nuxtseo-layer-devtools: ^6.0.2
   nuxtseo-shared: ^6.0.0
   ofetch: ^1.5.1
   pathe: ^2.0.3
@@ -122,8 +122,8 @@ catalog:
   ufo: ^1.6.4
   ultrahtml: ^1.7.0
   unbuild: ^3.6.1
-  unstorage: ^1.17.5
-  vite: ^8.3.3
-  vitest: ^5.0.3
+  unstorage: ^1.17.6
+  vite: ^8.3.4
+  vitest: ^5.0.5
   vue-eslint-parser: ^10.4.1
-  vue-tsc: ^3.3.12
+  vue-tsc: ^3.3.13
