@@ -62,10 +62,10 @@ packages:
 # Use immutable previews until the coordinated majors publish.
 overrides:
   '@nuxtjs/sitemap': https://pkg.pr.new/nuxt-modules/sitemap/@nuxtjs/sitemap@58838b6cdfafd0f4933a4ff53bc98f968bd7f733
-  nuxt-site-config: https://pkg.pr.new/harlan-zw/nuxt-site-config/nuxt-site-config@b8c8a6978ce818d77ecc50c679d412e748fdbdcb
-  nuxt-site-config-kit: https://pkg.pr.new/harlan-zw/nuxt-site-config/nuxt-site-config-kit@b8c8a6978ce818d77ecc50c679d412e748fdbdcb
+  nuxt-site-config: https://pkg.pr.new/harlan-zw/nuxt-site-config/nuxt-site-config@5cb73c897314fe0e349edb832aed98a39c13be52
+  nuxt-site-config-kit: https://pkg.pr.new/harlan-zw/nuxt-site-config/nuxt-site-config-kit@5cb73c897314fe0e349edb832aed98a39c13be52
   nuxtseo-shared: https://pkg.pr.new/harlan-zw/nuxt-seo/nuxtseo-shared@226c091a0744b7286ef721ac035eed53856bfaa5
-  site-config-stack: https://pkg.pr.new/harlan-zw/nuxt-site-config/site-config-stack@b8c8a6978ce818d77ecc50c679d412e748fdbdcb
+  site-config-stack: https://pkg.pr.new/harlan-zw/nuxt-site-config/site-config-stack@5cb73c897314fe0e349edb832aed98a39c13be52
   vue: ^3.5.43
 
 allowBuilds:
