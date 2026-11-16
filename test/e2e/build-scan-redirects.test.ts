@@ -59,6 +59,10 @@ describe('build scan redirects', () => {
     expect(links).toContainEqual({ link: '/old-permanent-strict', issues: redirectToAbout })
   })
 
+  it('reports a prerendered redirect to a missing page', () => {
+    expect(links).toContainEqual({ link: '/old-removed', issues: [{ name: 'no-error-response', fix: undefined }, { name: 'redirects', fix: '/removed' }] })
+  })
+
   it('reports a redirect the build fetches from the site URL', () => {
     expect(links).toContainEqual({ link: '/moved', issues: redirectToAbout })
   })
