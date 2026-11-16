@@ -95,6 +95,8 @@ try {
     const inspections = report.flatMap(page => page.reports)
     if (!inspections.some(link => link.link === '/missing' && link.error.some(issue => issue.name === 'no-error-response' && issue.message.includes('status code 404'))))
       throw new Error('The packed module did not report the missing page')
+    if (!inspections.some(link => link.link === '/gone' && link.error.some(issue => issue.name === 'no-error-response' && issue.message.includes('status code 404'))))
+      throw new Error('The packed module did not report the prerendered missing page')
     if (!inspections.some(link => link.link === '/Target' && link.warning.some(issue => issue.name === 'no-uppercase-chars')))
       throw new Error('The packed module did not report the uppercase URL')
     for (const link of ['/old', '/moved']) {
