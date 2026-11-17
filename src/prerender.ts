@@ -155,9 +155,11 @@ export function prerender(config: ModuleOptions, version?: string, routeFileMap:
       if (ctx.contents && !ctx.error && ctx.fileName?.endsWith('.html') && !route.endsWith('.html') && pageFilter(route))
         linkMap[route] = await extractPayload(ctx.contents)
 
+      // Nitro 2 sets statusCode and statusMessage on the error, Nitro 3 sets status and statusText
+      const error = ctx.error as { statusCode?: number, statusMessage?: string, status?: number, statusText?: string } | undefined
       const response: LinkResponse = {
-        status: Number(ctx.error?.statusCode) || 200,
-        statusText: ctx.error?.statusMessage || '',
+        status: Number(error?.statusCode ?? error?.status) || 200,
+        statusText: error?.statusMessage ?? error?.statusText ?? '',
         headers: {
           'Content-Type': ctx.contentType,
         },
