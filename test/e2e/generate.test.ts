@@ -1,13 +1,28 @@
+import type { AddressInfo } from 'node:net'
+import { once } from 'node:events'
 import { readFile } from 'node:fs/promises'
+import { createServer } from 'node:http'
 import { buildNuxt, createResolver, loadNuxt } from '@nuxt/kit'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 describe('generate', () => {
-  it('basic', async () => {
-    process.env.NODE_ENV = 'production'
-    process.env.prerender = true
-    process.env.NITRO_PRESET = 'static'
-    process.env.NUXT_PUBLIC_SITE_URL = 'https://nuxtseo.com'
+  it('basic', async ({ onTestFinished }) => {
+    // Baseless links resolve against the site URL. Keep their responses local and stable.
+    const server = createServer((_req, res) => {
+      res.writeHead(404, 'Not Found').end()
+    })
+    server.listen(0, '127.0.0.1')
+    await once(server, 'listening')
+    onTestFinished(async () => {
+      await new Promise<void>((resolve, reject) => server.close(error => error ? reject(error) : resolve()))
+    })
+    vi.stubEnv('NUXT_PUBLIC_SITE_URL', `http://127.0.0.1:${(server.address() as AddressInfo).port}`)
+    onTestFinished(() => {
+      vi.unstubAllEnvs()
+    })
+    vi.stubEnv('NODE_ENV', 'production')
+    vi.stubEnv('prerender', 'true')
+    vi.stubEnv('NITRO_PRESET', 'static')
     const { resolve } = createResolver(import.meta.url)
     const rootDir = resolve('../../playground')
     const nuxt = await loadNuxt({
