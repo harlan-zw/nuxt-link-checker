@@ -178,10 +178,16 @@ export function prerender(config: ModuleOptions, version?: string, routeFileMap:
       // ask the prerender app for the first hop of each meta refresh route; the other rules keep the prerendered response
       const client = prerenderClient
       if (client) {
+        const fetchOptions = { fetch: client.fetch, timeout: config.fetchTimeout }
         await Promise.all([...refreshRoutes].map(async ([route, response]) => {
-          const { redirect } = await crawlFetch(withBase(route, nitro.options.baseURL), { fetch: client.fetch, timeout: config.fetchTimeout })
-          if (redirect)
-            setLinkResponse(route, Promise.resolve({ ...response, redirect }))
+          const { redirect } = await crawlFetch(withBase(route, nitro.options.baseURL), fetchOptions)
+          if (!redirect)
+            return
+          // the prerender app does not follow redirects, so the other rules judge the page a local redirect lands on
+          const target = redirect.location.startsWith('/') && !redirect.location.startsWith('//')
+            ? await crawlFetch(redirect.location, fetchOptions)
+            : response
+          setLinkResponse(route, Promise.resolve({ status: target.status, statusText: target.statusText, headers: target.headers, redirect }))
         }))
       }
 

@@ -13,6 +13,7 @@ export default defineNuxtConfig({
     // the crawler follows the links to these, so Nitro prerenders each redirect
     '/old-permanent': { redirect: { to: '/about', statusCode: 301 } },
     '/old-permanent-strict': { redirect: { to: '/about', statusCode: 308 } },
+    '/old-removed': { redirect: '/removed' },
     // a server middleware on the deployed site redirects this path, so the build fetches it from the site URL
     '/moved': { prerender: false },
   },
