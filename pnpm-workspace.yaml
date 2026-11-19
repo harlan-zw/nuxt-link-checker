@@ -108,7 +108,7 @@ catalog:
   execa: ^10.2.0
   fuse.js: ^7.5.0
   magic-string: ^1.4.3
-  nuxt: 4.6.2
+  nuxt: 4.6.4
   nuxt-site-config: ^5.0.0
   nuxtseo-layer-devtools: ^6.0.2
   nuxtseo-shared: ^6.0.4
