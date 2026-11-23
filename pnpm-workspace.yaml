@@ -1,9 +1,8 @@
-# Preview packages use pinned tarball URLs in transitive dependencies.
-# Restore the default when replacing previews with registry releases.
-blockExoticSubdeps: false
-
 minimumReleaseAgeExcludePrune: true
 minimumReleaseAgeExclude:
+  - nuxt-site-config@5.0.4
+  - nuxt-site-config-kit@5.0.4
+  - site-config-stack@5.0.4
   - nuxtseo-layer-devtools
   - nuxtseo-shared
   - '@nuxt/kit@4.6.2'
@@ -59,13 +58,12 @@ packages:
   - playground
   - '!examples/**'
 
-# Use immutable previews until the coordinated majors publish.
 overrides:
-  '@nuxtjs/sitemap': https://pkg.pr.new/nuxt-modules/sitemap/@nuxtjs/sitemap@58838b6cdfafd0f4933a4ff53bc98f968bd7f733
-  nuxt-site-config: https://pkg.pr.new/harlan-zw/nuxt-site-config/nuxt-site-config@b8c8a6978ce818d77ecc50c679d412e748fdbdcb
-  nuxt-site-config-kit: https://pkg.pr.new/harlan-zw/nuxt-site-config/nuxt-site-config-kit@b8c8a6978ce818d77ecc50c679d412e748fdbdcb
+  '@nuxtjs/sitemap': 9.1.0
+  nuxt-site-config: 5.0.4
+  nuxt-site-config-kit: 5.0.4
   nuxtseo-shared: ^6.0.4
-  site-config-stack: https://pkg.pr.new/harlan-zw/nuxt-site-config/site-config-stack@b8c8a6978ce818d77ecc50c679d412e748fdbdcb
+  site-config-stack: 5.0.4
   vue: ^3.5.43
 
 allowBuilds:
@@ -109,14 +107,14 @@ catalog:
   fuse.js: ^7.5.0
   magic-string: ^1.4.3
   nuxt: 4.6.2
-  nuxt-site-config: ^5.0.0
+  nuxt-site-config: ^5.0.4
   nuxtseo-layer-devtools: ^6.0.2
   nuxtseo-shared: ^6.0.4
   ofetch: ^1.5.1
   pathe: ^2.0.3
   radix3: ^1.1.2
   sirv: ^3.0.2
-  site-config-stack: ^5.0.0
+  site-config-stack: ^5.0.4
   std-env: ^4.3.0
   typescript: 6.0.3
   ufo: ^1.6.4
