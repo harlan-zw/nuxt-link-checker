@@ -117,22 +117,16 @@ export function prerender(config: ModuleOptions, version?: string, routeFileMap:
       }
     })
   }
-  // Fix for #
-  // Ensure that an evenually configured "app.baseURL" (as declared
-  // in nuxt.config.ts) is excluded by default.
-  const excludedLinks = [...config.excludeLinks]
-  const rtConfig = useRuntimeConfig()
-  if (rtConfig.app.baseURL && rtConfig.app.baseURL.length > 2) { // app.baseUrl -> "/.../"
-    excludedLinks.push(rtConfig.app.baseURL)
-  }
-  const urlFilter = createFilter({
-    exclude: excludedLinks,
-  })
-
+  const { baseURL } = useRuntimeConfig().app
   const pageFilter = createFilter({
     exclude: config.excludePages,
   })
   nuxt.hooks.hook('nitro:init', async (nitro) => {
+    // Nuxt resolves module options before modules:done hooks can add exclusions.
+    const excludedLinks = new Set([...config.excludeLinks, ...nuxt.options.linkChecker?.excludeLinks ?? []])
+    if (baseURL && baseURL.length > 2)
+      excludedLinks.add(baseURL)
+    const urlFilter = createFilter({ exclude: [...excludedLinks] })
     let prerenderClient: ReturnType<typeof createPrerenderFetch> | undefined
     // prerendered routes that rendered a meta refresh, keyed without app.baseURL, so each may be a redirect
     const refreshRoutes = new Map<string, LinkResponse>()
