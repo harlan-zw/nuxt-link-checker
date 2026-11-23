@@ -67,6 +67,10 @@ describe('build scan redirects', () => {
     expect(links).toContainEqual({ link: '/moved', issues: redirectToAbout })
   })
 
+  it.each(['/old-static-excluded', '/old-late-excluded'])('excludes %s from the build report', (link) => {
+    expect(links.map(report => report.link)).not.toContain(link)
+  })
+
   it('passes a link to a page that does not redirect', () => {
     expect(links.find(l => l.link === '/about')?.issues ?? []).toEqual([])
   })
