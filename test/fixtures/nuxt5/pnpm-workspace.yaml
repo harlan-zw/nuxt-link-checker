@@ -5,9 +5,9 @@ allowBuilds:
   esbuild: true
 
 minimumReleaseAgeExclude:
-  - nuxt-site-config@5.0.4
-  - nuxt-site-config-kit@5.0.4
-  - site-config-stack@5.0.4
+  - nuxt-site-config@5.1.0
+  - nuxt-site-config-kit@5.1.0
+  - site-config-stack@5.1.0
   - nuxtseo-layer-devtools
   - nuxtseo-shared
   - '@nuxtjs/sitemap@8.4.0'
@@ -74,6 +74,6 @@ trustPolicyIgnoreAfter: 262800
 overrides:
   '@nuxtjs/sitemap': 9.1.0
   'nuxtseo-shared': ^6.0.4
-  'nuxt-site-config': 5.0.4
-  'nuxt-site-config-kit': 5.0.4
-  'site-config-stack': 5.0.4
+  'nuxt-site-config': 5.1.0
+  'nuxt-site-config-kit': 5.1.0
+  'site-config-stack': 5.1.0
