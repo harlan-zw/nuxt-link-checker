@@ -6,10 +6,10 @@ import { runRule } from './util'
 
 describe('rule trailing-slash', () => {
   it.each([200, 404])('skips the slash warning for a configured file with HTTP %s', (status) => {
-    const link = '/downloads/model.stl?download=1'
+    const link = '/downloads/sample.mrc?download=1'
     const result = inspect({
       link,
-      siteConfig: { trailingSlash: true, fileExtensions: ['.STL'] },
+      siteConfig: { trailingSlash: true, fileExtensions: ['.MRC'] },
       response: { status, statusText: '', headers: {} },
     })
 
@@ -18,14 +18,27 @@ describe('rule trailing-slash', () => {
     expect(result.error?.map(error => error.name)).toEqual(status === 404 ? ['no-error-response'] : [])
   })
 
-  it.each(['/downloads/model.stl', '/docs/version.2'])('still enforces trailing slashes for %s without a matching extension', (link) => {
+  it.each(['/downloads/sample.mrc', '/docs/version.2'])('still enforces trailing slashes for %s without a matching extension', (link) => {
     const result = inspect({
       link,
-      siteConfig: { trailingSlash: true, fileExtensions: ['obj'] },
+      siteConfig: { trailingSlash: true, fileExtensions: ['pdb'] },
     })
 
     expect(result.warning?.map(warning => warning.name)).toEqual(['trailing-slash'])
     expect(result.fix).toBe(`${link}/`)
+  })
+
+  it('reports a missing STL download without suggesting a trailing slash', () => {
+    const link = '/downloads/model.stl'
+    const result = inspect({
+      link,
+      siteConfig: { trailingSlash: true },
+      response: { status: 404, statusText: 'Not Found', headers: {} },
+    })
+
+    expect(result.error?.map(error => error.name)).toEqual(['no-error-response'])
+    expect(result.warning).toEqual([])
+    expect(result.fix).toBe(link)
   })
 
   it('works', () => {

@@ -12,17 +12,17 @@ describe('configured file extensions', async () => {
       // @ts-expect-error module augments NuxtConfig
       site: {
         trailingSlash: true,
-        fileExtensions: ['stl'],
+        fileExtensions: ['mrc'],
       },
     },
   })
 
   it('reports a missing download without suggesting a trailing slash', async () => {
-    const link = '/downloads/missing.stl'
+    const link = '/downloads/missing.mrc'
     const [result] = await $fetch('/__link-checker__/inspect', {
       method: 'POST',
       body: {
-        tasks: [{ paths: [], link, textContent: 'Download model' }],
+        tasks: [{ paths: [], link, textContent: 'Download sample' }],
         ids: [],
       },
     })
