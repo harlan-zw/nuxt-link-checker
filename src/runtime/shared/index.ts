@@ -1,7 +1,7 @@
 import { getLinkResponse } from './crawl'
 import { generateFileLinkDiff, generateFileLinkPreviews, lruFsCache } from './diff'
 import { inspect } from './inspect'
-import { isNonFetchableLink } from './inspections/util'
+import { hasConfiguredFileExtension, isNonFetchableLink } from './inspections/util'
 import { createPublicDirectoryIndexLookup } from './public-dir'
 
 export {
@@ -9,6 +9,7 @@ export {
   generateFileLinkDiff,
   generateFileLinkPreviews,
   getLinkResponse,
+  hasConfiguredFileExtension,
   inspect,
   isNonFetchableLink,
   lruFsCache,

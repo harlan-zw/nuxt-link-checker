@@ -1,7 +1,7 @@
 import type { Rule } from '../../types'
 import { fixSlashes, isPathFile } from 'nuxt-site-config/urls'
 import { parseURL } from 'ufo'
-import { defineRule } from './util'
+import { defineRule, hasConfiguredFileExtension } from './util'
 
 export default function RuleTrailingSlash(): Rule {
   return defineRule({
@@ -14,7 +14,7 @@ export default function RuleTrailingSlash(): Rule {
         return
       }
 
-      if ($url.pathname === '/' || isPathFile($url.pathname))
+      if ($url.pathname === '/' || isPathFile($url.pathname) || hasConfiguredFileExtension($url.pathname, siteConfig?.fileExtensions))
         return
 
       // a directory index loads its relative assets against the trailing slash, so it keeps one whatever the site config says

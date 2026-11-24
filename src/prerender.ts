@@ -123,7 +123,8 @@ export function prerender(config: ModuleOptions, version?: string, routeFileMap:
   })
   nuxt.hooks.hook('nitro:init', async (nitro) => {
     // Nuxt resolves module options before modules:done hooks can add exclusions.
-    const excludedLinks = new Set([...config.excludeLinks, ...nuxt.options.linkChecker?.excludeLinks ?? []])
+    const lateConfig = nuxt.options.linkChecker || undefined
+    const excludedLinks = new Set([...config.excludeLinks, ...lateConfig?.excludeLinks ?? []])
     if (baseURL && baseURL.length > 2)
       excludedLinks.add(baseURL)
     const urlFilter = createFilter({ exclude: [...excludedLinks] })

@@ -4,9 +4,9 @@ import { fixSlashes } from 'nuxt-site-config/urls'
 import { createError, defineEventHandler, readBody, serverFetch, useRuntimeConfig } from 'nuxt/server'
 import { createFetch } from 'ofetch'
 import { resolve } from 'pathe'
-import { withoutBase } from 'ufo'
+import { parseURL, withoutBase } from 'ufo'
 import { getSiteConfig } from '#site-config/server/composables/getSiteConfig'
-import { createPublicDirectoryIndexLookup, generateFileLinkDiff, generateFileLinkPreviews, getLinkResponse, inspect, isNonFetchableLink, lruFsCache } from '../../../shared'
+import { createPublicDirectoryIndexLookup, generateFileLinkDiff, generateFileLinkPreviews, getLinkResponse, hasConfiguredFileExtension, inspect, isNonFetchableLink, lruFsCache } from '../../../shared'
 
 interface InspectTask {
   link: string
@@ -38,9 +38,12 @@ function mergeOnKey<T, K extends keyof T>(arr: T[], key: K): T[] {
   return Object.values(res)
 }
 
-function isInternalRoute(path: string): boolean {
+function isInternalRoute(path: string, fileExtensions: unknown): boolean {
+  if (path.startsWith('/__') || path.startsWith('@'))
+    return true
+
   const lastSegment = path.split('/').pop() || path
-  return lastSegment.includes('.') || path.startsWith('/__') || path.startsWith('@')
+  return lastSegment.includes('.') && !hasConfiguredFileExtension(parseURL(path).pathname, fileExtensions)
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -113,7 +116,7 @@ export default defineEventHandler(async (e) => {
   return Promise.all(
     tasks.map(async ({ link, paths, textContent }) => {
       // do a quick check for links that are always safe
-      if (isNonFetchableLink(link) || isInternalRoute(link))
+      if (isNonFetchableLink(link) || isInternalRoute(link, partialCtx.siteConfig.fileExtensions))
         return { passes: true }
 
       const response = await getLinkResponse({

@@ -1,5 +1,17 @@
 import type { Rule } from '../../types'
 
+const FILE_EXTENSION_RE = /\.([0-9a-z]+)$/i
+
+export function hasConfiguredFileExtension(path: string, fileExtensions: unknown): boolean {
+  if (!Array.isArray(fileExtensions))
+    return false
+
+  const extension = path.match(FILE_EXTENSION_RE)?.[1]?.toLowerCase()
+  return !!extension && fileExtensions.some(extra =>
+    typeof extra === 'string' && extra.replace(/^\./, '').toLowerCase() === extension,
+  )
+}
+
 export function defineRule(rule: Rule): Rule {
   return rule
 }
