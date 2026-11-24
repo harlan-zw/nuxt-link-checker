@@ -5,6 +5,29 @@ import RuleTrailingSlash from '../../../src/runtime/shared/inspections/trailing-
 import { runRule } from './util'
 
 describe('rule trailing-slash', () => {
+  it.each([200, 404])('skips the slash warning for a configured file with HTTP %s', (status) => {
+    const link = '/downloads/model.stl?download=1'
+    const result = inspect({
+      link,
+      siteConfig: { trailingSlash: true, fileExtensions: ['.STL'] },
+      response: { status, statusText: '', headers: {} },
+    })
+
+    expect(result.warning).toEqual([])
+    expect(result.fix).toBe(link)
+    expect(result.error?.map(error => error.name)).toEqual(status === 404 ? ['no-error-response'] : [])
+  })
+
+  it.each(['/downloads/model.stl', '/docs/version.2'])('still enforces trailing slashes for %s without a matching extension', (link) => {
+    const result = inspect({
+      link,
+      siteConfig: { trailingSlash: true, fileExtensions: ['obj'] },
+    })
+
+    expect(result.warning?.map(warning => warning.name)).toEqual(['trailing-slash'])
+    expect(result.fix).toBe(`${link}/`)
+  })
+
   it('works', () => {
     const ctx = {
       siteConfig: {
