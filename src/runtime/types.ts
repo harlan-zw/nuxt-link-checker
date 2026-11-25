@@ -1,7 +1,6 @@
 import type Fuse from 'fuse.js'
 import type { SiteConfigResolved } from 'site-config-stack'
 import type { ParsedURL } from 'ufo'
-import type { ComputedRef, Ref } from 'vue'
 
 export interface Rule {
   id: string
@@ -64,22 +63,4 @@ export interface LinkInspectionResult {
   passes: boolean
   sources?: InspectionSource[]
   diff?: { diff: InspectionDiff, code: string, filepath: string }[]
-}
-
-export interface NuxtLinkCheckerClient {
-  isStarted: boolean
-  reset: (hard: boolean) => void
-  start: () => void
-  restart: () => void
-  scanLinks: () => void
-  startQueueWorker: () => void
-  stopQueueWorker: () => void
-  broadcast: (event: string, payload?: any) => void
-  openDevtoolsToLink: (link: string) => void
-  maybeAttachEls: (payload?: LinkInspectionResult) => void
-  inspectionEls: Ref<(LinkInspectionResult & { el: Element })[]>
-  visibleLinks: Set<string>
-  isWorkingQueue: boolean
-  linkDb: ComputedRef<LinkInspectionResult[]>
-  showInspections: Ref<boolean>
 }
