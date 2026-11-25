@@ -1,5 +1,5 @@
 import type { Rule } from '../../types'
-import { defineRule } from './util'
+import { defineRule } from './util.ts'
 
 export default function RuleDescriptiveLinkText(): Rule {
   return defineRule({

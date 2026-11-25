@@ -1,5 +1,5 @@
 import type { Rule } from '../../types'
-import { defineRule } from './util'
+import { defineRule } from './util.ts'
 
 export default function RuleAbsoluteSiteUrls(): Rule {
   return defineRule({

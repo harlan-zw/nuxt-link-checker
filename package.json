@@ -30,12 +30,6 @@
       "import": "./dist/eslint.mjs"
     }
   },
-  "build": {
-    "externals": [
-      "unstorage/drivers/fs",
-      "nuxt/server"
-    ]
-  },
   "main": "./dist/module.mjs",
   "types": "./dist/types.d.mts",
   "typesVersions": {
@@ -54,9 +48,9 @@
   },
   "scripts": {
     "client:build": "node -e \"require('fs').cpSync('devtools','dist/devtools',{recursive:true})\"",
-    "build": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build && pnpm run client:build",
+    "build": "nuxt-module-build prepare && tsdown && pnpm run client:build",
     "dev": "nuxi dev playground",
-    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground && pnpm run client:build",
+    "dev:prepare": "nuxt-module-build prepare && tsdown && nuxi prepare playground && pnpm run client:build",
     "prepack": "pnpm run build",
     "release": "pnpm build && bumpp --output=CHANGELOG.md",
     "lint": "eslint .",
@@ -108,8 +102,8 @@
     "nuxtseo-layer-devtools": "catalog:",
     "sirv": "catalog:",
     "std-env": "catalog:",
+    "tsdown": "catalog:",
     "typescript": "catalog:",
-    "unbuild": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:",
     "vue-eslint-parser": "catalog:",

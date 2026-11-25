@@ -14,11 +14,11 @@ import { normalizeLocales, resolveI18nModule } from 'nuxtseo-shared/i18n'
 import { getNuxtModuleOptions, resolveContentProvider, setupContentRuntime, setupNitroRuntimeCompatibility, setupRuntimeAliases, useModuleLogger } from 'nuxtseo-shared/kit'
 import { $fetch } from 'ofetch'
 import { join, resolve as resolvePath } from 'pathe'
-import { setupDevToolsUI } from './devtools'
-import { prerender } from './prerender'
-import { crawlFetch } from './runtime/shared/crawl'
-import { serializeFilters } from './runtime/shared/sharedUtils'
-import { convertNuxtPagesToPaths, findRemovedOptions } from './util'
+import { setupDevToolsUI } from './devtools.ts'
+import { prerender } from './prerender.ts'
+import { crawlFetch } from './runtime/shared/crawl.ts'
+import { serializeFilters } from './runtime/shared/sharedUtils.ts'
+import { convertNuxtPagesToPaths, findRemovedOptions } from './util.ts'
 
 export interface ModuleOptions {
   /**

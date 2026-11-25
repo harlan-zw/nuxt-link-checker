@@ -1,6 +1,6 @@
 import type { Rule, RuleReport } from '../../types'
-import { UNREACHABLE_STATUS } from '../crawl'
-import { defineRule, isNonFetchableLink } from './util'
+import { UNREACHABLE_STATUS } from '../crawl.ts'
+import { defineRule, isNonFetchableLink } from './util.ts'
 
 export default function RuleNoErrorResponse(): Rule {
   return defineRule({

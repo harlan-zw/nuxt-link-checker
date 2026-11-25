@@ -1,6 +1,6 @@
 import type { Rule } from 'eslint'
-import { createRouteMatcher, createSuggester, loadRoutes } from '../utils/routes'
-import { createCombinedVisitors, stripQueryAndHash, withoutTrailingSlash } from '../utils/visitors'
+import { createRouteMatcher, createSuggester, loadRoutes } from '../utils/routes.ts'
+import { createCombinedVisitors, stripQueryAndHash, withoutTrailingSlash } from '../utils/visitors.ts'
 
 const rule: Rule.RuleModule = {
   meta: {

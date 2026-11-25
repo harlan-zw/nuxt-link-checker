@@ -1,7 +1,7 @@
 import type { Rule } from '../../types'
 import { fixSlashes, isPathFile } from 'nuxt-site-config/urls'
 import { parseURL } from 'ufo'
-import { defineRule, hasConfiguredFileExtension } from './util'
+import { defineRule, hasConfiguredFileExtension } from './util.ts'
 
 export default function RuleTrailingSlash(): Rule {
   return defineRule({

@@ -1,5 +1,5 @@
 import type { Rule, RuleReport } from '../types'
-import { defineRule, isRedirectStatus } from './inspections/util'
+import { defineRule, isRedirectStatus } from './inspections/util.ts'
 
 function readLocation(headers: any): string | undefined {
   const location = typeof headers?.get === 'function' ? headers.get('location') : headers?.location

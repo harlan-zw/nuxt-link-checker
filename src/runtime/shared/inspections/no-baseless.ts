@@ -1,6 +1,6 @@
 import type { Rule } from '../../types'
 import { joinURL } from 'ufo'
-import { defineRule, isNonFetchableLink } from './util'
+import { defineRule, isNonFetchableLink } from './util.ts'
 
 export default function RuleNoDocumentRelative(): Rule {
   return defineRule({

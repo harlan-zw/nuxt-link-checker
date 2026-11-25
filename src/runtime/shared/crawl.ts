@@ -1,6 +1,6 @@
 import type { $Fetch } from 'ofetch'
 import { $fetch } from 'ofetch'
-import { isNonFetchableLink, isRedirectStatus } from './inspections/util'
+import { isNonFetchableLink, isRedirectStatus } from './inspections/util.ts'
 
 type MaybePromise<T> = T | Promise<T>
 

@@ -1,5 +1,5 @@
 import type { Rule } from '../../types'
-import { defineRule } from './util'
+import { defineRule } from './util.ts'
 
 const doubleSlashRe = /^\/{2,}|\/{2,}/g
 const doubleSlashTestRe = /^\/{2,}|\/{2,}/

@@ -9,8 +9,8 @@ import type { LinkInspectionResult, RuleReport } from '../runtime/types'
 import { colors } from 'consola/utils'
 import { useSiteConfig } from 'nuxt-site-config/kit'
 import { relative, resolve } from 'pathe'
-import { htmlTemplate } from './template'
-import { truncateString } from './util'
+import { htmlTemplate } from './template.ts'
+import { truncateString } from './util.ts'
 
 export interface PathReport {
   route: string

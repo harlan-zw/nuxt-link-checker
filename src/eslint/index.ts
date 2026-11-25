@@ -1,7 +1,7 @@
 import type { ESLint } from 'eslint'
-import { markdownProcessor } from './processor'
-import validRoute from './rules/valid-route'
-import validSitemapLink from './rules/valid-sitemap-link'
+import { markdownProcessor } from './processor.ts'
+import validRoute from './rules/valid-route.ts'
+import validSitemapLink from './rules/valid-sitemap-link.ts'
 
 const plugin: ESLint.Plugin = {
   meta: {

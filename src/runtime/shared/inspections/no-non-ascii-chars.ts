@@ -1,5 +1,5 @@
 import type { Rule } from '../../types'
-import { defineRule } from './util'
+import { defineRule } from './util.ts'
 
 const nonAsciiRe = /[^\u0020-\u007F]/
 

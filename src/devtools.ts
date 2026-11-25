@@ -7,8 +7,8 @@ import { extendPages, useNuxt } from '@nuxt/kit'
 import { diffArrays } from 'diff'
 import { setupDevToolsUI as _setupDevToolsUI, setupDevToolsRpc } from 'nuxtseo-shared/devtools'
 import { resolve } from 'pathe'
-import { generateLinkDiff } from './runtime/shared/diff'
-import { convertNuxtPagesToPaths, resolveViteWebSocket } from './util'
+import { generateLinkDiff } from './runtime/shared/diff.ts'
+import { convertNuxtPagesToPaths, resolveViteWebSocket } from './util.ts'
 
 const RPC_NAMESPACE = 'nuxt-link-checker-rpc'
 
