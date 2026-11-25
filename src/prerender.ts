@@ -17,12 +17,12 @@ import { withBase, withoutLeadingSlash } from 'ufo'
 import { ELEMENT_NODE, parse, walkSync } from 'ultrahtml'
 import { createStorage } from 'unstorage'
 import fsDriver from 'unstorage/drivers/fs'
-import { generateReports } from './build/report'
-import { runParallel, truncateString } from './build/util'
-import { crawlFetch, getLinkResponse, getResolvedLinkResponses, setLinkResponse } from './runtime/shared/crawl'
-import { inspect } from './runtime/shared/inspect'
-import { createPublicDirectoryIndexLookup } from './runtime/shared/public-dir'
-import { createFilter } from './runtime/shared/sharedUtils'
+import { generateReports } from './build/report.ts'
+import { runParallel, truncateString } from './build/util.ts'
+import { crawlFetch, getLinkResponse, getResolvedLinkResponses, setLinkResponse } from './runtime/shared/crawl.ts'
+import { inspect } from './runtime/shared/inspect.ts'
+import { createPublicDirectoryIndexLookup } from './runtime/shared/public-dir.ts'
+import { createFilter } from './runtime/shared/sharedUtils.ts'
 
 const { gray, yellow, dim, red, white } = colors
 
