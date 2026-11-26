@@ -84,7 +84,7 @@ function describeNetworkError(error: any): string {
   return deepest || error?.message || 'Network Error'
 }
 
-export async function crawlFetch(link: string, options: { timeout?: number, baseURL?: string, fetch?: $Fetch } = {}): Promise<LinkResponse & { time: number }> {
+export async function crawlFetch(link: string, options: { timeout?: number, baseURL?: string, fetch?: $Fetch, followRedirects?: boolean } = {}): Promise<LinkResponse & { time: number }> {
   const timeout = options.timeout || 5000
   const start = Date.now()
   const request = async (method: 'HEAD' | 'GET', redirect: RequestRedirect): Promise<LinkResponse> => {
@@ -126,6 +126,8 @@ export async function crawlFetch(link: string, options: { timeout?: number, base
   const location = first.headers.location
   if (!isRedirectStatus(first.status) || typeof location !== 'string' || !location)
     return { ...first, time: Date.now() - start }
+  if (options.followRedirects === false)
+    return { ...first, redirect: { status: first.status, location }, time: Date.now() - start }
   // the other rules judge where the link ends up, so follow the redirect for the final response
   const final = await probe('follow')
   return { ...final, redirect: { status: first.status, location }, time: Date.now() - start }

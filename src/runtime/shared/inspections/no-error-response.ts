@@ -1,13 +1,13 @@
 import type { Rule, RuleReport } from '../../types'
 import { UNREACHABLE_STATUS } from '../crawl.ts'
-import { defineRule, isNonFetchableLink } from './util.ts'
+import { defineRule, isErrorStatus, isNonFetchableLink } from './util.ts'
 
 export default function RuleNoErrorResponse(): Rule {
   return defineRule({
     id: 'no-error-response',
     externalLinks: true,
     test({ link, response, report, pageSearch }) {
-      if (!response || typeof response.status !== 'number' || (response.status >= 200 && response.status < 400) || isNonFetchableLink(link))
+      if (!response || !isErrorStatus(response.status) || isNonFetchableLink(link))
         return
       const payload: RuleReport = {
         name: 'no-error-response',

@@ -19,8 +19,9 @@ import { createStorage } from 'unstorage'
 import fsDriver from 'unstorage/drivers/fs'
 import { generateReports } from './build/report.ts'
 import { runParallel, truncateString } from './build/util.ts'
-import { crawlFetch, getLinkResponse, getResolvedLinkResponses, setLinkResponse } from './runtime/shared/crawl.ts'
+import { crawlFetch, getLinkResponse, getResolvedLinkResponses, setLinkResponse, UNREACHABLE_STATUS } from './runtime/shared/crawl.ts'
 import { inspect } from './runtime/shared/inspect.ts'
+import { isRedirectStatus } from './runtime/shared/inspections/util.ts'
 import { createPublicDirectoryIndexLookup } from './runtime/shared/public-dir.ts'
 import { createFilter } from './runtime/shared/sharedUtils.ts'
 
@@ -30,6 +31,123 @@ const linkMap: Record<string, ExtractedPayload> = {}
 
 // h3 and Nuxt answer a redirect with a body that holds this tag, and Nitro prerenders that body as the page
 const META_REFRESH_RE = /<meta[^>]+http-equiv=["']?refresh/i
+const MAX_REDIRECT_HOPS = 20
+const LOCAL_REDIRECT_ORIGIN = 'http://prerender.invalid'
+
+function safeDecodeURI(path: string): string {
+  try {
+    return decodeURI(path)
+  }
+  catch {
+    return path
+  }
+}
+
+function readRedirect(response: LinkResponse): { status: number, location: string } | undefined {
+  if (response.redirect)
+    return response.redirect
+  const location = response.headers?.location
+  if (isRedirectStatus(response.status) && typeof location === 'string' && location)
+    return { status: response.status, location }
+  return undefined
+}
+
+function resolveLocalRedirect(location: string, fromPath: string, baseURL: string): { fetchPath: string, location: string } | undefined {
+  const trimmed = location.trim()
+  if (!trimmed || trimmed.startsWith('//') || /^[a-z][a-z\d+\-.]*:/i.test(trimmed))
+    return undefined
+  try {
+    const url = new URL(trimmed, new URL(fromPath, LOCAL_REDIRECT_ORIGIN))
+    if (url.origin !== LOCAL_REDIRECT_ORIGIN)
+      return undefined
+    // Keep root-relative locations as written; resolve document-relative hops against the current path.
+    const nextLocation = trimmed.startsWith('/') ? trimmed : `${url.pathname}${url.search}${url.hash}`
+    return {
+      fetchPath: withBase(`${url.pathname}${url.search}`, baseURL),
+      location: nextLocation,
+    }
+  }
+  catch {
+    return undefined
+  }
+}
+
+function normalizeVisitKey(path: string): string {
+  const url = new URL(path, LOCAL_REDIRECT_ORIGIN)
+  return `${url.pathname}${url.search}`
+}
+
+/**
+ * Follow local redirects for a prerendered meta refresh route against the prerender app.
+ * Stops at the first non-redirect response, an external target, a cycle, or the hop limit.
+ */
+export async function resolvePrerenderRedirect(
+  route: string,
+  prerenderedResponse: LinkResponse,
+  options: {
+    baseURL?: string
+    fetch: (path: string) => Promise<LinkResponse>
+    maxHops?: number
+  },
+): Promise<LinkResponse | undefined> {
+  const baseURL = options.baseURL || '/'
+  const maxHops = options.maxHops ?? MAX_REDIRECT_HOPS
+  let currentPath = withBase(route, baseURL)
+  let current = await options.fetch(currentPath)
+  const firstHop = readRedirect(current)
+  if (!firstHop)
+    return undefined
+
+  let lastLocation = firstHop.location.trim()
+  const visited = new Set([normalizeVisitKey(currentPath)])
+
+  for (let hops = 0; ; hops++) {
+    const hop = readRedirect(current)
+    if (!hop)
+      break
+
+    const resolved = resolveLocalRedirect(hop.location, currentPath, baseURL)
+    if (!resolved) {
+      // Redirects to another site keep the prerendered response instead of making an external request.
+      return {
+        status: prerenderedResponse.status,
+        statusText: prerenderedResponse.statusText,
+        headers: prerenderedResponse.headers,
+        redirect: { status: firstHop.status, location: hop.location.trim() },
+      }
+    }
+
+    lastLocation = resolved.location
+    const visitKey = normalizeVisitKey(resolved.fetchPath)
+    if (visited.has(visitKey)) {
+      return {
+        status: UNREACHABLE_STATUS,
+        statusText: 'Redirect loop',
+        headers: {},
+        redirect: { status: firstHop.status, location: lastLocation },
+      }
+    }
+    if (hops >= maxHops) {
+      return {
+        status: UNREACHABLE_STATUS,
+        statusText: 'Too many redirects',
+        headers: {},
+        redirect: { status: firstHop.status, location: lastLocation },
+      }
+    }
+
+    visited.add(visitKey)
+    currentPath = resolved.fetchPath
+    current = await options.fetch(safeDecodeURI(currentPath))
+  }
+
+  return {
+    status: current.status,
+    statusText: current.statusText,
+    headers: current.headers,
+    redirect: { status: firstHop.status, location: lastLocation },
+  }
+}
 
 /**
  * Extract the title, element ids, and links from a rendered page.
@@ -172,19 +290,17 @@ export function prerender(config: ModuleOptions, version?: string, routeFileMap:
         return
       scanned = true
 
-      // ask the prerender app for the first hop of each meta refresh route; the other rules keep the prerendered response
+      // ask the prerender app for each meta refresh route and follow local redirect chains to where the link lands
       const client = prerenderClient
       if (client) {
-        const fetchOptions = { fetch: client.fetch, timeout: config.fetchTimeout }
+        const fetchOptions = { fetch: client.fetch, timeout: config.fetchTimeout, followRedirects: false }
         await Promise.all([...refreshRoutes].map(async ([route, response]) => {
-          const { redirect } = await crawlFetch(withBase(route, nitro.options.baseURL), fetchOptions)
-          if (!redirect)
-            return
-          // the prerender app does not follow redirects, so the other rules judge the page a local redirect lands on
-          const target = redirect.location.startsWith('/') && !redirect.location.startsWith('//')
-            ? await crawlFetch(redirect.location, fetchOptions)
-            : response
-          setLinkResponse(route, Promise.resolve({ status: target.status, statusText: target.statusText, headers: target.headers, redirect }))
+          const resolved = await resolvePrerenderRedirect(route, response, {
+            baseURL: nitro.options.baseURL,
+            fetch: target => crawlFetch(target, fetchOptions),
+          })
+          if (resolved)
+            setLinkResponse(route, Promise.resolve(resolved))
         }))
       }
 

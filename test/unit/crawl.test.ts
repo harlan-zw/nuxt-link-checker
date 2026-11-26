@@ -101,10 +101,15 @@ describe('crawlFetch on a redirect', () => {
     expect(res).toMatchObject({ status: 200, redirect: { status: 301, location: '/ok' } })
   })
 
-  it('reports the redirect and the broken target', async () => {
+  it('stops at the first hop when followRedirects is false', async () => {
+    const res = await crawlFetch('/moved', { baseURL, followRedirects: false })
+    expect(res).toMatchObject({ status: 301, redirect: { status: 301, location: '/ok' } })
+  })
+
+  it('reports the redirect and the broken target without suggesting the missing target', async () => {
     const response = await crawlFetch('/moved-to-missing', { baseURL })
     const result = inspect({ link: '/moved-to-missing', response }, [RuleNoErrorResponse(), RuleRedirects()])
     expect(result.error!.map(e => e.message)).toEqual(['Should not respond with status code 404 (Not Found).'])
-    expect(result.warning!.map(w => w.fix)).toEqual(['/missing'])
+    expect(result.warning!.map(w => ({ name: w.name, fix: w.fix }))).toEqual([{ name: 'redirects', fix: undefined }])
   })
 })

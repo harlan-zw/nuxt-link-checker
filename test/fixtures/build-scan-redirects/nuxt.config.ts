@@ -22,6 +22,12 @@ export default defineNuxtConfig({
     '/old-permanent': { redirect: { to: '/about', statusCode: 301 } },
     '/old-permanent-strict': { redirect: { to: '/about', statusCode: 308 } },
     '/old-removed': { redirect: '/removed' },
+    '/old-chain-removed': { redirect: '/middle-removed' },
+    '/middle-removed': { redirect: '/removed' },
+    '/old-chain-about': { redirect: '/middle-about' },
+    '/middle-about': { redirect: '/about' },
+    '/loop-a': { redirect: '/loop-b' },
+    '/loop-b': { redirect: '/loop-a' },
     '/old-static-excluded': { redirect: '/about' },
     '/old-late-excluded': { redirect: '/about' },
     // a server middleware on the deployed site redirects this path, so the build fetches it from the site URL
