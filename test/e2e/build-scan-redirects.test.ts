@@ -59,8 +59,20 @@ describe('build scan redirects', () => {
     expect(links).toContainEqual({ link: '/old-permanent-strict', issues: redirectToAbout })
   })
 
-  it('reports a prerendered redirect to a missing page', () => {
-    expect(links).toContainEqual({ link: '/old-removed', issues: [{ name: 'no-error-response', fix: undefined }, { name: 'redirects', fix: '/removed' }] })
+  it('reports a prerendered redirect to a missing page without suggesting the broken target', () => {
+    expect(links).toContainEqual({ link: '/old-removed', issues: [{ name: 'no-error-response', fix: undefined }, { name: 'redirects', fix: undefined }] })
+  })
+
+  it('reports a missing page after two prerendered redirects without suggesting the broken chain', () => {
+    expect(links).toContainEqual({ link: '/old-chain-removed', issues: [{ name: 'no-error-response', fix: undefined }, { name: 'redirects', fix: undefined }] })
+  })
+
+  it('follows a working prerendered redirect chain to the final page', () => {
+    expect(links).toContainEqual({ link: '/old-chain-about', issues: redirectToAbout })
+  })
+
+  it('reports a prerendered redirect loop as an error without a fix', () => {
+    expect(links).toContainEqual({ link: '/loop-a', issues: [{ name: 'no-error-response', fix: undefined }, { name: 'redirects', fix: undefined }] })
   })
 
   it('reports a redirect the build fetches from the site URL', () => {

@@ -34,4 +34,27 @@ describe('rule redirects', () => {
     expect(result.passes).toBe(true)
     expect(result.fix).toBe('/page')
   })
+
+  it.each([0, 404, 500])('omits the redirect fix when the followed target responds %i', (finalStatus) => {
+    const result = inspect({
+      link: '/old-page',
+      siteConfig,
+      response: {
+        status: finalStatus,
+        statusText: finalStatus === 0 ? 'Redirect loop' : 'Error',
+        headers: {},
+        redirect: { status: 302, location: '/broken-target' },
+      },
+    })
+
+    expect(result.passes).toBe(false)
+    expect(result.error?.map(e => e.name)).toEqual(['no-error-response'])
+    expect(result.warning).toEqual([{
+      name: 'redirects',
+      scope: 'warning',
+      message: 'Should not redirect.',
+      tip: 'Redirects use up your crawl budget and increase loading times, it\'s recommended to avoid them when possible.',
+    }])
+    expect(result.fix).toBe('/old-page')
+  })
 })

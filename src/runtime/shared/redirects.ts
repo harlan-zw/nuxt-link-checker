@@ -1,5 +1,5 @@
 import type { Rule, RuleReport } from '../types'
-import { defineRule, isRedirectStatus } from './inspections/util.ts'
+import { defineRule, isErrorStatus, isRedirectStatus } from './inspections/util.ts'
 
 function readLocation(headers: any): string | undefined {
   const location = typeof headers?.get === 'function' ? headers.get('location') : headers?.location
@@ -33,7 +33,7 @@ export default function RuleRedirects(): Rule {
         tip: 'Redirects use up your crawl budget and increase loading times, it\'s recommended to avoid them when possible.',
       }
 
-      if (hop.location) {
+      if (hop.location && !isErrorStatus(response?.status)) {
         payload.fix = hop.location
         payload.fixDescription = `Set to redirect URL ${hop.location}.`
       }

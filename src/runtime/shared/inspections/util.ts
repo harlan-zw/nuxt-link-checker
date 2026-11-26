@@ -29,3 +29,7 @@ const REDIRECT_STATUSES = new Set([301, 302, 303, 307, 308])
 export function isRedirectStatus(status: unknown): boolean {
   return typeof status === 'number' && REDIRECT_STATUSES.has(status)
 }
+
+export function isErrorStatus(status: unknown): boolean {
+  return typeof status === 'number' && (status < 200 || status >= 400)
+}
